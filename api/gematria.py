@@ -1,3 +1,4 @@
+from http.server import BaseHTTPRequestHandler
 import json
 import re
 import requests
@@ -54,40 +55,43 @@ def find_sentence_start_quotes(text, target_sum, max_length=50):
 
     return quotes
 
-def handler(event, context):
-    """
-    Handle the incoming request to find quotes.
-    """
-    # Ensure the HTTP method is POST
-    if event['httpMethod'] != 'POST':
-        return {
-            'statusCode': 405,
-            'body': json.dumps({'success': False, 'error': 'Method Not Allowed'})
-        }
+class handler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        body = json.loads(post_data.decode('utf-8'))
+        
+        try:
+            url = body.get('url')
+            target_sum = int(body.get('targetSum'))
 
-    try:
-        # Load the request body
-        body = json.loads(event['body'])
-        url = body.get('url')
-        target_sum = int(body.get('targetSum'))
+            # Fetch text from the provided URL
+            text = fetch_text(url)
 
-        # Fetch text from the provided URL
-        text = fetch_text(url)
+            # Find matching quotes
+            matching_quotes = find_sentence_start_quotes(text, target_sum)
 
-        # Find matching quotes
-        matching_quotes = find_sentence_start_quotes(text, target_sum)
-
-        # Return the successful response
-        return {
-            'statusCode': 200,
-            'body': json.dumps({
+            # Prepare the response
+            response = {
                 'success': True,
                 'quotes': [{'text': quote, 'sum': eq_sum(quote)} for quote in matching_quotes]
-            })
-        }
-    except Exception as e:
-        logging.error(f"Error: {str(e)}")
-        return {
-            'statusCode': 500,
-            'body': json.dumps({'success': False, 'error': str(e)})
-        }
+            }
+
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(response).encode())
+
+        except Exception as e:
+            logging.error(f"Error: {str(e)}")
+            self.send_response(500)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({'success': False, 'error': str(e)}).encode())
+
+    def do_GET(self):
+        # Handle GET request (optional, for testing)
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps({"message": "Gematria function is running. Use POST to submit a request."}).encode())
