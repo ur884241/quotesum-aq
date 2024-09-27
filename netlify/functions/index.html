@@ -47,8 +47,8 @@
 <body>
     <div class="container">
         <h1>Gematria Quote Finder</h1>
-        <input type="text" id="urlInput" placeholder="Enter URL of .txt file">
-        <input type="number" id="targetSum" placeholder="Enter target sum">
+        <input type="text" id="urlInput" placeholder="Enter URL of .txt file" required>
+        <input type="number" id="targetSum" placeholder="Enter target sum" required>
         <button onclick="searchQuotes()">Search Quotes</button>
         <div id="results"></div>
     </div>
@@ -59,6 +59,12 @@
             const targetSum = document.getElementById('targetSum').value;
             const resultsDiv = document.getElementById('results');
 
+            // Input validation
+            if (!url || !targetSum) {
+                resultsDiv.innerHTML = 'Please provide both a URL and a target sum.';
+                return;
+            }
+
             resultsDiv.innerHTML = 'Searching for quotes...';
 
             try {
@@ -67,6 +73,11 @@
                     body: JSON.stringify({ url, targetSum }),
                     headers: { 'Content-Type': 'application/json' }
                 });
+
+                // Check if the request was successful
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
 
                 const data = await response.json();
 
