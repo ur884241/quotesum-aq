@@ -31,6 +31,7 @@ def find_sentence_start_quotes(text, target_sum, max_length=50):
     return quotes
 
 def handler(event, context):
+    print(event)  # This will log the event data
     try:
         body = json.loads(event['body'])
         url = body.get('url')
