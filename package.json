@@ -1,0 +1,11 @@
+{
+  "name": "quotesum-aq",
+  "version": "1.0.0",
+  "description": "Finds quotes in a txt block for a target gematria sum.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

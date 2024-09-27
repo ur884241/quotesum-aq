@@ -1,8 +1,6 @@
-from flask import Flask, render_template, request, jsonify
+import json
 import requests
 import re
-
-app = Flask(__name__)
 
 def create_eq_dict():
     return {chr(97 + i): 10 + i for i in range(26)}
@@ -18,7 +16,7 @@ def eq_sum(text):
 def find_sentence_start_quotes(text, target_sum, max_length=50):
     sentences = re.split(r'(?<=[.!?])\s+', text)
     quotes = []
-    
+
     for sentence in sentences:
         words = sentence.split()
         current_sum = 0
@@ -29,28 +27,28 @@ def find_sentence_start_quotes(text, target_sum, max_length=50):
                 quotes.append(quote)
             elif current_sum > target_sum:
                 break
-    
+
     return quotes
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/search', methods=['POST'])
-def search():
-    url = request.form['url']
-    target_sum = int(request.form['target_sum'])
-    
+def handler(event, context):
     try:
+        body = json.loads(event['body'])
+        url = body.get('url')
+        target_sum = int(body.get('targetSum'))
+
         response = requests.get(url)
         text = response.text
         matching_quotes = find_sentence_start_quotes(text, target_sum)
-        return jsonify({
-            'success': True,
-            'quotes': [{'text': quote, 'sum': eq_sum(quote)} for quote in matching_quotes]
-        })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
 
-if __name__ == '__main__':
-    app.run(debug=True)
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'success': True,
+                'quotes': [{'text': quote, 'sum': eq_sum(quote)} for quote in matching_quotes]
+            })
+        }
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'success': False, 'error': str(e)})
+        }
