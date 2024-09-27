@@ -1,17 +1,11 @@
-[
-build
-]
+[build]
   functions = "netlify/functions"
   publish = "."
 
-[
-build.environment
-]
+[build.environment]
   PYTHON_VERSION = "3.8"
 
-[[
-redirects
-]]
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
