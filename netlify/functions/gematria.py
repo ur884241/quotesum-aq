@@ -1,43 +1,41 @@
 import json
 import re
 import requests
+import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 def fetch_text(url):
     """Fetch text content from a given URL."""
     response = requests.get(url, timeout=10)
+    if response.status_code != 200:
+        raise ValueError(f"Failed to fetch text: {response.status_code} {response.reason}")
     return response.text
-
 
 def create_eq_dict():
     """Create a dictionary mapping letters to their corrected English Qaballa values."""
     return {chr(97 + i): 10 + i for i in range(26)}
 
-
 EQ_DICT = create_eq_dict()
-
 
 def eq_value(char):
     """Return the corrected English Qaballa value for a given character."""
     return EQ_DICT.get(char.lower(), 0)
 
-
 def eq_sum(text):
     """Calculate the corrected English Qaballa sum for a given text."""
     return sum(eq_value(c) for c in text)
 
-
 def find_sentence_start_quotes(text, target_sum, max_length=50):
     """
     Find quotes that start sentences and have a specific English Qaballa sum.
-
     Args:
-    text (str): The text to search in.
-    target_sum (int): The target English Qaballa sum.
-    max_length (int): Maximum number of words in a quote.
-
+        text (str): The text to search in.
+        target_sum (int): The target English Qaballa sum.
+        max_length (int): Maximum number of words in a quote.
     Returns:
-    list: A list of matching quotes.
+        list: A list of matching quotes.
     """
     sentences = re.split(r"(?<=[.!?])\s+", text)
     quotes = []
@@ -55,30 +53,39 @@ def find_sentence_start_quotes(text, target_sum, max_length=50):
 
     return quotes
 
-
 def handler(event, context):
     """
     Handle the incoming request to find quotes.
-
     Args:
-    event: The event data from Netlify.
-    context: The context of the function execution.
-
+        event: The event data from Netlify.
+        context: The context of the function execution.
     Returns:
-    dict: The HTTP response with status code and body.
+        dict: The HTTP response with status code and body.
     """
     try:
         body = json.loads(event['body'])
         url = body.get('url')
-        target_sum = int(body.get('targetSum'))
+        target_sum = body.get('targetSum')
 
-        # Fetch text from the provided URL
+        # Input validation
+        if not url or not isinstance(target_sum, int):
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'success': False, 'error': 'Invalid input: url and targetSum are required.'})
+            }
+
+        logging.info(f"Fetching text from URL: {url}")
         text = fetch_text(url)
 
-        # Find matching quotes
         matching_quotes = find_sentence_start_quotes(text, target_sum)
+        logging.info(f"Found {len(matching_quotes)} matching quotes.")
 
-        # Prepare the response
+        if not matching_quotes:
+            return {
+                'statusCode': 200,
+                'body': json.dumps({'success': True, 'quotes': [], 'message': 'No matching quotes found.'})
+            }
+
         return {
             'statusCode': 200,
             'body': json.dumps({
@@ -86,7 +93,13 @@ def handler(event, context):
                 'quotes': [{'text': quote, 'sum': eq_sum(quote)} for quote in matching_quotes]
             })
         }
+    except ValueError as ve:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'success': False, 'error': str(ve)})
+        }
     except Exception as e:
+        logging.error(f"An error occurred: {str(e)}")
         return {
             'statusCode': 500,
             'body': json.dumps({'success': False, 'error': str(e)})
