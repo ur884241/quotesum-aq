@@ -1,0 +1,17 @@
+[
+build
+]
+  functions = "netlify/functions"
+  publish = "."
+
+[
+build.environment
+]
+  PYTHON_VERSION = "3.8"
+
+[[
+redirects
+]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
