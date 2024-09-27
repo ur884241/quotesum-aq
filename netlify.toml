@@ -1,6 +1,6 @@
 [build]
   functions = "netlify/functions"
-  publish = "."
+  publish = "index.html"
 
 [build.environment]
   PYTHON_VERSION = "3.8"
