@@ -2,16 +2,20 @@ import json
 import re
 import requests
 import logging
+from urllib.parse import urlparse
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 def fetch_text(url):
     """Fetch text content from a given URL."""
-    response = requests.get(url, timeout=10)
-    if response.status_code != 200:
-        raise ValueError(f"Failed to fetch text: {response.status_code} {response.reason}")
-    return response.text
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()  # Raise an error for bad responses
+        return response.text
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error fetching text: {e}")
+        raise ValueError(f"Failed to fetch text: {str(e)}")
 
 def create_eq_dict():
     """Create a dictionary mapping letters to their corrected English Qaballa values."""
@@ -53,6 +57,11 @@ def find_sentence_start_quotes(text, target_sum, max_length=50):
 
     return quotes
 
+def is_valid_url(url):
+    """Check if the given string is a valid URL."""
+    parsed = urlparse(url)
+    return all([parsed.scheme, parsed.netloc])
+
 def handler(event, context):
     """
     Handle the incoming request to find quotes.
@@ -70,6 +79,10 @@ def handler(event, context):
         url = body.get('url')
         target_sum = int(body.get('targetSum'))
 
+        # Validate URL
+        if not is_valid_url(url):
+            raise ValueError("Invalid URL format")
+
         # Fetch text from the provided URL
         text = fetch_text(url)
 
@@ -84,6 +97,7 @@ def handler(event, context):
             })
         }
     except Exception as e:
+        logging.error(f"Error in handler: {e}")
         return {
             'statusCode': 500,
             'body': json.dumps({'success': False, 'error': str(e)})
