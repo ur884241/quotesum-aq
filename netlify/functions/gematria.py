@@ -54,25 +54,28 @@ def find_sentence_start_quotes(text, target_sum, max_length=50):
     return quotes
 
 def handler(event, context):
+    """
+    Handle the incoming request to find quotes.
+    """
+
+    # Ensure the HTTP method is POST
+    if event['httpMethod'] != 'POST':
+        return {
+            'statusCode': 405,
+            'body': json.dumps({'success': False, 'error': 'Method Not Allowed'})
+        }
+
     try:
         body = json.loads(event['body'])
         url = body.get('url')
         target_sum = int(body.get('targetSum'))
-        
-        # Validate URL and target_sum
-        if not url or not isinstance(target_sum, int):
-            return {
-                'statusCode': 400,
-                'body': json.dumps({'success': False, 'error': 'Invalid input'})
-            }
-        
+
         # Fetch text from the provided URL
         text = fetch_text(url)
-        
+
         # Find matching quotes
         matching_quotes = find_sentence_start_quotes(text, target_sum)
 
-        # Prepare the response
         return {
             'statusCode': 200,
             'body': json.dumps({
@@ -80,14 +83,8 @@ def handler(event, context):
                 'quotes': [{'text': quote, 'sum': eq_sum(quote)} for quote in matching_quotes]
             })
         }
-    except json.JSONDecodeError:
-        return {
-            'statusCode': 400,
-            'body': json.dumps({'success': False, 'error': 'Invalid JSON format'})
-        }
     except Exception as e:
         return {
             'statusCode': 500,
             'body': json.dumps({'success': False, 'error': str(e)})
         }
-

@@ -55,37 +55,37 @@
 
     <script>
         async function searchQuotes() {
-    const url = document.getElementById('urlInput').value;
-    const targetSum = document.getElementById('targetSum').value;
-    const resultsDiv = document.getElementById('results');
+            const url = document.getElementById('urlInput').value;
+            const targetSum = document.getElementById('targetSum').value;
+            const resultsDiv = document.getElementById('results');
 
-    resultsDiv.innerHTML = 'Searching for quotes...';
+            resultsDiv.innerHTML = 'Searching for quotes...';
 
-    try {
-        const response = await fetch('./netlify/functions/gematria', {
-            method: 'POST',
-            body: JSON.stringify({ url, targetSum }),
-            headers: { 'Content-Type': 'application/json' }
-        });
+            try {
+                const response = await fetch('/.netlify/functions/gematria', {
+                    method: 'POST',
+                    body: JSON.stringify({ url, targetSum }),
+                    headers: { 'Content-Type': 'application/json' }
+                });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultsDiv.innerHTML = `<h2>Found ${data.quotes.length} matching quotes:</h2>`;
+                    data.quotes.forEach((quote, index) => {
+                        resultsDiv.innerHTML += `<p>${index + 1}. '${quote.text}' (Sum: ${quote.sum})</p>`;
+                    });
+                } else {
+                    resultsDiv.innerHTML = `Error: ${data.error}`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `Error: ${error.message}`;
+            }
         }
-
-        const data = await response.json();
-
-        if (data.success) {
-            resultsDiv.innerHTML = `<h2>Found ${data.quotes.length} matching quotes:</h2>`;
-            data.quotes.forEach((quote, index) => {
-                resultsDiv.innerHTML += `<p>${index + 1}. '${quote.text}' (Sum: ${quote.sum})</p>`;
-            });
-        } else {
-            resultsDiv.innerHTML = `Error: ${data.error}`;
-        }
-    } catch (error) {
-        resultsDiv.innerHTML = `Error: ${error.message}`;
-    }
-}
     </script>
 </body>
 </html>
