@@ -1,5 +1,5 @@
 [build]
-  functions = "netlify/functions"  # Adjust this if your functions are elsewhere
+  functions = "netlify/functions"
   publish = "."
 
 [build.environment]

@@ -54,38 +54,25 @@ def find_sentence_start_quotes(text, target_sum, max_length=50):
     return quotes
 
 def handler(event, context):
-    """
-    Handle the incoming request to find quotes.
-    Args:
-        event: The event data from Netlify.
-        context: The context of the function execution.
-    Returns:
-        dict: The HTTP response with status code and body.
-    """
     try:
         body = json.loads(event['body'])
         url = body.get('url')
-        target_sum = body.get('targetSum')
-
-        # Input validation
+        target_sum = int(body.get('targetSum'))
+        
+        # Validate URL and target_sum
         if not url or not isinstance(target_sum, int):
             return {
                 'statusCode': 400,
-                'body': json.dumps({'success': False, 'error': 'Invalid input: url and targetSum are required.'})
+                'body': json.dumps({'success': False, 'error': 'Invalid input'})
             }
-
-        logging.info(f"Fetching text from URL: {url}")
+        
+        # Fetch text from the provided URL
         text = fetch_text(url)
-
+        
+        # Find matching quotes
         matching_quotes = find_sentence_start_quotes(text, target_sum)
-        logging.info(f"Found {len(matching_quotes)} matching quotes.")
 
-        if not matching_quotes:
-            return {
-                'statusCode': 200,
-                'body': json.dumps({'success': True, 'quotes': [], 'message': 'No matching quotes found.'})
-            }
-
+        # Prepare the response
         return {
             'statusCode': 200,
             'body': json.dumps({
@@ -93,14 +80,14 @@ def handler(event, context):
                 'quotes': [{'text': quote, 'sum': eq_sum(quote)} for quote in matching_quotes]
             })
         }
-    except ValueError as ve:
+    except json.JSONDecodeError:
         return {
             'statusCode': 400,
-            'body': json.dumps({'success': False, 'error': str(ve)})
+            'body': json.dumps({'success': False, 'error': 'Invalid JSON format'})
         }
     except Exception as e:
-        logging.error(f"An error occurred: {str(e)}")
         return {
             'statusCode': 500,
             'body': json.dumps({'success': False, 'error': str(e)})
         }
+
