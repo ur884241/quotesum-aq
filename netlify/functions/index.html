@@ -68,7 +68,7 @@
             resultsDiv.innerHTML = 'Searching for quotes...';
 
             try {
-                const response = await fetch('/.netlify/functions/gematria', {
+                const response = await fetch('/.netlify/functions/gematria.py', {
                     method: 'POST',
                     body: JSON.stringify({ url, targetSum }),
                     headers: { 'Content-Type': 'application/json' }
