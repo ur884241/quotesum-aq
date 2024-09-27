@@ -54,58 +54,29 @@
     </div>
 
     <script>
-        const EQ_DICT = {};
-        for (let i = 0; i < 26; i++) {
-            EQ_DICT[String.fromCharCode(97 + i)] = 10 + i;
-        }
-
-        function eqValue(char) {
-            return EQ_DICT[char.toLowerCase()] || 0;
-        }
-
-        function eqSum(text) {
-            return Array.from(text).reduce((sum, char) => sum + eqValue(char), 0);
-        }
-
-        function findSentenceStartQuotes(text, targetSum, maxLength = 50) {
-            const sentences = text.split(/(?<=[.!?])\s+/);
-            const quotes = [];
-
-            for (const sentence of sentences) {
-                const words = sentence.split(/\s+/);
-                let currentSum = 0;
-                for (let i = 0; i < Math.min(words.length, maxLength); i++) {
-                    currentSum += eqSum(words[i]);
-                    if (currentSum === targetSum) {
-                        quotes.push(words.slice(0, i + 1).join(' '));
-                    } else if (currentSum > targetSum) {
-                        break;
-                    }
-                }
-            }
-
-            return quotes;
-        }
-
         async function searchQuotes() {
             const url = document.getElementById('urlInput').value;
-            const targetSum = parseInt(document.getElementById('targetSum').value);
+            const targetSum = document.getElementById('targetSum').value;
             const resultsDiv = document.getElementById('results');
 
-            resultsDiv.innerHTML = 'Fetching text...';
+            resultsDiv.innerHTML = 'Searching for quotes...';
 
             try {
-                const response = await fetch(url);
-                const text = await response.text();
-
-                resultsDiv.innerHTML = 'Searching for quotes...';
-
-                const matchingQuotes = findSentenceStartQuotes(text, targetSum);
-
-                resultsDiv.innerHTML = `<h2>Found ${matchingQuotes.length} matching quotes:</h2>`;
-                matchingQuotes.forEach((quote, index) => {
-                    resultsDiv.innerHTML += `<p>${index + 1}. '${quote}' (Sum: ${eqSum(quote)})</p>`;
+                const response = await fetch('/.netlify/functions/gematria', {
+                    method: 'POST',
+                    body: JSON.stringify({ url, targetSum }),
+                    headers: { 'Content-Type': 'application/json' }
                 });
+                const data = await response.json();
+
+                if (data.success) {
+                    resultsDiv.innerHTML = `<h2>Found ${data.quotes.length} matching quotes:</h2>`;
+                    data.quotes.forEach((quote, index) => {
+                        resultsDiv.innerHTML += `<p>${index + 1}. '${quote.text}' (Sum: ${quote.sum})</p>`;
+                    });
+                } else {
+                    resultsDiv.innerHTML = `Error: ${data.error}`;
+                }
             } catch (error) {
                 resultsDiv.innerHTML = `Error: ${error.message}`;
             }
