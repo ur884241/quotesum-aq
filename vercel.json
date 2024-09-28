@@ -13,7 +13,7 @@
       },
       {
           "src": "/(.*)",
-          "dest": "/public/index.html"  // Pointing to the HTML file in the public directory
+          "dest": "/index.html"  
       }
   ]
 }
