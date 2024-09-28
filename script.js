@@ -139,7 +139,7 @@ function init() {
     particles.length = 0;
     let size = 24;
     let x = (canvas.width - ctx.measureText(text).width) / 2;
-    let y = 100;
+    let y = 200;
 
     ctx.font = size + 'px Courier';
     ctx.fillStyle = 'white';
