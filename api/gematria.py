@@ -59,39 +59,28 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
         post_data = self.rfile.read(content_length)
-        body = json.loads(post_data.decode('utf-8'))
-        
+        body = json.loads(post_data)
+
+        # Extract URL and target sum from the request body
+        url = body.get('url')
+        target_sum = body.get('target_sum')
+
+        if not url or not target_sum:
+            self.send_response(400)
+            self.end_headers()
+            self.wfile.write(b'Missing url or target_sum in request body')
+            return
+
         try:
-            url = body.get('url')
-            target_sum = int(body.get('targetSum'))
-
-            # Fetch text from the provided URL
             text = fetch_text(url)
-
-            # Find matching quotes
-            matching_quotes = find_sentence_start_quotes(text, target_sum)
-
-            # Prepare the response
-            response = {
-                'success': True,
-                'quotes': [{'text': quote, 'sum': eq_sum(quote)} for quote in matching_quotes]
-            }
-
+            quotes = find_sentence_start_quotes(text, target_sum)
+            response = {'quotes': quotes}
             self.send_response(200)
-            self.send_header('Content-type', 'application/json')
+            self.send_header('Content-Type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(response).encode())
-
         except Exception as e:
-            logging.error(f"Error: {str(e)}")
+            logging.error(f"Error processing request: {e}")
             self.send_response(500)
-            self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({'success': False, 'error': str(e)}).encode())
-
-    def do_GET(self):
-        # Handle GET request (optional, for testing)
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        self.wfile.write(json.dumps({"message": "Gematria function is running. Use POST to submit a request."}).encode())
+            self.wfile.write(b'Internal server error')
