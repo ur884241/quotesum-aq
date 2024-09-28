@@ -42,6 +42,10 @@
             border-top: 1px solid #ddd;
             padding-top: 20px;
         }
+        .error {
+            color: red;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -54,15 +58,32 @@
     </div>
 
     <script>
+        // Configure your API URL here
+        const API_URL = '/api/gematria';
+
         async function searchQuotes() {
-            const url = document.getElementById('urlInput').value;
-            const targetSum = document.getElementById('targetSum').value;
+            const urlInput = document.getElementById('urlInput');
+            const targetSumInput = document.getElementById('targetSum');
             const resultsDiv = document.getElementById('results');
+
+            // Input validation
+            if (!urlInput.value || !targetSumInput.value) {
+                resultsDiv.innerHTML = '<p class="error">Please fill in both fields.</p>';
+                return;
+            }
+
+            const url = urlInput.value;
+            const targetSum = parseInt(targetSumInput.value);
+
+            if (isNaN(targetSum)) {
+                resultsDiv.innerHTML = '<p class="error">Please enter a valid number for the target sum.</p>';
+                return;
+            }
 
             resultsDiv.innerHTML = 'Searching for quotes...';
 
             try {
-                const response = await fetch('/api/gematria', {  // Ensure this path is correct
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     body: JSON.stringify({ url, targetSum }),
                     headers: { 'Content-Type': 'application/json' }
@@ -80,10 +101,10 @@
                         resultsDiv.innerHTML += `<p>${index + 1}. '${quote.text}' (Sum: ${quote.sum})</p>`;
                     });
                 } else {
-                    resultsDiv.innerHTML = `Error: ${data.error}`;
+                    resultsDiv.innerHTML = `<p class="error">Error: ${data.error}</p>`;
                 }
             } catch (error) {
-                resultsDiv.innerHTML = `Error: ${error.message}`;
+                resultsDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
             }
         }
     </script>
