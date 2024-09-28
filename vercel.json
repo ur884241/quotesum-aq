@@ -7,6 +7,6 @@
   ],
   "routes": [
     { "src": "/api/gematria", "dest": "api/gematria.py" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
