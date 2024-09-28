@@ -53,7 +53,7 @@ input, button {
     border: 1px solid var(--border-color);
     color: var(--text-color);
     font-family: 'Fira Code', monospace;
-    font-size: 16px;
+    font-size: 13px;
     box-sizing: border-box;
     height: 40px;
 }
