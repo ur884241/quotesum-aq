@@ -5,68 +5,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gematria Quote Finder</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
+        body, html {
             margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
+            padding: 0;
+            height: 100%;
+            font-family: 'Courier New', monospace;
+            background-color: #0f0f0f;
+            color: #e0e0e0;
+            overflow-x: hidden;
         }
         .container {
             max-width: 800px;
             margin: auto;
-            background: white;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+        #background-sigil {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.1;
         }
         h1 {
-            color: #333;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.1);
         }
-        input[type="text"], input[type="number"], button {
+        input, button {
             width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid #444;
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
         }
         button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
+            background-color: #2a2a2a;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #3a3a3a;
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
         }
         #results {
             margin-top: 20px;
-            border-top: 1px solid #ddd;
             padding-top: 20px;
+            border-top: 1px solid #444;
         }
-        .error {
-            color: red;
-            margin-top: 5px;
+        .quote {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.03);
+            border-left: 3px solid #666;
+            transition: all 0.3s ease;
+        }
+        .quote:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateX(5px);
+        }
+        .ascii-art {
+            font-size: 10px;
+            line-height: 10px;
+            white-space: pre;
+            font-family: monospace;
+            color: #666;
+            text-align: center;
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
+    <svg id="background-sigil" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+        <!-- Complex sigil pattern will be generated here -->
+    </svg>
+
     <div class="container">
         <h1>Gematria Quote Finder</h1>
+        <div class="ascii-art" id="ascii-sigil"></div>
         <input type="text" id="urlInput" placeholder="Enter URL of .txt file" required>
         <input type="number" id="targetSum" placeholder="Enter target sum" required>
-        <button onclick="searchQuotes()">Search Quotes</button>
+        <button onclick="searchQuotes()">Invoke</button>
         <div id="results"></div>
     </div>
 
     <script>
-        // Configure your API URL here
-        const API_URL = '/api/gematria';
+        // Generate complex sigil pattern
+        function generateSigil() {
+            const svg = document.getElementById('background-sigil');
+            const numPaths = 50;
+            let paths = '';
+            for (let i = 0; i < numPaths; i++) {
+                const points = [];
+                for (let j = 0; j < 5; j++) {
+                    points.push(`${Math.random() * 1000},${Math.random() * 1000}`);
+                }
+                paths += `<path d="M${points.join(' L')}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" />`;
+            }
+            svg.innerHTML = paths;
+        }
 
+        // Generate ASCII sigil
+        function generateAsciiSigil() {
+            const ascii = document.getElementById('ascii-sigil');
+            const chars = '╔╗╚╝║═╠╣╦╩╬';
+            let art = '';
+            for (let i = 0; i < 10; i++) {
+                for (let j = 0; j < 40; j++) {
+                    art += chars[Math.floor(Math.random() * chars.length)];
+                }
+                art += '\n';
+            }
+            ascii.textContent = art;
+        }
+
+        // Your existing searchQuotes function here
         async function searchQuotes() {
             const urlInput = document.getElementById('urlInput');
             const targetSumInput = document.getElementById('targetSum');
             const resultsDiv = document.getElementById('results');
 
-            // Input validation
             if (!urlInput.value || !targetSumInput.value) {
                 resultsDiv.innerHTML = '<p class="error">Please fill in both fields.</p>';
                 return;
@@ -83,7 +147,7 @@
             resultsDiv.innerHTML = 'Searching for quotes...';
 
             try {
-                const response = await fetch(API_URL, {
+                const response = await fetch('/api/gematria', {
                     method: 'POST',
                     body: JSON.stringify({ url, targetSum }),
                     headers: { 'Content-Type': 'application/json' }
@@ -98,7 +162,7 @@
                 if (data.success) {
                     resultsDiv.innerHTML = `<h2>Found ${data.quotes.length} matching quotes:</h2>`;
                     data.quotes.forEach((quote, index) => {
-                        resultsDiv.innerHTML += `<p>${index + 1}. '${quote.text}' (Sum: ${quote.sum})</p>`;
+                        resultsDiv.innerHTML += `<div class="quote"><p>${index + 1}. '${quote.text}' (Sum: ${quote.sum})</p></div>`;
                     });
                 } else {
                     resultsDiv.innerHTML = `<p class="error">Error: ${data.error}</p>`;
@@ -107,6 +171,13 @@
                 resultsDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
             }
         }
+
+        // Initialize
+        generateSigil();
+        generateAsciiSigil();
+
+        // Regenerate ASCII sigil every 10 seconds
+        setInterval(generateAsciiSigil, 10000);
     </script>
 </body>
 </html>
