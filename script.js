@@ -181,7 +181,3 @@ function animate() {
 init();
 animate();
 
-// Periodically reinitialize to create fading effect
-setInterval(() => {
-    init();
-}, 5000);
