@@ -1,0 +1,111 @@
+:root {
+    --bg-color: #0f0f0f;
+    --text-color: #e0e0e0;
+    --accent-color: #666;
+    --input-bg: rgba(255,255,255,0.05);
+    --button-bg: #2a2a2a;
+    --button-hover-bg: #3a3a3a;
+    --border-color: #444;
+    --quote-border: #666;
+    --error-color: #ff4444;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Courier New', monospace;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+#background-sigil {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.1;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-shadow: 2px 2px 4px rgba(255,255,255,0.1);
+}
+
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-family: inherit;
+}
+
+button {
+    background-color: var(--button-bg);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--button-hover-bg);
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+}
+
+#results {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.quote {
+    padding: 10px;
+    margin-bottom: 10px;
+    background: var(--input-bg);
+    border-left: 3px solid var(--quote-border);
+    transition: all 0.3s ease;
+}
+
+.quote:hover {
+    background: var(--button-bg);
+    transform: translateX(5px);
+}
+
+.ascii-art {
+    font-size: 10px;
+    line-height: 10px;
+    white-space: pre;
+    font-family: monospace;
+    color: var(--accent-color);
+    text-align: center;
+    margin: 20px 0;
+}
+
+.error {
+    color: var(--error-color);
+    font-weight: bold;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+    
+    h1 {
+        font-size: 2em;
+    }
+}
