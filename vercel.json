@@ -10,6 +10,10 @@
       {
           "src": "/api/(.*)",
           "dest": "api/$1.py"
+      },
+      {
+          "src": "/(.*)",
+          "dest": "/public/index.html"  // Pointing to the HTML file in the public directory
       }
   ]
 }
