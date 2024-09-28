@@ -10,10 +10,6 @@
       {
           "src": "/api/(.*)",
           "dest": "api/$1.py"
-      },
-      {
-          "src": "/(.*)",
-          "dest": "/index.html" // or "/public/index.html" if in a public folder
       }
   ]
 }
