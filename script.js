@@ -138,8 +138,8 @@ class Particle {
 function init() {
     particles.length = 0;
     let size = 24;
-    let x = (canvas.width - ctx.measureText(text).width) / 2;
-    let y = 200;
+    let x = (canvas.width - ctx.measureText(text).width) / 1.5;
+    let y = 100;
 
     ctx.font = size + 'px Courier';
     ctx.fillStyle = 'white';
