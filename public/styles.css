@@ -53,12 +53,16 @@ input, button {
     border: 1px solid var(--border-color);
     color: var(--text-color);
     font-family: inherit;
+    font-size: 16px; /* Ensure consistent font size */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
 }
 
 button {
     background-color: var(--button-bg);
     cursor: pointer;
     transition: all 0.3s ease;
+    height: 40px; /* Set a fixed height to match other input elements */
+    line-height: 20px; /* Adjust line height for vertical centering */
 }
 
 button:hover {
