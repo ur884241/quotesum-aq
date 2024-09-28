@@ -82,6 +82,7 @@ button:hover {
     background: var(--input-bg);
     border-left: 3px solid var(--quote-border);
     transition: all 0.3s ease;
+    font-size: 13px;
 }
 
 .quote:hover {
@@ -117,7 +118,7 @@ button:hover {
 #titleCanvas {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 30;
     width: 100%;
     height: 200px;
 }
