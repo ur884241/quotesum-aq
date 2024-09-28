@@ -1,19 +1,11 @@
 {
   "version": 2,
   "builds": [
-      {
-          "src": "api/*.py",
-          "use": "@vercel/python"
-      }
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "api/gematria.py", "use": "@vercel/python" }
   ],
   "routes": [
-      {
-          "src": "/api/(.*)",
-          "dest": "api/$1.py"
-      },
-      {
-          "src": "/(.*)",
-          "dest": "/index.html"  
-      }
+    { "src": "/api/gematria", "dest": "api/gematria.py" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
