@@ -14,7 +14,7 @@ body, html {
     margin: 0;
     padding: 0;
     height: 100%;
-    font-family: 'Courier New', monospace;
+    font-family: 'Fira Code', monospace;
     background-color: var(--bg-color);
     color: var(--text-color);
     overflow-x: hidden;
@@ -52,17 +52,17 @@ input, button {
     background: var(--input-bg);
     border: 1px solid var(--border-color);
     color: var(--text-color);
-    font-family: inherit;
-    font-size: 16px; /* Ensure consistent font size */
-    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    font-family: 'Fira Code', monospace;
+    font-size: 16px;
+    box-sizing: border-box;
+    height: 40px;
 }
 
 button {
     background-color: var(--button-bg);
     cursor: pointer;
     transition: all 0.3s ease;
-    height: 40px; /* Set a fixed height to match other input elements */
-    line-height: 20px; /* Adjust line height for vertical centering */
+    line-height: 20px;
 }
 
 button:hover {
@@ -93,7 +93,7 @@ button:hover {
     font-size: 10px;
     line-height: 10px;
     white-space: pre;
-    font-family: monospace;
+    font-family: 'Fira Code', monospace;
     color: var(--accent-color);
     text-align: center;
     margin: 20px 0;
