@@ -3,7 +3,7 @@ import json
 import re
 import requests
 import logging
-from database import insert_quote, get_quotes_by_sum
+from .database import insert_quote, get_quotes_by_sum
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
