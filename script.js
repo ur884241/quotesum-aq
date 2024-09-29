@@ -142,7 +142,7 @@ function init() {
     let y = 100;
 
     ctx.font = size + 'px Courier';
-    ctx.fillStyle = 'yellow';
+    ctx.fillStyle = 'white';
     ctx.fillText(text, x, y);
 
     const pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
