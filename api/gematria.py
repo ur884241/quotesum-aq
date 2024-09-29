@@ -3,23 +3,15 @@ import json
 import re
 import requests
 import logging
-from pymongo import MongoClient
-import os
+from database import insert_quote, get_quotes_by_sum
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# MongoDB setup
-MONGO_URI = os.environ.get('MONGO_URI')
-client = MongoClient(MONGO_URI)
-db = client.gematria_db
-quotes_collection = db.quotes
-
 def fetch_text(url):
     """Fetch text content from a given URL."""
     response = requests.get(url, timeout=10)
-    if response.status_code != 200:
-        raise ValueError(f"Failed to fetch text: {response.status_code} {response.reason}")
+    response.raise_for_status()
     return response.text
 
 def create_eq_dict():
@@ -36,15 +28,6 @@ def eq_value(char):
 def eq_sum(text):
     """Calculate the corrected English Qaballa sum for a given text."""
     return sum(eq_value(c) for c in text)
-
-def insert_quote(text, sum_value):
-    """Insert a quote into the MongoDB database."""
-    quote = {"text": text, "sum": sum_value}
-    quotes_collection.insert_one(quote)
-
-def get_quotes_by_sum(target_sum):
-    """Retrieve quotes from the MongoDB database by sum value."""
-    return list(quotes_collection.find({"sum": target_sum}, {"_id": 0}))
 
 def find_sentence_start_quotes(text, target_sum, max_length=50):
     """
@@ -66,7 +49,8 @@ def find_sentence_start_quotes(text, target_sum, max_length=50):
             current_sum += eq_sum(words[i])
             if current_sum == target_sum:
                 quote = " ".join(words[: i + 1])
-                quotes.append({"text": quote, "sum": target_sum})
+                quote_obj = {"text": quote, "sum": target_sum}
+                quotes.append(quote_obj)
                 insert_quote(quote, target_sum)  # Store the quote in the database
             elif current_sum > target_sum:
                 break
