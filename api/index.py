@@ -26,16 +26,15 @@ client = MongoClient(MONGODB_URI, server_api=ServerApi('1'), connectTimeoutMS=30
 db = client[DB_NAME]
 quotes_collection = db['quotes']
 
-def insert_quote(text, sum_value, url):
+def insert_quote(text, sum_value):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
     try:
-        quote = {"text": text, "sum": sum_value, "url": url}
+        quote = {"text": text, "sum": sum_value}
         result = quotes_collection.insert_one(quote)
         logger.info(f"Successfully inserted quote with id: {result.inserted_id}")
     except Exception as e:
         logger.error(f"Failed to insert quote: {str(e)}")
 
-# Update the get_quotes_by_sum function to return the URL
 def get_quotes_by_sum(target_sum):
     logger.info(f"Attempting to retrieve quotes for sum: {target_sum}")
     try:
@@ -46,8 +45,31 @@ def get_quotes_by_sum(target_sum):
         logger.error(f"Failed to retrieve quotes: {str(e)}")
         return []
 
-# Update the find_sentence_start_quotes function to include the URL
-def find_sentence_start_quotes(text, target_sum, url, max_length=50):
+def fetch_text(url):
+    """Fetch text content from a given URL."""
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        return response.text
+    except requests.RequestException as e:
+        logger.error(f"Error fetching text from URL: {e}")
+        raise
+
+def create_eq_dict():
+    """Create a dictionary mapping letters to their corrected English Qaballa values."""
+    return {chr(97 + i): 10 + i for i in range(26)}
+
+EQ_DICT = create_eq_dict()
+
+def eq_value(char):
+    """Return the corrected English Qaballa value for a given character."""
+    return EQ_DICT.get(char.lower(), 0)
+
+def eq_sum(text):
+    """Calculate the corrected English Qaballa sum for a given text."""
+    return sum(eq_value(c) for c in text)
+
+def find_sentence_start_quotes(text, target_sum, max_length=50):
     sentences = re.split(r"(?<=[.!?])\s+", text)
     quotes = []
 
@@ -58,10 +80,10 @@ def find_sentence_start_quotes(text, target_sum, url, max_length=50):
             current_sum += eq_sum(words[i])
             if current_sum == target_sum:
                 quote = " ".join(words[: i + 1])
-                quote_obj = {"text": quote, "sum": target_sum, "url": url}
+                quote_obj = {"text": quote, "sum": target_sum}
                 quotes.append(quote_obj)
                 logger.info(f"Found matching quote: {quote[:30]}...")
-                insert_quote(quote, target_sum, url)
+                insert_quote(quote, target_sum)
             elif current_sum > target_sum:
                 break
 
@@ -93,7 +115,7 @@ class handler(BaseHTTPRequestHandler):
             if len(matching_quotes) < 5:
                 logger.info("Not enough quotes found in database, fetching text from URL")
                 text = fetch_text(url)
-                new_quotes = find_sentence_start_quotes(text, target_sum, url)
+                new_quotes = find_sentence_start_quotes(text, target_sum)
                 matching_quotes.extend(new_quotes)
 
             response = {
@@ -108,7 +130,7 @@ class handler(BaseHTTPRequestHandler):
             logger.error(f"Error processing request: {str(e)}")
             error_response = {'success': False, 'error': str(e)}
             self.send_json_response(error_response, 500)
-            
+
     def do_GET(self):
         logger.info(f"Received GET request: {self.path}")
         try:
