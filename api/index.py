@@ -28,7 +28,7 @@ try:
 except Exception as e:
     print(e)
 
-db = client[DB_NAME]
+
 
 def insert_quote(text, sum_value):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
