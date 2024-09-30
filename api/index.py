@@ -12,6 +12,9 @@ from pymongo.server_api import ServerApi
 import os
 import traceback
 
+insert_quote("Test Quote", 1234)
+MONGO_URI = "mongodb+srv://vitorio8:<aNh8FRbesD7Tybl6>@cluster1888.jgndp.mongodb.net/gematria_db?retryWrites=true&w=majority&appName=Cluster1888"
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
