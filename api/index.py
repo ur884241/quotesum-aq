@@ -6,23 +6,22 @@ import logging
 from pymongo import MongoClient
 import os
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-logger.info("API script is being loaded")
-
-# MongoDB setup
 MONGO_URI = os.environ.get('MONGO_URI')
-logger.info(f"MONGO_URI: {MONGO_URI[:10]}..." if MONGO_URI else "MONGO_URI is not set")
+logger.info(f"MONGO_URI is {'set' if MONGO_URI else 'not set'}")
 
 try:
-    client = MongoClient(MONGO_URI)
+    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+    # The ismaster command is cheap and does not require auth.
+    client.admin.command('ismaster')
+    logger.info("Successfully connected to MongoDB")
     db = client.gematria_db
     quotes_collection = db.quotes
-    logger.info("Successfully connected to MongoDB")
 except Exception as e:
     logger.error(f"Failed to connect to MongoDB: {str(e)}")
+
 
 def insert_quote(text, sum_value):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
