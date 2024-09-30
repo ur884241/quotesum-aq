@@ -9,19 +9,20 @@ import os
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+logger.info("Starting API script")
+
 MONGO_URI = os.environ.get('MONGO_URI')
 logger.info(f"MONGO_URI is {'set' if MONGO_URI else 'not set'}")
 
 try:
     client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
-    # The ismaster command is cheap and does not require auth.
-    client.admin.command('ismaster')
+    # Force a connection to verify it works
+    client.server_info()
     logger.info("Successfully connected to MongoDB")
     db = client.gematria_db
     quotes_collection = db.quotes
 except Exception as e:
     logger.error(f"Failed to connect to MongoDB: {str(e)}")
-
 
 def insert_quote(text, sum_value):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
@@ -129,12 +130,26 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(error_response).encode())
 
     def do_GET(self):
-        logger.info("Received GET request")
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        message = {"message": "Gematria function is running. Use POST to submit a request."}
-        self.wfile.write(json.dumps(message).encode())
-        logger.info("Sent GET response")
+        logger.info(f"Received GET request: {self.path}")
+        if self.path == '/debug-mongo':
+            try:
+                client.server_info()  # This will raise an exception if the connection fails
+                message = {"status": "Connected to MongoDB successfully"}
+                logger.info("MongoDB connection test successful")
+            except Exception as e:
+                message = {"status": "Failed to connect to MongoDB", "error": str(e)}
+                logger.error(f"MongoDB connection test failed: {str(e)}")
+            
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(message).encode())
+        else:
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            message = {"message": "Gematria function is running. Use POST to submit a request."}
+            self.wfile.write(json.dumps(message).encode())
+            logger.info("Sent GET response")
 
 logger.info("API script loaded successfully")
