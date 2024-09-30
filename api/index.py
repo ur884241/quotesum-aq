@@ -3,11 +3,12 @@ import json
 import re
 import requests
 import logging
-from pymongo.mongo_client import MongoClient
+from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import os
 import traceback
 
+# Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -30,26 +31,29 @@ elif "?" not in MONGO_URI:
 
 logger.info(f"Connecting to MongoDB database: {DB_NAME}")
 
-try:
-    # Create a new client and connect to the server
-    client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
+# Global MongoDB client variable
+mongo_client = None
+quotes_collection = None
+
+def get_db():
+    global mongo_client
+    global quotes_collection
     
-    # Send a ping to confirm a successful connection
-    client.admin.command('ping')
-    logger.info("Pinged your deployment. You successfully connected to MongoDB!")
-    
-    db = client[DB_NAME]
-    quotes_collection = db[COLLECTION_NAME]
-    logger.info(f"Using collection: {COLLECTION_NAME}")
-except Exception as e:
-    logger.error(f"Failed to connect to MongoDB: {str(e)}")
-    client = None  # Set client to None if connection fails
+    if mongo_client is None:
+        logger.info("Connecting to MongoDB...")
+        mongo_client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
+        mongo_client.admin.command('ping')  # Test connection
+        logger.info("Pinged your deployment. You successfully connected to MongoDB!")
+        db = mongo_client[DB_NAME]
+        quotes_collection = db[COLLECTION_NAME]
+        logger.info(f"Using collection: {COLLECTION_NAME}")
+    return quotes_collection
 
 def insert_quote(text, sum_value):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
     try:
         quote = {"text": text, "sum": sum_value}
-        result = quotes_collection.insert_one(quote)
+        result = get_db().insert_one(quote)
         logger.info(f"Successfully inserted quote with id: {result.inserted_id}")
     except Exception as e:
         logger.error(f"Failed to insert quote: {str(e)}")
@@ -57,7 +61,7 @@ def insert_quote(text, sum_value):
 def get_quotes_by_sum(target_sum):
     logger.info(f"Attempting to retrieve quotes for sum: {target_sum}")
     try:
-        quotes = list(quotes_collection.find({"sum": target_sum}, {"_id": 0}))
+        quotes = list(get_db().find({"sum": target_sum}, {"_id": 0}))
         logger.info(f"Retrieved {len(quotes)} quotes")
         return quotes
     except Exception as e:
@@ -154,9 +158,9 @@ class handler(BaseHTTPRequestHandler):
         logger.info(f"Received GET request: {self.path}")
         try:
             if self.path == '/api/gematria/debug-mongo':
-                if client is not None:
+                if mongo_client is not None:
                     try:
-                        client.admin.command('ping')
+                        mongo_client.admin.command('ping')
                         message = {"status": "Connected to MongoDB successfully"}
                         logger.info("MongoDB connection test successful")
                     except Exception as e:
