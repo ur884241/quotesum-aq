@@ -30,24 +30,7 @@ except Exception as e:
 
 
 
-def insert_quote(text, sum_value):
-    logger.info(f"Attempting to insert quote: {text[:30]}...")
-    try:
-        quote = {"text": text, "sum": sum_value}
-        result = quotes_collection.insert_one(quote)
-        logger.info(f"Successfully inserted quote with id: {result.inserted_id}")
-    except Exception as e:
-        logger.error(f"Failed to insert quote: {str(e)}")
 
-def get_quotes_by_sum(target_sum):
-    logger.info(f"Attempting to retrieve quotes for sum: {target_sum}")
-    try:
-        quotes = list(quotes_collection.find({"sum": target_sum}, {"_id": 0}))
-        logger.info(f"Retrieved {len(quotes)} quotes")
-        return quotes
-    except Exception as e:
-        logger.error(f"Failed to retrieve quotes: {str(e)}")
-        return []
 
 def fetch_text(url):
     """Fetch text content from a given URL."""
@@ -110,13 +93,41 @@ class handler(BaseHTTPRequestHandler):
         try:
             url = body.get('url')
             target_sum = int(body.get('targetSum'))
-
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/index.py", "use": "@vercel/python" },
+    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "*.css", "use": "@vercel/static" },
+    { "src": "*.js", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/.*", "dest": "/api/index.py" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+ 
+}
             logger.info(f"Processing request for URL: {url} and target sum: {target_sum}")
 
             matching_quotes = get_quotes_by_sum(target_sum)
             logger.info(f"Retrieved {len(matching_quotes)} quotes from database")
 
-            if len(matching_quotes) < 5:
+            if len(matching_quotes) < 5:{
+  "version": 2,
+  "builds": [
+    { "src": "api/index.py", "use": "@vercel/python" },
+    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "*.css", "use": "@vercel/static" },
+    { "src": "*.js", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/.*", "dest": "/api/index.py" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+ 
+}
                 logger.info("Not enough quotes found in database, fetching text from URL")
                 text = fetch_text(url)
                 new_quotes = find_sentence_start_quotes(text, target_sum)
@@ -160,6 +171,27 @@ class handler(BaseHTTPRequestHandler):
             self.send_json_response({"error": "Internal server error"}, 500)
 
 logger.info("API script loaded successfully")
+
+
+
+def insert_quote(text, sum_value):
+    logger.info(f"Attempting to insert quote: {text[:30]}...")
+    try:
+        quote = {"text": text, "sum": sum_value}
+        result = quotes_collection.insert_one(quote)
+        logger.info(f"Successfully inserted quote with id: {result.inserted_id}")
+    except Exception as e:
+        logger.error(f"Failed to insert quote: {str(e)}")
+
+def get_quotes_by_sum(target_sum):
+    logger.info(f"Attempting to retrieve quotes for sum: {target_sum}")
+    try:
+        quotes = list(quotes_collection.find({"sum": target_sum}, {"_id": 0}))
+        logger.info(f"Retrieved {len(quotes)} quotes")
+        return quotes
+    except Exception as e:
+        logger.error(f"Failed to retrieve quotes: {str(e)}")
+        return []
 
 
 @app.route('/api/test-mongodb', methods=['GET'])
