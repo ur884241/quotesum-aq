@@ -7,9 +7,10 @@
     { "src": "*.js", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/.*", "dest": "/api/index.py" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/api/(.*)", "dest": "/api/index.py" },
+    { "src": "^/static/(.*)", "dest": "/static/$1" },
+    { "src": "^/favicon.ico", "dest": "/favicon.ico" },
+    { "src": "^/(.*)\\.(.+)", "dest": "/$1.$2" },
+    { "src": "^/(.*)", "dest": "/index.html" }
   ]
- 
 }
