@@ -12,8 +12,6 @@ from pymongo.server_api import ServerApi
 import os
 import traceback
 
-
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -149,6 +147,7 @@ class handler(BaseHTTPRequestHandler):
             logger.error(f"Error in GET request: {str(e)}")
             logger.error(traceback.format_exc())
             self.send_json_response({"error": "Internal server error", "message": str(e)}, 500)
+
     def do_POST(self):
         logger.info("Received POST request")
         content_length = int(self.headers['Content-Length'])
@@ -182,29 +181,5 @@ class handler(BaseHTTPRequestHandler):
             logger.error(f"Error processing request: {str(e)}")
             error_response = {'success': False, 'error': str(e)}
             self.send_json_response(error_response, 500)
-
-    def do_GET(self):
-        logger.info(f"Received GET request: {self.path}")
-        try:
-            if self.path == '/api/gematria/debug-mongo':
-                if client is not None:
-                    try:
-                        client.admin.command('ping')
-                        message = {"status": "Connected to MongoDB successfully"}
-                        logger.info("MongoDB connection test successful")
-                    except Exception as e:
-                        message = {"status": "Failed to connect to MongoDB", "error": str(e)}
-                        logger.error(f"MongoDB connection test failed: {str(e)}")
-                else:
-                    message = {"status": "MongoDB client is not initialized"}
-                    logger.error("MongoDB client is not initialized")
-            else:
-                message = {"message": "Gematria function is running. Use POST to submit a request."}
-            
-            self.send_json_response(message)
-        except Exception as e:
-            logger.error(f"Error in GET request: {str(e)}")
-            logger.error(traceback.format_exc())
-            self.send_json_response({"error": "Internal server error"}, 500)
 
 logger.info("API script loaded successfully")
