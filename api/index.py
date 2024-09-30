@@ -1,3 +1,7 @@
+import sys
+print("Python version:", sys.version)
+print("Script starting execution")
+sys.stdout.flush()
 from http.server import BaseHTTPRequestHandler
 import json
 import re
@@ -7,6 +11,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os
 import traceback
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -116,6 +121,33 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(json.dumps(data).encode())
 
+    def do_GET(self):
+        logger.info(f"Received GET request: {self.path}")
+        try:
+            if self.path == '/api/gematria/debug-mongo':
+                if client is not None:
+                    try:
+                        client.admin.command('ping')
+                        message = {"status": "Connected to MongoDB successfully"}
+                        logger.info("MongoDB connection test successful")
+                    except Exception as e:
+                        message = {"status": "Failed to connect to MongoDB", "error": str(e)}
+                        logger.error(f"MongoDB connection test failed: {str(e)}")
+                else:
+                    message = {"status": "MongoDB client is not initialized"}
+                    logger.error("MongoDB client is not initialized")
+            elif self.path.startswith('/api/gematria'):
+                message = {"message": "Gematria function is running. Use POST to submit a request."}
+            else:
+                message = {"error": "Not Found", "message": "The requested resource was not found on this server."}
+                self.send_json_response(message, 404)
+                return
+            
+            self.send_json_response(message)
+        except Exception as e:
+            logger.error(f"Error in GET request: {str(e)}")
+            logger.error(traceback.format_exc())
+            self.send_json_response({"error": "Internal server error", "message": str(e)}, 500)
     def do_POST(self):
         logger.info("Received POST request")
         content_length = int(self.headers['Content-Length'])
