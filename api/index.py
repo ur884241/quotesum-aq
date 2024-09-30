@@ -3,11 +3,12 @@ import json
 import re
 import requests
 import logging
+import traceback
+import sys
+import os
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
-import os
 from urllib.parse import urlparse
-import traceback
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -84,6 +85,14 @@ def get_quotes_by_sum(target_sum):
         logger.error(f"Failed to retrieve quotes: {str(e)}")
         return []
 
+def log_error(e):
+    error_type, error_value, error_traceback = sys.exc_info()
+    print(f"Error Type: {error_type}", file=sys.stderr)
+    print(f"Error Value: {error_value}", file=sys.stderr)
+    print("Traceback:", file=sys.stderr)
+    traceback.print_tb(error_traceback, file=sys.stderr)
+    print(f"Full traceback: {traceback.format_exc()}", file=sys.stderr)
+
 class handler(BaseHTTPRequestHandler):
     def send_json_response(self, data, status=200):
         self.send_response(status)
@@ -91,13 +100,46 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(json.dumps(data).encode())
 
+    def do_GET(self):
+        logger.info(f"Received GET request: {self.path}")
+        try:
+            if self.path == '/api/test-mongodb':
+                try:
+                    client.admin.command('ping')
+                    self.send_json_response({"status": "MongoDB connection successful"})
+                except Exception as e:
+                    log_error(e)
+                    self.send_json_response({"error": "MongoDB connection failed", "details": str(e)}, 500)
+            elif self.path == '/api/test-env':
+                env_vars = {key: value for key, value in os.environ.items() if not key.lower().contains('secret')}
+                self.send_json_response({"environment_variables": env_vars})
+            elif self.path == '/api/gematria/debug-mongo':
+                if client is not None:
+                    try:
+                        client.admin.command('ping')
+                        message = {"status": "Connected to MongoDB successfully"}
+                        logger.info("MongoDB connection test successful")
+                    except Exception as e:
+                        message = {"status": "Failed to connect to MongoDB", "error": str(e)}
+                        logger.error(f"MongoDB connection test failed: {str(e)}")
+                else:
+                    message = {"status": "MongoDB client is not initialized"}
+                    logger.error("MongoDB client is not initialized")
+                self.send_json_response(message)
+            else:
+                message = {"message": "Gematria function is running. Use POST to submit a request."}
+                self.send_json_response(message)
+        except Exception as e:
+            log_error(e)
+            self.send_json_response({"error": "Internal server error", "details": str(e)}, 500)
+
     def do_POST(self):
         logger.info("Received POST request")
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        body = json.loads(post_data.decode('utf-8'))
-        
         try:
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            body = json.loads(post_data.decode('utf-8'))
+            
             url = body.get('url')
             target_sum = int(body.get('targetSum'))
             logger.info(f"Processing request for URL: {url} and target sum: {target_sum}")
@@ -119,35 +161,18 @@ class handler(BaseHTTPRequestHandler):
             logger.info("Response sent successfully")
 
         except Exception as e:
-            logger.error(f"Error processing request: {str(e)}")
-            error_response = {'success': False, 'error': str(e)}
+            log_error(e)
+            error_response = {'success': False, 'error': str(e), 'traceback': traceback.format_exc()}
             self.send_json_response(error_response, 500)
 
-    def do_GET(self):
-        logger.info(f"Received GET request: {self.path}")
-        try:
-            if self.path == '/api/gematria/debug-mongo':
-                if client is not None:
-                    try:
-                        client.admin.command('ping')
-                        message = {"status": "Connected to MongoDB successfully"}
-                        logger.info("MongoDB connection test successful")
-                    except Exception as e:
-                        message = {"status": "Failed to connect to MongoDB", "error": str(e)}
-                        logger.error(f"MongoDB connection test failed: {str(e)}")
-                else:
-                    message = {"status": "MongoDB client is not initialized"}
-                    logger.error("MongoDB client is not initialized")
-            else:
-                message = {"message": "Gematria function is running. Use POST to submit a request."}
-            
-            self.send_json_response(message)
-        except Exception as e:
-            logger.error(f"Error in GET request: {str(e)}")
-            logger.error(traceback.format_exc())
-            self.send_json_response({"error": "Internal server error"}, 500)
-
 def main(req):
-    return handler(req, ("", 0), None).wfile.getvalue()
+    try:
+        return handler(req, ("", 0), None).wfile.getvalue()
+    except Exception as e:
+        log_error(e)
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": "Internal Server Error", "details": str(e)})
+        }
 
 logger.info("API script loaded successfully")
