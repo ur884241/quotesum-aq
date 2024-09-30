@@ -1,56 +1,44 @@
 import sys
-print("Python version:", sys.version)
-print("Script starting execution")
-sys.stdout.flush()
-from http.server import BaseHTTPRequestHandler
-import json
-import re
-import requests
+import os
 import logging
+import traceback
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-import os
-import traceback
 
+# Logging Setup
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 logger.info("Starting API script")
 
 # MongoDB connection setup
-MONGO_URI = os.environ.get('MONGO_URI')
+MONGO_URI = "mongodb+srv://vitorio8:IITINdAL4U0DqH8U@cluster1888.jgndp.mongodb.net/gematria_db?retryWrites=true&w=majority"
 DB_NAME = "gematria_db"
 COLLECTION_NAME = "quotes"
 
-if not MONGO_URI:
-    logger.error("MONGO_URI environment variable is not set")
-    raise ValueError("MONGO_URI environment variable is not set")
+# Debugging: print the Mongo URI to ensure it's correct
+logger.info(f"Mongo URI: {MONGO_URI}")
 
-# Append database name to the URI if not already present
-if "?" in MONGO_URI and not MONGO_URI.split("?")[0].endswith(DB_NAME):
-    MONGO_URI = MONGO_URI.replace("?", f"/{DB_NAME}?")
-elif "?" not in MONGO_URI:
-    MONGO_URI += f"/{DB_NAME}"
-
-logger.info(f"Connecting to MongoDB database: {DB_NAME}")
-
+# MongoDB connection attempt
 try:
-    # Increase timeout to give more time for MongoDB to connect
+    # Use a longer timeout to allow for potential connection issues
     client = MongoClient(MONGO_URI, server_api=ServerApi('1'), serverSelectionTimeoutMS=20000)
     
-    # Test the connection by sending a ping
+    # Ping the server to check if the connection is successful
     client.admin.command('ping')
     logger.info("Pinged your deployment. You successfully connected to MongoDB!")
     
+    # Get the database and collection
     db = client[DB_NAME]
     quotes_collection = db[COLLECTION_NAME]
     logger.info(f"Using collection: {COLLECTION_NAME}")
 except Exception as e:
+    # Log detailed error and traceback for easier debugging
     logger.error(f"Failed to connect to MongoDB: {str(e)}")
-    logger.error(traceback.format_exc())  # Detailed error logging
+    logger.error(traceback.format_exc())
     client = None  # Set client to None if connection fails
 
-    
+# Function to insert quotes into MongoDB
 def insert_quote(text, sum_value):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
     try:
@@ -60,6 +48,7 @@ def insert_quote(text, sum_value):
     except Exception as e:
         logger.error(f"Failed to insert quote: {str(e)}")
 
+# Function to retrieve quotes from MongoDB based on sum
 def get_quotes_by_sum(target_sum):
     logger.info(f"Attempting to retrieve quotes for sum: {target_sum}")
     try:
@@ -69,6 +58,7 @@ def get_quotes_by_sum(target_sum):
     except Exception as e:
         logger.error(f"Failed to retrieve quotes: {str(e)}")
         return []
+
 
 def fetch_text(url):
     """Fetch text content from a given URL."""
