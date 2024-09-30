@@ -10,8 +10,6 @@
     { "src": "/api/.*", "dest": "/api/index.py" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
-  ],
-  "env": {
-    "MONGODB_URI": "@MONGODB_URI"
-  }
+  ]
+ 
 }
