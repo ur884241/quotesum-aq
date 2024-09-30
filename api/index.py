@@ -3,16 +3,20 @@ import json
 import re
 import requests
 import logging
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 import os
+import traceback
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Construct the full MongoDB URI
+logger.info("Starting API script")
+
+# MongoDB connection setup
 MONGO_URI = os.environ.get('MONGO_URI')
-DB_NAME = "gematria_db"  # Specify your database name here
-COLLECTION_NAME = "quotes"  # Specify your collection name here
+DB_NAME = "gematria_db"
+COLLECTION_NAME = "quotes"
 
 if not MONGO_URI:
     logger.error("MONGO_URI environment variable is not set")
@@ -27,16 +31,20 @@ elif "?" not in MONGO_URI:
 logger.info(f"Connecting to MongoDB database: {DB_NAME}")
 
 try:
-    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
-    # Force a connection to verify it works
-    client.server_info()
-    logger.info("Successfully connected to MongoDB")
+    # Create a new client and connect to the server
+    client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
+    
+    # Send a ping to confirm a successful connection
+    client.admin.command('ping')
+    logger.info("Pinged your deployment. You successfully connected to MongoDB!")
+    
     db = client[DB_NAME]
     quotes_collection = db[COLLECTION_NAME]
     logger.info(f"Using collection: {COLLECTION_NAME}")
 except Exception as e:
     logger.error(f"Failed to connect to MongoDB: {str(e)}")
     client = None  # Set client to None if connection fails
+
 def insert_quote(text, sum_value):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
     try:
@@ -102,6 +110,12 @@ def find_sentence_start_quotes(text, target_sum, max_length=50):
     return quotes
 
 class handler(BaseHTTPRequestHandler):
+    def send_json_response(self, data, status=200):
+        self.send_response(status)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps(data).encode())
+
     def do_POST(self):
         logger.info("Received POST request")
         content_length = int(self.headers['Content-Length'])
@@ -128,41 +142,36 @@ class handler(BaseHTTPRequestHandler):
                 'quotes': matching_quotes
             }
 
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(response).encode())
+            self.send_json_response(response)
             logger.info("Response sent successfully")
 
         except Exception as e:
             logger.error(f"Error processing request: {str(e)}")
-            self.send_response(500)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
             error_response = {'success': False, 'error': str(e)}
-            self.wfile.write(json.dumps(error_response).encode())
+            self.send_json_response(error_response, 500)
 
     def do_GET(self):
         logger.info(f"Received GET request: {self.path}")
-        if self.path == '/debug-mongo':
-            try:
-                client.server_info()  # This will raise an exception if the connection fails
-                message = {"status": "Connected to MongoDB successfully"}
-                logger.info("MongoDB connection test successful")
-            except Exception as e:
-                message = {"status": "Failed to connect to MongoDB", "error": str(e)}
-                logger.error(f"MongoDB connection test failed: {str(e)}")
+        try:
+            if self.path == '/api/gematria/debug-mongo':
+                if client is not None:
+                    try:
+                        client.admin.command('ping')
+                        message = {"status": "Connected to MongoDB successfully"}
+                        logger.info("MongoDB connection test successful")
+                    except Exception as e:
+                        message = {"status": "Failed to connect to MongoDB", "error": str(e)}
+                        logger.error(f"MongoDB connection test failed: {str(e)}")
+                else:
+                    message = {"status": "MongoDB client is not initialized"}
+                    logger.error("MongoDB client is not initialized")
+            else:
+                message = {"message": "Gematria function is running. Use POST to submit a request."}
             
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps(message).encode())
-        else:
-            self.send_response(200)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            message = {"message": "Gematria function is running. Use POST to submit a request."}
-            self.wfile.write(json.dumps(message).encode())
-            logger.info("Sent GET response")
+            self.send_json_response(message)
+        except Exception as e:
+            logger.error(f"Error in GET request: {str(e)}")
+            logger.error(traceback.format_exc())
+            self.send_json_response({"error": "Internal server error"}, 500)
 
 logger.info("API script loaded successfully")

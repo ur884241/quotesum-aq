@@ -1,2 +1,2 @@
+pymongo
 requests
-pymongo[srv]
