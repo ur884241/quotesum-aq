@@ -7,7 +7,8 @@
     { "src": "*.js", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/gematria", "dest": "api/index.py" },
+    { "src": "/api/gematria", "dest": "/api/index.py" },
+    { "src": "/api/gematria/(.*)", "dest": "/api/index.py" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
