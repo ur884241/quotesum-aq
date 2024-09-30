@@ -14,17 +14,19 @@ logger = logging.getLogger(__name__)
 logger.info("Starting API script")
 
 # MongoDB connection setup
+MONGODB_URI = os.environ.get('MONGODB_URI')
 DB_NAME = "gematria_db"
 COLLECTION_NAME = "quotes"
 
-# Build MongoDB URI using environment variables for security
-db_username = os.environ.get('DB_USERNAME')
-db_password = os.environ.get('DB_PASSWORD')
-MONGODB_URI = f"mongodb+srv://{db_username}:{db_password}@cluster1888.jgndp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1888"
+if not MONGODB_URI:
+    logger.error("MONGODB_URI environment variable is not set")
+    raise ValueError("MONGODB_URI environment variable is not set")
 
-if not db_username or not db_password:
-    logger.error("Database username or password environment variables are not set")
-    raise ValueError("Database username or password environment variables are not set")
+# Append database name to the URI if not already present
+if "?" in MONGODB_URI and not MONGODB_URI.split("?")[0].endswith(DB_NAME):
+    MONGODB_URI = MONGODB_URI.replace("?", f"/{DB_NAME}?")
+elif "?" not in MONGODB_URI:
+    MONGODB_URI += f"/{DB_NAME}"
 
 logger.info(f"Connecting to MongoDB database: {DB_NAME}")
 
