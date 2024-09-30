@@ -12,6 +12,6 @@
     { "src": "/(.*)", "dest": "/index.html" }
   ],
   "env": {
-    "MONGODB_URI": "@mongo_uri"
+    "MONGODB_URI": "@MONGODB_URI"
   }
 }
