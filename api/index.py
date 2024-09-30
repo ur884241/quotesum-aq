@@ -35,10 +35,10 @@ elif "?" not in MONGO_URI:
 logger.info(f"Connecting to MongoDB database: {DB_NAME}")
 
 try:
-    # Create a new client and connect to the server
-    client = MongoClient(MONGO_URI, server_api=ServerApi('1'), serverSelectionTimeoutMS=5000)
+    # Increase timeout to give more time for MongoDB to connect
+    client = MongoClient(MONGO_URI, server_api=ServerApi('1'), serverSelectionTimeoutMS=20000)
     
-    # Send a ping to confirm a successful connection
+    # Test the connection by sending a ping
     client.admin.command('ping')
     logger.info("Pinged your deployment. You successfully connected to MongoDB!")
     
@@ -47,8 +47,10 @@ try:
     logger.info(f"Using collection: {COLLECTION_NAME}")
 except Exception as e:
     logger.error(f"Failed to connect to MongoDB: {str(e)}")
+    logger.error(traceback.format_exc())  # Detailed error logging
     client = None  # Set client to None if connection fails
 
+    
 def insert_quote(text, sum_value):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
     try:
