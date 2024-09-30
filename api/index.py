@@ -26,10 +26,10 @@ client = MongoClient(MONGODB_URI, server_api=ServerApi('1'), connectTimeoutMS=30
 db = client[DB_NAME]
 quotes_collection = db['quotes']
 
-def insert_quote(text, sum_value):
+def insert_quote(text, sum_value, url):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
     try:
-        quote = {"text": text, "sum": sum_value}
+        quote = {"text": text, "sum": sum_value, "url": url}
         result = quotes_collection.insert_one(quote)
         logger.info(f"Successfully inserted quote with id: {result.inserted_id}")
     except Exception as e:
@@ -69,7 +69,7 @@ def eq_sum(text):
     """Calculate the corrected English Qaballa sum for a given text."""
     return sum(eq_value(c) for c in text)
 
-def find_sentence_start_quotes(text, target_sum, max_length=50):
+def find_sentence_start_quotes(text, target_sum, url, max_length=50):
     sentences = re.split(r"(?<=[.!?])\s+", text)
     quotes = []
 
@@ -80,10 +80,10 @@ def find_sentence_start_quotes(text, target_sum, max_length=50):
             current_sum += eq_sum(words[i])
             if current_sum == target_sum:
                 quote = " ".join(words[: i + 1])
-                quote_obj = {"text": quote, "sum": target_sum}
+                quote_obj = {"text": quote, "sum": target_sum, "url": url}
                 quotes.append(quote_obj)
                 logger.info(f"Found matching quote: {quote[:30]}...")
-                insert_quote(quote, target_sum)
+                insert_quote(quote, target_sum, url)
             elif current_sum > target_sum:
                 break
 
@@ -115,7 +115,7 @@ class handler(BaseHTTPRequestHandler):
             if len(matching_quotes) < 5:
                 logger.info("Not enough quotes found in database, fetching text from URL")
                 text = fetch_text(url)
-                new_quotes = find_sentence_start_quotes(text, target_sum)
+                new_quotes = find_sentence_start_quotes(text, target_sum, url)
                 matching_quotes.extend(new_quotes)
 
             response = {
@@ -154,5 +154,8 @@ class handler(BaseHTTPRequestHandler):
             logger.error(f"Error in GET request: {str(e)}")
             logger.error(traceback.format_exc())
             self.send_json_response({"error": "Internal server error"}, 500)
+
+def main(request):
+    return handler(request, ("", 0), None).wfile.getvalue()
 
 logger.info("API script loaded successfully")
