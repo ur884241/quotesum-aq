@@ -1,44 +1,50 @@
-import sys
-import os
+from http.server import BaseHTTPRequestHandler
+import json
+import re
+import requests
 import logging
-import traceback
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+import os
+import traceback
 
-# Logging Setup
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 logger.info("Starting API script")
 
 # MongoDB connection setup
-MONGO_URI = "mongodb+srv://vitorio8:IITINdAL4U0DqH8U@cluster1888.jgndp.mongodb.net/gematria_db?retryWrites=true&w=majority"
+MONGO_URI = os.environ.get('MONGO_URI')
 DB_NAME = "gematria_db"
 COLLECTION_NAME = "quotes"
 
-# Debugging: print the Mongo URI to ensure it's correct
-logger.info(f"Mongo URI: {MONGO_URI}")
+if not MONGO_URI:
+    logger.error("MONGO_URI environment variable is not set")
+    raise ValueError("MONGO_URI environment variable is not set")
 
-# MongoDB connection attempt
+# Append database name to the URI if not already present
+if "?" in MONGO_URI and not MONGO_URI.split("?")[0].endswith(DB_NAME):
+    MONGO_URI = MONGO_URI.replace("?", f"/{DB_NAME}?")
+elif "?" not in MONGO_URI:
+    MONGO_URI += f"/{DB_NAME}"
+
+logger.info(f"Connecting to MongoDB database: {DB_NAME}")
+
 try:
-    # Use a longer timeout to allow for potential connection issues
-    client = MongoClient(MONGO_URI, server_api=ServerApi('1'), serverSelectionTimeoutMS=20000)
+    # Create a new client and connect to the server
+    client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
     
-    # Ping the server to check if the connection is successful
+    # Send a ping to confirm a successful connection
     client.admin.command('ping')
     logger.info("Pinged your deployment. You successfully connected to MongoDB!")
     
-    # Get the database and collection
     db = client[DB_NAME]
     quotes_collection = db[COLLECTION_NAME]
     logger.info(f"Using collection: {COLLECTION_NAME}")
 except Exception as e:
-    # Log detailed error and traceback for easier debugging
     logger.error(f"Failed to connect to MongoDB: {str(e)}")
-    logger.error(traceback.format_exc())
     client = None  # Set client to None if connection fails
 
-# Function to insert quotes into MongoDB
 def insert_quote(text, sum_value):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
     try:
@@ -48,7 +54,6 @@ def insert_quote(text, sum_value):
     except Exception as e:
         logger.error(f"Failed to insert quote: {str(e)}")
 
-# Function to retrieve quotes from MongoDB based on sum
 def get_quotes_by_sum(target_sum):
     logger.info(f"Attempting to retrieve quotes for sum: {target_sum}")
     try:
@@ -58,7 +63,6 @@ def get_quotes_by_sum(target_sum):
     except Exception as e:
         logger.error(f"Failed to retrieve quotes: {str(e)}")
         return []
-
 
 def fetch_text(url):
     """Fetch text content from a given URL."""
@@ -112,34 +116,6 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(json.dumps(data).encode())
 
-    def do_GET(self):
-        logger.info(f"Received GET request: {self.path}")
-        try:
-            if self.path == '/api/gematria/debug-mongo':
-                if client is not None:
-                    try:
-                        client.admin.command('ping')
-                        message = {"status": "Connected to MongoDB successfully"}
-                        logger.info("MongoDB connection test successful")
-                    except Exception as e:
-                        message = {"status": "Failed to connect to MongoDB", "error": str(e)}
-                        logger.error(f"MongoDB connection test failed: {str(e)}")
-                else:
-                    message = {"status": "MongoDB client is not initialized"}
-                    logger.error("MongoDB client is not initialized")
-            elif self.path.startswith('/api/gematria'):
-                message = {"message": "Gematria function is running. Use POST to submit a request."}
-            else:
-                message = {"error": "Not Found", "message": "The requested resource was not found on this server."}
-                self.send_json_response(message, 404)
-                return
-            
-            self.send_json_response(message)
-        except Exception as e:
-            logger.error(f"Error in GET request: {str(e)}")
-            logger.error(traceback.format_exc())
-            self.send_json_response({"error": "Internal server error", "message": str(e)}, 500)
-
     def do_POST(self):
         logger.info("Received POST request")
         content_length = int(self.headers['Content-Length'])
@@ -173,5 +149,29 @@ class handler(BaseHTTPRequestHandler):
             logger.error(f"Error processing request: {str(e)}")
             error_response = {'success': False, 'error': str(e)}
             self.send_json_response(error_response, 500)
+
+    def do_GET(self):
+        logger.info(f"Received GET request: {self.path}")
+        try:
+            if self.path == '/api/gematria/debug-mongo':
+                if client is not None:
+                    try:
+                        client.admin.command('ping')
+                        message = {"status": "Connected to MongoDB successfully"}
+                        logger.info("MongoDB connection test successful")
+                    except Exception as e:
+                        message = {"status": "Failed to connect to MongoDB", "error": str(e)}
+                        logger.error(f"MongoDB connection test failed: {str(e)}")
+                else:
+                    message = {"status": "MongoDB client is not initialized"}
+                    logger.error("MongoDB client is not initialized")
+            else:
+                message = {"message": "Gematria function is running. Use POST to submit a request."}
+            
+            self.send_json_response(message)
+        except Exception as e:
+            logger.error(f"Error in GET request: {str(e)}")
+            logger.error(traceback.format_exc())
+            self.send_json_response({"error": "Internal server error"}, 500)
 
 logger.info("API script loaded successfully")
