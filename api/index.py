@@ -3,47 +3,32 @@ import json
 import re
 import requests
 import logging
-from pymongo.mongo_client import MongoClient
+from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import os
-import traceback
+from urllib.parse import urlparse
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-logger.info("Starting API script")
-
-# MongoDB connection setup
 MONGODB_URI = os.environ.get('MONGODB_URI')
 DB_NAME = "gematria_db"
-COLLECTION_NAME = "quotes"
 
-if not MONGODB_URI:
-    logger.error("MONGODB_URI environment variable is not set")
-    raise ValueError("MONGODB_URI environment variable is not set")
+# Parse the connection string
+uri_parts = urlparse(MONGODB_URI)
+db_name_from_uri = uri_parts.path.strip('/')
 
-# Append database name to the URI if not already present
-if "?" in MONGODB_URI and not MONGODB_URI.split("?")[0].endswith(DB_NAME):
-    MONGODB_URI = MONGODB_URI.replace("?", f"/{DB_NAME}?")
-elif "?" not in MONGODB_URI:
-    MONGODB_URI += f"/{DB_NAME}"
+# Use the database name from the URI if it exists, otherwise use the default
+DB_NAME = db_name_from_uri if db_name_from_uri else DB_NAME
 
-logger.info(f"Connecting to MongoDB database: {DB_NAME}")
+# Create a new client and connect to the server
+client = MongoClient(MONGODB_URI, server_api=ServerApi('1'), connectTimeoutMS=30000, socketTimeoutMS=None, connect=False, maxPoolsize=1)
 
+# Send a ping to confirm a successful connection
 try:
-    # Create a new client and connect to the server
-    client = MongoClient(MONGODB_URI, server_api=ServerApi('1'))
-    
-    # Send a ping to confirm a successful connection
     client.admin.command('ping')
-    logger.info("Pinged your deployment. You successfully connected to MongoDB!")
-    
-    db = client[DB_NAME]
-    quotes_collection = db[COLLECTION_NAME]
-    logger.info(f"Using collection: {COLLECTION_NAME}")
+    print("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
-    logger.error(f"Failed to connect to MongoDB: {str(e)}")
-    client = None  # Set client to None if connection fails
+    print(e)
+
+db = client[DB_NAME]
 
 def insert_quote(text, sum_value):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
