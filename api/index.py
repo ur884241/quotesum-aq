@@ -29,6 +29,7 @@ quotes_collection = db['quotes']
 def insert_quote(text, sum_value, url):
     logger.info(f"Attempting to insert quote: {text[:30]}...")
     try:
+        # Include the URL in the quote object
         quote = {"text": text, "sum": sum_value, "url": url}
         result = quotes_collection.insert_one(quote)
         logger.info(f"Successfully inserted quote with id: {result.inserted_id}")
@@ -80,10 +81,10 @@ def find_sentence_start_quotes(text, target_sum, url, max_length=50):
             current_sum += eq_sum(words[i])
             if current_sum == target_sum:
                 quote = " ".join(words[: i + 1])
-                quote_obj = {"text": quote, "sum": target_sum, "url": url}
+                quote_obj = {"text": quote, "sum": target_sum}
                 quotes.append(quote_obj)
                 logger.info(f"Found matching quote: {quote[:30]}...")
-                insert_quote(quote, target_sum, url)
+                insert_quote(quote, target_sum, url)  # Pass the URL to insert_quote
             elif current_sum > target_sum:
                 break
 
@@ -91,12 +92,6 @@ def find_sentence_start_quotes(text, target_sum, url, max_length=50):
     return quotes
 
 class handler(BaseHTTPRequestHandler):
-    def send_json_response(self, data, status=200):
-        self.send_response(status)
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        self.wfile.write(json.dumps(data).encode())
-
     def do_POST(self):
         logger.info("Received POST request")
         content_length = int(self.headers['Content-Length'])
@@ -115,7 +110,7 @@ class handler(BaseHTTPRequestHandler):
             if len(matching_quotes) < 5:
                 logger.info("Not enough quotes found in database, fetching text from URL")
                 text = fetch_text(url)
-                new_quotes = find_sentence_start_quotes(text, target_sum, url)
+                new_quotes = find_sentence_start_quotes(text, target_sum, url)  # Pass the URL to find_sentence_start_quotes
                 matching_quotes.extend(new_quotes)
 
             response = {
@@ -154,8 +149,5 @@ class handler(BaseHTTPRequestHandler):
             logger.error(f"Error in GET request: {str(e)}")
             logger.error(traceback.format_exc())
             self.send_json_response({"error": "Internal server error"}, 500)
-
-def main(request):
-    return handler(request, ("", 0), None).wfile.getvalue()
 
 logger.info("API script loaded successfully")
