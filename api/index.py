@@ -7,33 +7,37 @@ from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 import os
 from urllib.parse import urlparse
+import traceback
 
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# MongoDB setup
 MONGODB_URI = os.environ.get('MONGODB_URI')
-DB_NAME = "gematria_db"
+if not MONGODB_URI:
+    raise ValueError("MONGODB_URI environment variable is not set")
 
-# Parse the connection string
 uri_parts = urlparse(MONGODB_URI)
-db_name_from_uri = uri_parts.path.strip('/')
+DB_NAME = uri_parts.path.strip('/') or "gematria_db"
 
-# Use the database name from the URI if it exists, otherwise use the default
-DB_NAME = db_name_from_uri if db_name_from_uri else DB_NAME
-
-# Create a new client and connect to the server
 client = MongoClient(MONGODB_URI, server_api=ServerApi('1'), connectTimeoutMS=30000, socketTimeoutMS=None, connect=False, maxPoolsize=1)
+db = client[DB_NAME]
+quotes_collection = db['quotes']
 
-# Send a ping to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
+# Helper functions
+def create_eq_dict():
+    return {chr(97 + i): 10 + i for i in range(26)}
 
+EQ_DICT = create_eq_dict()
 
+def eq_value(char):
+    return EQ_DICT.get(char.lower(), 0)
 
-
+def eq_sum(text):
+    return sum(eq_value(c) for c in text)
 
 def fetch_text(url):
-    """Fetch text content from a given URL."""
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -42,24 +46,9 @@ def fetch_text(url):
         logger.error(f"Error fetching text from URL: {e}")
         raise
 
-def create_eq_dict():
-    """Create a dictionary mapping letters to their corrected English Qaballa values."""
-    return {chr(97 + i): 10 + i for i in range(26)}
-
-EQ_DICT = create_eq_dict()
-
-def eq_value(char):
-    """Return the corrected English Qaballa value for a given character."""
-    return EQ_DICT.get(char.lower(), 0)
-
-def eq_sum(text):
-    """Calculate the corrected English Qaballa sum for a given text."""
-    return sum(eq_value(c) for c in text)
-
 def find_sentence_start_quotes(text, target_sum, max_length=50):
     sentences = re.split(r"(?<=[.!?])\s+", text)
     quotes = []
-
     for sentence in sentences:
         words = sentence.split()
         current_sum = 0
@@ -73,9 +62,27 @@ def find_sentence_start_quotes(text, target_sum, max_length=50):
                 insert_quote(quote, target_sum)
             elif current_sum > target_sum:
                 break
-
     logger.info(f"Found {len(quotes)} matching quotes in text")
     return quotes
+
+def insert_quote(text, sum_value):
+    logger.info(f"Attempting to insert quote: {text[:30]}...")
+    try:
+        quote = {"text": text, "sum": sum_value}
+        result = quotes_collection.insert_one(quote)
+        logger.info(f"Successfully inserted quote with id: {result.inserted_id}")
+    except Exception as e:
+        logger.error(f"Failed to insert quote: {str(e)}")
+
+def get_quotes_by_sum(target_sum):
+    logger.info(f"Attempting to retrieve quotes for sum: {target_sum}")
+    try:
+        quotes = list(quotes_collection.find({"sum": target_sum}, {"_id": 0}))
+        logger.info(f"Retrieved {len(quotes)} quotes")
+        return quotes
+    except Exception as e:
+        logger.error(f"Failed to retrieve quotes: {str(e)}")
+        return []
 
 class handler(BaseHTTPRequestHandler):
     def send_json_response(self, data, status=200):
@@ -93,41 +100,12 @@ class handler(BaseHTTPRequestHandler):
         try:
             url = body.get('url')
             target_sum = int(body.get('targetSum'))
-{
-  "version": 2,
-  "builds": [
-    { "src": "api/index.py", "use": "@vercel/python" },
-    { "src": "*.html", "use": "@vercel/static" },
-    { "src": "*.css", "use": "@vercel/static" },
-    { "src": "*.js", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/api/.*", "dest": "/api/index.py" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ]
- 
-}
             logger.info(f"Processing request for URL: {url} and target sum: {target_sum}")
 
             matching_quotes = get_quotes_by_sum(target_sum)
             logger.info(f"Retrieved {len(matching_quotes)} quotes from database")
 
-            if len(matching_quotes) < 5:{
-  "version": 2,
-  "builds": [
-    { "src": "api/index.py", "use": "@vercel/python" },
-    { "src": "*.html", "use": "@vercel/static" },
-    { "src": "*.css", "use": "@vercel/static" },
-    { "src": "*.js", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/api/.*", "dest": "/api/index.py" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ]
- 
-}
+            if len(matching_quotes) < 5:
                 logger.info("Not enough quotes found in database, fetching text from URL")
                 text = fetch_text(url)
                 new_quotes = find_sentence_start_quotes(text, target_sum)
@@ -137,7 +115,6 @@ class handler(BaseHTTPRequestHandler):
                 'success': True,
                 'quotes': matching_quotes
             }
-
             self.send_json_response(response)
             logger.info("Response sent successfully")
 
@@ -170,35 +147,7 @@ class handler(BaseHTTPRequestHandler):
             logger.error(traceback.format_exc())
             self.send_json_response({"error": "Internal server error"}, 500)
 
+def main(req):
+    return handler(req, ("", 0), None).wfile.getvalue()
+
 logger.info("API script loaded successfully")
-
-
-
-def insert_quote(text, sum_value):
-    logger.info(f"Attempting to insert quote: {text[:30]}...")
-    try:
-        quote = {"text": text, "sum": sum_value}
-        result = quotes_collection.insert_one(quote)
-        logger.info(f"Successfully inserted quote with id: {result.inserted_id}")
-    except Exception as e:
-        logger.error(f"Failed to insert quote: {str(e)}")
-
-def get_quotes_by_sum(target_sum):
-    logger.info(f"Attempting to retrieve quotes for sum: {target_sum}")
-    try:
-        quotes = list(quotes_collection.find({"sum": target_sum}, {"_id": 0}))
-        logger.info(f"Retrieved {len(quotes)} quotes")
-        return quotes
-    except Exception as e:
-        logger.error(f"Failed to retrieve quotes: {str(e)}")
-        return []
-
-
-@app.route('/api/test-mongodb', methods=['GET'])
-def test_mongodb():
-    try:
-        client.admin.command('ping')
-        return jsonify({"status": "success", "message": "Connected to MongoDB"}), 200
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e), "traceback": traceback.format_exc()}), 500
-
