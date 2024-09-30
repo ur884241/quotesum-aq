@@ -160,3 +160,13 @@ class handler(BaseHTTPRequestHandler):
             self.send_json_response({"error": "Internal server error"}, 500)
 
 logger.info("API script loaded successfully")
+
+
+@app.route('/api/test-mongodb', methods=['GET'])
+def test_mongodb():
+    try:
+        client.admin.command('ping')
+        return jsonify({"status": "success", "message": "Connected to MongoDB"}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e), "traceback": traceback.format_exc()}), 500
+
