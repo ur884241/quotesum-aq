@@ -8,50 +8,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- SVG Background for Sigil Pattern -->
     <svg id="background-sigil" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
         <!-- Complex sigil pattern will be generated here -->
     </svg>
 
-    <!-- Canvas for Title -->
+
     <canvas id="titleCanvas"></canvas>
 
-    <!-- Main Container -->
     <div class="container">
-        <!-- ASCII Art Display Area -->
+        
         <div class="ascii-art" id="ascii-sigil"></div>
-
-        <!-- URL Input for .txt File -->
         <input type="text" id="urlInput" placeholder="Enter URL of .txt file" required>
-
-        <!-- Target Sum Input -->
         <input type="number" id="targetSum" placeholder="Enter target sum" required>
-
-        <!-- Existing Button to Invoke Search -->
         <button onclick="searchQuotes()">Invoke</button>
-
-        <!-- New Button to Generate Random Number -->
-        <button onclick="generateRandomSum()">Generate Random Target Sum</button>
-
-        <!-- Results Section -->
         <div id="results"></div>
     </div>
 
-    <!-- JavaScript File -->
-    <script>
-        // Function to Search Quotes (assuming script.js has this function defined)
-        function searchQuotes() {
-            const url = document.getElementById('urlInput').value;
-            const targetSum = parseInt(document.getElementById('targetSum').value);
-            // Add your quote search logic here or call an existing function
-        }
-
-        // Function to Generate a Random Number and Place it in the Target Sum Field
-        function generateRandomSum() {
-            const randomNumber = Math.floor(Math.random() * 1000); // Generate a random number between 0 and 999
-            document.getElementById('targetSum').value = randomNumber; // Set the random number in the input field
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
-cd
