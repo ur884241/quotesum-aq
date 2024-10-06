@@ -8,17 +8,27 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="sidebar">
+        <a href="#home">Home</a>
+        <a href="#section1">Section 1</a>
+        <a href="#section2">Section 2</a>
+        <a href="#section3">Logs</a>
+        <a href="#about">About</a>
+    </div>
+
     <svg id="background-sigil" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
         <!-- Complex sigil pattern will be generated here -->
     </svg>
 
-
     <canvas id="titleCanvas"></canvas>
 
     <div class="container">
-        
         <div class="ascii-art" id="ascii-sigil"></div>
-        <input type="text" id="urlInput" placeholder="Enter URL of .txt file" required>
+        <input type="text" id="urlInput" placeholder="Enter URL of .txt file">
+        <div class="file-upload">
+            <label for="fileInput" class="file-label">Or upload a file (PDF or TXT)</label>
+            <input type="file" id="fileInput" accept=".pdf,.txt">
+        </div>
         <input type="number" id="targetSum" placeholder="Enter target sum" required>
         <button onclick="searchQuotes()">Invoke</button>
         <div id="results"></div>

@@ -55,6 +55,27 @@ def fetch_text(url):
         logger.error(f"Error fetching text from URL: {e}")
         raise
 
+def extract_text_from_pdf(pdf_content):
+    """Extract text from a PDF file."""
+    pdf_file = io.BytesIO(pdf_content)
+    reader = PyPDF2.PdfReader(pdf_file)
+    text = ""
+    for page in reader.pages:
+        text += page.extract_text() + "\n"
+    return text
+
+def process_uploaded_file(file_field):
+    """Process an uploaded file (PDF or TXT) and return its content."""
+    filename = file_field.filename
+    file_content = file_field.file.read()
+    
+    if filename.lower().endswith('.pdf'):
+        return extract_text_from_pdf(file_content)
+    elif filename.lower().endswith('.txt'):
+        return file_content.decode('utf-8')
+    else:
+        raise ValueError("Unsupported file type. Please upload a PDF or TXT file
+
 def create_eq_dict():
     """Create a dictionary mapping letters to their corrected English Qaballa values."""
     return {chr(97 + i): 10 + i for i in range(26)}
@@ -99,23 +120,46 @@ class handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         logger.info("Received POST request")
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        body = json.loads(post_data.decode('utf-8'))
+        content_type, pdict = cgi.parse_header(self.headers.get('content-type'))
         
-        try:
+        if content_type == 'application/json':
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            body = json.loads(post_data.decode('utf-8'))
             url = body.get('url')
             target_sum = int(body.get('targetSum'))
-
+            
             logger.info(f"Processing request for URL: {url} and target sum: {target_sum}")
+            
+            text = fetch_text(url)
+        elif content_type == 'multipart/form-data':
+            form = cgi.FieldStorage(
+                fp=self.rfile,
+                headers=self.headers,
+                environ={'REQUEST_METHOD': 'POST',
+                         'CONTENT_TYPE': self.headers['Content-Type'],
+                         })
+            
+            file_item = form['file']
+            target_sum = int(form.getvalue('targetSum'))
+            
+            if file_item.filename:
+                logger.info(f"Processing uploaded file: {file_item.filename}")
+                text = process_uploaded_file(file_item)
+            else:
+                self.send_json_response({'success': False, 'error': 'No file uploaded'}, 400)
+                return
+        else:
+            self.send_json_response({'success': False, 'error': 'Unsupported content type'}, 400)
+            return
 
+        try:
             matching_quotes = get_quotes_by_sum(target_sum)
             logger.info(f"Retrieved {len(matching_quotes)} quotes from database")
 
             if len(matching_quotes) < 5:
-                logger.info("Not enough quotes found in database, fetching text from URL")
-                text = fetch_text(url)
-                new_quotes = find_sentence_start_quotes(text, target_sum, url)
+                logger.info("Not enough quotes found in database, processing text")
+                new_quotes = find_sentence_start_quotes(text, target_sum, url if 'url' in locals() else file_item.filename)
                 matching_quotes.extend(new_quotes)
 
             response = {

@@ -20,6 +20,7 @@ body, html {
     overflow-x: hidden;
 }
 
+
 .container {
     max-width: 800px;
     margin: auto;
@@ -126,4 +127,67 @@ button:hover {
 
 .container {
     margin-top: 100px; /* Adjust based on your layout needs */
+    
 }
+
+/* Sidebar styling */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 200px;
+    background-color: var(--bg-color);
+    padding-top: 200px;
+    padding-left: 60px;
+    z-index: 2; /* Ensure the sidebar is above other elements */
+}
+
+.sidebar a {
+    display: block;
+    color: var(--text-color);
+    padding: 10px 10px;
+    text-decoration: none;
+    font-size: 13px;
+    transition: background 0.1s ease;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar a:hover {
+    background-color: var(--button-hover-bg);
+}
+
+/* Adjust container to make room for sidebar */
+
+/* Ensure elements are layered correctly */
+#background-sigil {
+    z-index: 0; /* Background is lowest */
+}
+
+#titleCanvas {
+    z-index: 0; /* Canvas is below the container */
+}
+
+/* Prevent overlap of content */
+body {
+    overflow: hidden; /* Prevent horizontal scrolling */
+}
+
+.file-upload {
+    margin: 10px 0;
+}
+
+.file-label {
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#fileInput {
+    display: none;
+}
+
