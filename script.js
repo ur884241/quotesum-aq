@@ -196,13 +196,17 @@ async function searchQuotes() {
             if (data.quotes.length === 0) {
                 resultsDiv.innerHTML = 'No matching quotes found.';
             } else {
-                resultsDiv.innerHTML = `<p>Total quotes found: ${data.quotes.length}</p>`;
-                resultsDiv.innerHTML += data.quotes.map(quote => `
-                    <div class="quote">
-                        <p>${quote.text}</p>
-                        <p class="quote-info">Sum: ${quote.sum}, Source: ${quote.url}</p>
+                resultsDiv.innerHTML = `
+                    <p>Total quotes found: ${data.quotes.length}</p>
+                    <div class="quotes-container" style="max-height: 400px; overflow-y: auto;">
+                        ${data.quotes.map(quote => `
+                            <div class="quote">
+                                <p>${quote.text}</p>
+                                <p class="quote-info">Sum: ${quote.sum}, Source: ${quote.url}</p>
+                            </div>
+                        `).join('')}
                     </div>
-                `).join('');
+                `;
             }
         } else {
             resultsDiv.innerHTML = `Error: ${data.error}`;
@@ -216,3 +220,12 @@ async function searchQuotes() {
     }
 }
 
+// Add this event listener to update the file label when a file is selected
+document.getElementById('fileInput').addEventListener('change', function(event) {
+    const fileName = event.target.files[0]?.name;
+    if (fileName) {
+        document.querySelector('.file-label').textContent = `File selected: ${fileName}`;
+    } else {
+        document.querySelector('.file-label').textContent = 'Upload a file (PDF or TXT)';
+    }
+});

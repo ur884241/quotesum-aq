@@ -78,18 +78,23 @@ button:hover {
     font-size: 15px;
 }
 
-.quote {
+.quotes-container {
+    border: 1px solid #ccc;
+    border-radius: 5px;
     padding: 10px;
-    margin-bottom: 10px;
-    background: var(--input-bg);
-    border-left: 3px solid var(--quote-border);
-    transition: all 0.3s ease;
-    font-size: 14px;
+    margin-top: 10px;
 }
 
-.quote:hover {
-    background: var(--button-bg);
-    transform: translateX(5px);
+.quote {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+}
+
+.quote-info {
+    font-size: 0.9em;
+    color: #666;
 }
 
 .ascii-art {
