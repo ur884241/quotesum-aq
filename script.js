@@ -189,41 +189,30 @@ async function searchQuotes() {
             method: 'POST',
             body: formData
         });
+        
         const data = await response.json();
+        
         if (data.success) {
-            resultsDiv.innerHTML = data.quotes.map(quote => `
-                <div class="quote">
-                    <p>${quote.text}</p>
-                    <p class="quote-info">Sum: ${quote.sum}, Source: ${quote.url}</p>
-                </div>
-            `).join('');
+            if (data.quotes.length === 0) {
+                resultsDiv.innerHTML = 'No matching quotes found.';
+            } else {
+                resultsDiv.innerHTML = `<p>Total quotes found: ${data.quotes.length}</p>`;
+                resultsDiv.innerHTML += data.quotes.map(quote => `
+                    <div class="quote">
+                        <p>${quote.text}</p>
+                        <p class="quote-info">Sum: ${quote.sum}, Source: ${quote.url}</p>
+                    </div>
+                `).join('');
+            }
         } else {
             resultsDiv.innerHTML = `Error: ${data.error}`;
+            if (data.traceback) {
+                console.error('Server traceback:', data.traceback);
+            }
         }
     } catch (error) {
+        console.error('Fetch error:', error);
         resultsDiv.innerHTML = `An error occurred: ${error.message}`;
     }
 }
 
-// You might want to add an event listener for the file input change
-document.getElementById('fileInput').addEventListener('change', function(event) {
-    const fileName = event.target.files[0]?.name;
-    if (fileName) {
-        document.querySelector('.file-label').textContent = `File selected: ${fileName}`;
-    } else {
-        document.querySelector('.file-label').textContent = 'Or upload a file (PDF or TXT)';
-    }
-});
-
-// If you want to trigger the search on Enter key in the input fields
-document.getElementById('urlInput').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        searchQuotes();
-    }
-});
-
-document.getElementById('targetSum').addEventListener('keypress', function(event) {
-    if (event.key === 'Enter') {
-        searchQuotes();
-    }
-});

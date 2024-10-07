@@ -6,6 +6,9 @@ import logging
 import traceback
 import sys
 import os
+import cgi
+import io
+import PyPDF2
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 from urllib.parse import urlparse
@@ -55,27 +58,6 @@ def fetch_text(url):
         logger.error(f"Error fetching text from URL: {e}")
         raise
 
-def extract_text_from_pdf(pdf_content):
-    """Extract text from a PDF file."""
-    pdf_file = io.BytesIO(pdf_content)
-    reader = PyPDF2.PdfReader(pdf_file)
-    text = ""
-    for page in reader.pages:
-        text += page.extract_text() + "\n"
-    return text
-
-def process_uploaded_file(file_field):
-    """Process an uploaded file (PDF or TXT) and return its content."""
-    filename = file_field.filename
-    file_content = file_field.file.read()
-    
-    if filename.lower().endswith('.pdf'):
-        return extract_text_from_pdf(file_content)
-    elif filename.lower().endswith('.txt'):
-        return file_content.decode('utf-8')
-    else:
-        raise ValueError("Unsupported file type. Please upload a PDF or TXT file
-
 def create_eq_dict():
     """Create a dictionary mapping letters to their corrected English Qaballa values."""
     return {chr(97 + i): 10 + i for i in range(26)}
@@ -120,47 +102,48 @@ class handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         logger.info("Received POST request")
-        content_type, pdict = cgi.parse_header(self.headers.get('content-type'))
-        
-        if content_type == 'application/json':
-            content_length = int(self.headers['Content-Length'])
-            post_data = self.rfile.read(content_length)
-            body = json.loads(post_data.decode('utf-8'))
-            url = body.get('url')
-            target_sum = int(body.get('targetSum'))
-            
-            logger.info(f"Processing request for URL: {url} and target sum: {target_sum}")
-            
-            text = fetch_text(url)
-        elif content_type == 'multipart/form-data':
-            form = cgi.FieldStorage(
-                fp=self.rfile,
-                headers=self.headers,
-                environ={'REQUEST_METHOD': 'POST',
-                         'CONTENT_TYPE': self.headers['Content-Type'],
-                         })
-            
-            file_item = form['file']
-            target_sum = int(form.getvalue('targetSum'))
-            
-            if file_item.filename:
-                logger.info(f"Processing uploaded file: {file_item.filename}")
-                text = process_uploaded_file(file_item)
-            else:
-                self.send_json_response({'success': False, 'error': 'No file uploaded'}, 400)
-                return
-        else:
-            self.send_json_response({'success': False, 'error': 'Unsupported content type'}, 400)
-            return
-
         try:
+            content_type, pdict = cgi.parse_header(self.headers.get('content-type'))
+            
+            if content_type == 'multipart/form-data':
+                form = cgi.FieldStorage(
+                    fp=self.rfile,
+                    headers=self.headers,
+                    environ={'REQUEST_METHOD': 'POST',
+                             'CONTENT_TYPE': self.headers['Content-Type'],
+                             })
+                
+                target_sum = int(form.getvalue('targetSum'))
+                
+                if 'file' in form:
+                    file_item = form['file']
+                    if file_item.filename:
+                        logger.info(f"Processing uploaded file: {file_item.filename}")
+                        text = self.process_uploaded_file(file_item)
+                        url = file_item.filename  # Use filename as URL for uploaded files
+                    else:
+                        self.send_json_response({'success': False, 'error': 'No file uploaded'}, 400)
+                        return
+                elif 'url' in form:
+                    url = form.getvalue('url')
+                    if url:
+                        logger.info(f"Processing URL: {url}")
+                        text = fetch_text(url)
+                    else:
+                        self.send_json_response({'success': False, 'error': 'No URL provided'}, 400)
+                        return
+                else:
+                    self.send_json_response({'success': False, 'error': 'No file or URL provided'}, 400)
+                    return
+            else:
+                self.send_json_response({'success': False, 'error': 'Unsupported content type'}, 400)
+                return
+
             matching_quotes = get_quotes_by_sum(target_sum)
             logger.info(f"Retrieved {len(matching_quotes)} quotes from database")
 
-            if len(matching_quotes) < 5:
-                logger.info("Not enough quotes found in database, processing text")
-                new_quotes = find_sentence_start_quotes(text, target_sum, url if 'url' in locals() else file_item.filename)
-                matching_quotes.extend(new_quotes)
+            new_quotes = find_sentence_start_quotes(text, target_sum, url)
+            matching_quotes.extend(new_quotes)
 
             response = {
                 'success': True,
@@ -168,12 +151,32 @@ class handler(BaseHTTPRequestHandler):
             }
 
             self.send_json_response(response)
-            logger.info("Response sent successfully")
+            logger.info(f"Response sent successfully with {len(matching_quotes)} quotes")
 
         except Exception as e:
             logger.error(f"Error processing request: {str(e)}")
-            error_response = {'success': False, 'error': str(e)}
+            logger.error(traceback.format_exc())
+            error_response = {'success': False, 'error': str(e), 'traceback': traceback.format_exc()}
             self.send_json_response(error_response, 500)
+
+    def process_uploaded_file(self, file_item):
+        filename = file_item.filename
+        file_content = file_item.file.read()
+        
+        if filename.lower().endswith('.pdf'):
+            return self.extract_text_from_pdf(file_content)
+        elif filename.lower().endswith('.txt'):
+            return file_content.decode('utf-8')
+        else:
+            raise ValueError("Unsupported file type. Please upload a PDF or TXT file.")
+
+    def extract_text_from_pdf(self, pdf_content):
+        pdf_file = io.BytesIO(pdf_content)
+        reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text() + "\n"
+        return text
 
     def do_GET(self):
         logger.info(f"Received GET request: {self.path}")
