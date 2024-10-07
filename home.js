@@ -1,6 +1,9 @@
 export function loadHomePage() {
     return `
         <div class="container">
+            <div class="title-container">
+                <canvas id="titleCanvas"></canvas>
+            </div>
             <div class="ascii-art" id="ascii-sigil"></div>
             <input type="text" id="urlInput" placeholder="Enter URL of .txt file">
             <div class="file-upload">

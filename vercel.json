@@ -4,13 +4,14 @@
     { "src": "api/index.py", "use": "@vercel/python" },
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "*.css", "use": "@vercel/static" },
-    { "src": "*.js", "use": "@vercel/static" }
+    { "src": "*.js", "use": "@vercel/static" },
+    { "src": "*.txt", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/index.py" },
     { "src": "^/static/(.*)", "dest": "/static/$1" },
     { "src": "^/favicon.ico", "dest": "/favicon.ico" },
-    { "src": "^/(.*)\\.(.+)", "dest": "/$1.$2" },
+    { "src": "^/(.*)\\.(html|css|js|txt)$", "dest": "/$1.$2" },
     { "src": "^/(.*)", "dest": "/index.html" },
     { "src": "/aboutContent.txt", "dest": "/aboutContent.txt" }
   ]

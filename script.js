@@ -1,36 +1,47 @@
 // Global variables and constants
-const pageTitle = 'SFINX RESEARCH AIN';
+const pageTitle = '- SFINX RESEARCH AIN -';
 const ASCII_SIGIL_INTERVAL = 3330;
 
 // Mouse object for particle interaction
 const mouse = {
     x: null,
     y: null,
-    radius: 100
+    radius: 50
 };
 
 // Async function to load content dynamically
 async function loadContent(page) {
+    console.log(`Loading content for page: ${page}`);
     const contentDiv = document.getElementById('content');
+    if (!contentDiv) {
+        console.error("Content div not found");
+        return;
+    }
     
     try {
         let content;
         switch (page) {
             case 'home':
+                console.log("Loading home page");
                 const { loadHomePage } = await import('./home.js');
                 content = loadHomePage();
                 break;
             case 'about':
+                console.log("Loading about page");
                 const { loadAboutPage } = await import('./about.js');
                 content = loadAboutPage();
                 break;
             default:
+                console.log(`Loading default content for ${page}`);
                 content = `<h2>${page}</h2><p>Content for ${page} goes here.</p>`;
         }
         
         contentDiv.innerHTML = content;
+        console.log("Content loaded into div");
         
         if (page === 'home') {
+            console.log("Setting up home page components");
+            setupCanvasTitle(pageTitle);
             generateAsciiSigil();
             setupFileInputListener();
         }
@@ -42,7 +53,7 @@ async function loadContent(page) {
 
 // Function to initialize the page
 function initializePage() {
-    setupCanvasTitle(pageTitle);
+    console.log("Initializing page");
     generateSigil();
     loadContent('home');
     setupEventListeners();
@@ -51,6 +62,7 @@ function initializePage() {
 
 // Setup event listeners
 function setupEventListeners() {
+    console.log("Setting up event listeners");
     document.querySelectorAll('.sidebar a').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -59,10 +71,26 @@ function setupEventListeners() {
         });
     });
 
-    window.addEventListener('mousemove', function(event) {
-        mouse.x = event.x;
-        mouse.y = event.y;
-    });
+    window.addEventListener('resize', debounce(() => {
+        console.log("Window resized");
+        const canvas = document.getElementById('titleCanvas');
+        if (canvas) {
+            setupCanvasTitle(pageTitle);
+        }
+    }, 250));
+}
+
+// Debounce function to limit the rate at which a function can fire
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 function setupFileInputListener() {
@@ -81,9 +109,23 @@ function setupFileInputListener() {
 // Function to set up the canvas title
 function setupCanvasTitle(title = pageTitle) {
     const canvas = document.getElementById('titleCanvas');
+    if (!canvas) return;  // Exit if canvas doesn't exist
+
     const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
+    canvas.width = canvas.offsetWidth;
     canvas.height = 200;
+
+    // Get canvas position
+    const canvasRect = canvas.getBoundingClientRect();
+
+    // Update mouse position relative to canvas
+    function updateMousePos(e) {
+        mouse.x = e.clientX - canvasRect.left;
+        mouse.y = e.clientY - canvasRect.top;
+    }
+
+    // Add mousemove event listener to canvas
+    canvas.addEventListener('mousemove', updateMousePos);
 
     const particles = [];
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -95,20 +137,22 @@ function setupCanvasTitle(title = pageTitle) {
             this.x = x;
             this.y = y;
             this.char = char;
-            this.size = isTitle ? 18 : 12;  // Different size for title characters
-            this.color = isTitle ? '#ffffff' : 'rgba(255, 255, 255, 0.5)';  // Different color for title
+            this.size = isTitle ? 18 : 12;
+            this.color = isTitle ? '#ffffff' : 'rgba(255, 255, 255, 0.5)';
             this.baseX = x;
             this.baseY = y;
-            this.density = isTitle ? (Math.random() * 50) + 5 : (Math.random() * 30) + 1;  // Title particles have higher density
+            this.density = isTitle ? (Math.random() * 50) + 5 : (Math.random() * 30) + 1;
         }
 
         draw() {
             ctx.fillStyle = this.color;
             ctx.font = `${this.size}px Courier`;
-            ctx.fillText(this.char, this.x, this.y);  // Draw the character
+            ctx.fillText(this.char, this.x, this.y);
         }
 
         update() {
+            if (mouse.x === null || mouse.y === null) return;
+
             let dx = mouse.x - this.x;
             let dy = mouse.y - this.y;
             let distance = Math.sqrt(dx * dx + dy * dy);
@@ -139,16 +183,15 @@ function setupCanvasTitle(title = pageTitle) {
     function initParticles() {
         particles.length = 0;
 
-        // Set font size for measuring title text
-        let size = 24;
-        let x = (canvas.width - ctx.measureText(text).width) / 2.3;
+        let size = 20;
+        let x = 20;  // Start from the left edge with a small padding
         let y = 100;
 
         ctx.font = `${size}px Courier`;
         ctx.fillStyle = 'white';
+        ctx.textAlign = 'left';
         ctx.fillText(text, x, y);
 
-        // Get pixel data to create particles for the title text
         const pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
 
         for (let y = 0; y < canvas.height; y += 4) {
@@ -161,26 +204,32 @@ function setupCanvasTitle(title = pageTitle) {
             }
         }
 
-        // Create particles specifically for the title text
         for (let i = 0; i < text.length; i++) {
-            let posX = (canvas.width - ctx.measureText(text).width) / 2.3 + i * 20;  // Position title characters in center
+            let posX = x + i * 20;
             let posY = 100;
-            particles.push(new Particle(posX, posY, text[i], true));  // `true` marks it as a title particle
+            particles.push(new Particle(posX, posY, text[i], true));
         }
     }
 
-    // Animate the particles to interact and move like the title
+    // Animate the particles
     function animateParticles() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(particle => {
             particle.draw();
-            particle.update();
+            particle.update();// Initialize the page when the DOM is fully loaded
+            document.addEventListener('DOMContentLoaded', initializePage);
+            
         });
         requestAnimationFrame(animateParticles);
     }
 
-    initParticles();  // Initialize particles
-    animateParticles();  // Start animation
+    initParticles();
+    animateParticles();
+
+    // Cleanup function
+    return function cleanup() {
+        canvas.removeEventListener('mousemove', updateMousePos);
+    };
 }
 
 // Function to generate complex sigil pattern
@@ -256,7 +305,7 @@ async function searchQuotes() {
             } else {
                 resultsDiv.innerHTML = `
                     <p>Total quotes found: ${data.quotes.length}</p>
-                    <div class="quotes-container" style="max-height: 400px; overflow-y: auto;">
+                    <div class="quotes-container">
                         ${data.quotes.map(quote => `
                             <div class="quote">
                                 <p>${quote.text}</p>
@@ -278,8 +327,13 @@ async function searchQuotes() {
     }
 }
 
+
 // Initialize the page when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', initializePage);
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM fully loaded");
+    initializePage();
+});
+
 
 // Expose necessary functions to global scope
 window.searchQuotes = searchQuotes;

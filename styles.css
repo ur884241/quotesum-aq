@@ -27,7 +27,7 @@ body {
 
 .container {
     max-width: 800px;
-    margin: 100px auto 0;
+    margin: 0 auto;
     padding: 20px;
     position: relative;
     z-index: 1;
@@ -108,7 +108,7 @@ button:hover {
     white-space: pre;
     font-family: 'Fira Code', monospace;
     color: var(--accent-color);
-    text-align: center;
+    text-align: left;
     margin: 20px 0;
 }
 
@@ -117,13 +117,18 @@ button:hover {
     font-weight: bold;
 }
 
+.title-container {
+    position: relative;
+    height: 200px; /* Match the height of titleCanvas */
+    margin-bottom: -75px;
+}
+
 #titleCanvas {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 200px;
-    z-index: 1;
+    height: 100%;
 }
 
 /* Sidebar styling */
@@ -132,7 +137,7 @@ button:hover {
     top: 0;
     left: 0;
     height: 100%;
-    width: 200px;
+    width: 120px;
     background-color: var(--bg-color);
     padding-top: 200px;
     padding-left: 60px;
@@ -147,7 +152,7 @@ button:hover {
     text-decoration: none;
     font-size: 13px;
     transition: background 0.1s ease;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 0.2px solid var(--border-color);
 }
 
 .sidebar a:hover {
@@ -212,13 +217,9 @@ button:hover {
     #content {
         margin-left: 0;
         height: auto;
-    }
+        overflow-y: visible; /* Change from auto to visible */
+        height: auto; /* Set to auto to avoid height issues */
+    }     
 
-    #titleCanvas {
-        position: absolute;
-    }
-
-    .about-container {
-        margin-top: 50px;
-    }
+   
 }
