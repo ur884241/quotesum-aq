@@ -10,7 +10,7 @@
     --error-color: #ff4444;
 }
 
-body, html {
+html, body {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -20,10 +20,14 @@ body, html {
     overflow-x: hidden;
 }
 
+body {
+    display: flex;
+    flex-direction: column;
+}
 
 .container {
     max-width: 800px;
-    margin: auto;
+    margin: 100px auto 0;
     padding: 20px;
     position: relative;
     z-index: 1;
@@ -35,7 +39,7 @@ body, html {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
+    z-index: -1;
     opacity: 0.1;
 }
 
@@ -43,7 +47,6 @@ h1 {
     text-align: center;
     font-size: 1.5em;
     margin-bottom: 30px;
-    
 }
 
 input, button {
@@ -83,18 +86,20 @@ button:hover {
     border-radius: 5px;
     padding: 10px;
     margin-top: 10px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .quote {
     margin-bottom: 15px;
     padding: 10px;
-    background-color: none;
+    background-color: rgba(255, 255, 255, 0.05);
     border-radius: 5px;
 }
 
 .quote-info {
     font-size: 0.9em;
-    color: #666;
+    color: var(--accent-color);
 }
 
 .ascii-art {
@@ -112,27 +117,13 @@ button:hover {
     font-weight: bold;
 }
 
-@media (max-width: 600px) {
-    .container {
-        padding: 10px;
-    }
-    
-    h1 {
-        font-size: 2em;
-    }
-}
-
 #titleCanvas {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 200px;
-}
-
-.container {
-    margin-top: 100px; /* Adjust based on your layout needs */
-    
+    z-index: 1;
 }
 
 /* Sidebar styling */
@@ -145,7 +136,8 @@ button:hover {
     background-color: var(--bg-color);
     padding-top: 200px;
     padding-left: 60px;
-    z-index: 2; /* Ensure the sidebar is above other elements */
+    z-index: 1000;
+    overflow-y: auto;
 }
 
 .sidebar a {
@@ -162,22 +154,6 @@ button:hover {
     background-color: var(--button-hover-bg);
 }
 
-/* Adjust container to make room for sidebar */
-
-/* Ensure elements are layered correctly */
-#background-sigil {
-    z-index: 0; /* Background is lowest */
-}
-
-#titleCanvas {
-    z-index: 0; /* Canvas is below the container */
-}
-
-/* Prevent overlap of content */
-body {
-    overflow: hidden; /* Prevent horizontal scrolling */
-}
-
 .file-upload {
     margin: 10px 0;
 }
@@ -185,14 +161,64 @@ body {
 .file-label {
     display: inline-block;
     padding: 8px 12px;
-    background-color: #f0f0f0;
-    color: #333;
-    border: 1px solid #ccc;
+    background-color: var(--button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.file-label:hover {
+    background-color: var(--button-hover-bg);
 }
 
 #fileInput {
     display: none;
 }
 
+
+#content {
+    margin-left: 200px; /* Make room for the sidebar */
+    padding: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 40px); /* Full height minus padding */
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+        margin-top: 50px;
+    }
+    
+    h1 {
+        font-size: 1.3em;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding-top: 10px;
+        padding-left: 0;
+    }
+
+    .sidebar a {
+        float: left;
+        padding: 10px;
+    }
+
+    #content {
+        margin-left: 0;
+        height: auto;
+    }
+
+    #titleCanvas {
+        position: absolute;
+    }
+
+    .about-container {
+        margin-top: 50px;
+    }
+}

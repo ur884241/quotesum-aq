@@ -1,7 +1,84 @@
-// Global variables to hold dynamic page title
-const pageTitle = 'SFINX RESEARCH AIN';  // Default title for the page
+// Global variables and constants
+const pageTitle = 'SFINX RESEARCH AIN';
+const ASCII_SIGIL_INTERVAL = 3330;
 
-// Function to set up the canvas title with generative art overlay and interactive behavior
+// Mouse object for particle interaction
+const mouse = {
+    x: null,
+    y: null,
+    radius: 100
+};
+
+// Async function to load content dynamically
+async function loadContent(page) {
+    const contentDiv = document.getElementById('content');
+    
+    try {
+        let content;
+        switch (page) {
+            case 'home':
+                const { loadHomePage } = await import('./home.js');
+                content = loadHomePage();
+                break;
+            case 'about':
+                const { loadAboutPage } = await import('./about.js');
+                content = loadAboutPage();
+                break;
+            default:
+                content = `<h2>${page}</h2><p>Content for ${page} goes here.</p>`;
+        }
+        
+        contentDiv.innerHTML = content;
+        
+        if (page === 'home') {
+            generateAsciiSigil();
+            setupFileInputListener();
+        }
+    } catch (error) {
+        console.error(`Error loading ${page} content:`, error);
+        contentDiv.innerHTML = `<p>Error loading content. Please try again.</p>`;
+    }
+}
+
+// Function to initialize the page
+function initializePage() {
+    setupCanvasTitle(pageTitle);
+    generateSigil();
+    loadContent('home');
+    setupEventListeners();
+    setInterval(generateAsciiSigil, ASCII_SIGIL_INTERVAL);
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    document.querySelectorAll('.sidebar a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('data-page');
+            loadContent(page);
+        });
+    });
+
+    window.addEventListener('mousemove', function(event) {
+        mouse.x = event.x;
+        mouse.y = event.y;
+    });
+}
+
+function setupFileInputListener() {
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(event) {
+            const fileName = event.target.files[0]?.name;
+            const label = document.querySelector('.file-label');
+            if (label) {
+                label.textContent = fileName ? `File selected: ${fileName}` : 'Upload a file (PDF or TXT)';
+            }
+        });
+    }
+}
+
+// Function to set up the canvas title
 function setupCanvasTitle(title = pageTitle) {
     const canvas = document.getElementById('titleCanvas');
     const ctx = canvas.getContext('2d');
@@ -106,25 +183,12 @@ function setupCanvasTitle(title = pageTitle) {
     animateParticles();  // Start animation
 }
 
-// Mouse object to track user's mouse movement for particle interaction
-const mouse = {
-    x: null,
-    y: null,
-    radius: 100
-}
-
-window.addEventListener('mousemove', function(event) {
-    mouse.x = event.x;
-    mouse.y = event.y;
-});
-
-// Function to generate complex sigil pattern without adding the title overlay
+// Function to generate complex sigil pattern
 function generateSigil() {
     const svg = document.getElementById('background-sigil');
     const numPaths = 50;
     let paths = '';
 
-    // Create complex sigil pattern without title
     for (let i = 0; i < numPaths; i++) {
         const points = [];
         for (let j = 0; j < 5; j++) {
@@ -133,32 +197,26 @@ function generateSigil() {
         paths += `<path d="M${points.join(' L')}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" />`;
     }
 
-    svg.innerHTML = paths;  // Apply generated paths to SVG
+    svg.innerHTML = paths;
 }
 
 // Generate ASCII sigil art
 function generateAsciiSigil() {
     const ascii = document.getElementById('ascii-sigil');
-    const chars = '╔╗╚╝║═╠╣╦╩╬';
-    let art = '';
-    for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 40; j++) {
-            art += chars[Math.floor(Math.random() * chars.length)];
+    if (ascii) {
+        const chars = '╔╗╚╝║═╠╣╦╩╬';
+        let art = '';
+        for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 40; j++) {
+                art += chars[Math.floor(Math.random() * chars.length)];
+            }
+            art += '\n';
         }
-        art += '\n';
+        ascii.textContent = art;
     }
-    ascii.textContent = art;
 }
 
-// Initialize the page with the new title
-generateSigil();  // Generate sigil pattern without overlay title
-setupCanvasTitle(pageTitle);  // Overlay title on Canvas generative art
-generateAsciiSigil();  // Generate ASCII sigil art
-
-// Regenerate ASCII sigil every few seconds
-setInterval(generateAsciiSigil, 3330);
-
-
+// Search quotes function
 async function searchQuotes() {
     const resultsDiv = document.getElementById('results');
     resultsDiv.innerHTML = 'Invoking...';
@@ -220,12 +278,9 @@ async function searchQuotes() {
     }
 }
 
-// Add this event listener to update the file label when a file is selected
-document.getElementById('fileInput').addEventListener('change', function(event) {
-    const fileName = event.target.files[0]?.name;
-    if (fileName) {
-        document.querySelector('.file-label').textContent = `File selected: ${fileName}`;
-    } else {
-        document.querySelector('.file-label').textContent = 'Upload a file (PDF or TXT)';
-    }
-});
+// Initialize the page when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initializePage);
+
+// Expose necessary functions to global scope
+window.searchQuotes = searchQuotes;
+window.generateAsciiSigil = generateAsciiSigil;

@@ -1,0 +1,26 @@
+About This Tool
+
+This tool helps you discover quotes from texts that have a specific numerical value according to English Qaballa. Here's how to use it:
+
+1. Choose Your Input:
+You can either enter a URL of a .txt file in the input box provided, or upload a local text file (TXT or PDF) by clicking on "Upload a file" and selecting the desired file.
+
+2. Enter the Target Sum:
+Type the numerical value you're looking for in the "Enter target sum" box. This sum is based on the English Qaballa values assigned to each letter in the quote.
+
+3. Invoke the Search:
+Click the "Invoke" button to start the search process.
+
+4. View the Results:
+The tool will display all quotes that match your target sum, along with their calculated values and source (URL or filename).
+
+Tips:
+- For best results when using URLs, ensure the links point to plain text content.
+- Larger text files or documents may take longer to process, so please be patient.
+- Experiment with different sums to uncover interesting patterns in the text.
+
+What is English Qaballa?
+English Qaballa is a system that assigns numerical values to letters. In this system:
+A = 1, B = 2, C = 3, and so on up to Z = 26. The sum of a word or phrase is the total of these values.
+
+
