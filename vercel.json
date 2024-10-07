@@ -12,5 +12,6 @@
     { "src": "^/favicon.ico", "dest": "/favicon.ico" },
     { "src": "^/(.*)\\.(.+)", "dest": "/$1.$2" },
     { "src": "^/(.*)", "dest": "/index.html" }
+    { "src": "/aboutContent.txt", "dest": "/aboutContent.txt" }
   ]
 }
