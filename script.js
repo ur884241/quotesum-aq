@@ -1,12 +1,12 @@
 // Global variables and constants
-const pageTitle = '- SFINX RESEARCH AIN -';
+const pageTitle = 'SFINX RESEARCH AIN';
 const ASCII_SIGIL_INTERVAL = 3330;
 
 // Mouse object for particle interaction
 const mouse = {
     x: null,
     y: null,
-    radius: 50
+    radius: 100
 };
 
 // Async function to load content dynamically
