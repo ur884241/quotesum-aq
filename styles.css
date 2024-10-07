@@ -79,7 +79,7 @@ button:hover {
 }
 
 .quotes-container {
-    border: 1px solid #ccc;
+    border: 0px;
     border-radius: 5px;
     padding: 10px;
     margin-top: 10px;
@@ -88,7 +88,7 @@ button:hover {
 .quote {
     margin-bottom: 15px;
     padding: 10px;
-    background-color: #f0f0f0;
+    background-color: none;
     border-radius: 5px;
 }
 

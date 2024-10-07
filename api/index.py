@@ -38,16 +38,6 @@ def insert_quote(text, sum_value, url):
     except Exception as e:
         logger.error(f"Failed to insert quote: {str(e)}")
 
-def get_quotes_by_sum(target_sum):
-    logger.info(f"Attempting to retrieve quotes for sum: {target_sum}")
-    try:
-        quotes = list(quotes_collection.find({"sum": target_sum}, {"_id": 0}))
-        logger.info(f"Retrieved {len(quotes)} quotes")
-        return quotes
-    except Exception as e:
-        logger.error(f"Failed to retrieve quotes: {str(e)}")
-        return []
-
 def fetch_text(url):
     """Fetch text content from a given URL."""
     try:
@@ -139,19 +129,16 @@ class handler(BaseHTTPRequestHandler):
                 self.send_json_response({'success': False, 'error': 'Unsupported content type'}, 400)
                 return
 
-            matching_quotes = get_quotes_by_sum(target_sum)
-            logger.info(f"Retrieved {len(matching_quotes)} quotes from database")
-
-            new_quotes = find_sentence_start_quotes(text, target_sum, url)
-            matching_quotes.extend(new_quotes)
-
+            # Find quotes only from the current text
+            matching_quotes = find_sentence_start_quotes(text, target_sum, url)
+            
             response = {
                 'success': True,
                 'quotes': matching_quotes
             }
 
             self.send_json_response(response)
-            logger.info(f"Response sent successfully with {len(matching_quotes)} quotes")
+            logger.info(f"Response sent successfully with {len(matching_quotes)} quotes from the current text")
 
         except Exception as e:
             logger.error(f"Error processing request: {str(e)}")
