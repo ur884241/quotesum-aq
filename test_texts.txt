@@ -1,0 +1,41 @@
+SACRED TEXTS
+-----------
+"In the beginning was the Word, and the Word was with God, and the Word was God."
+"Be still, and know that I am God."
+"Love your neighbor as yourself."
+
+PHILOSOPHICAL
+------------
+"God is dead. God remains dead. And we have killed him."
+"That which does not kill us makes us stronger."
+"Man is the measure of all things."
+
+LITERARY
+--------
+"To be, or not to be, that is the question."
+"All the world's a stage, and all the men and women merely players."
+"It was the best of times, it was the worst of times."
+
+MODERN
+------
+"The only way to do great work is to love what you do."
+"Stay hungry, stay foolish."
+"Innovation distinguishes between a leader and a follower."
+
+TECHNICAL
+---------
+"The quick brown fox jumps over the lazy dog."
+"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+"Python is a programming language that lets you work quickly."
+
+POETRY
+------
+"Shall I compare thee to a summer's day?"
+"Two roads diverged in a wood, and I—I took the one less traveled by."
+"The woods are lovely, dark and deep."
+
+HISTORICAL
+----------
+"We hold these truths to be self-evident, that all men are created equal."
+"Four score and seven years ago our fathers brought forth on this continent..."
+"Ask not what your country can do for you, ask what you can do for your country." 

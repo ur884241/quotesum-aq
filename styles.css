@@ -18,6 +18,10 @@ html, body {
     background-color: var(--bg-color);
     color: var(--text-color);
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 0;
 }
 
 body {
@@ -40,7 +44,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: -1;
-    opacity: 0.1;
+    opacity: 0.05;
 }
 
 h1 {
@@ -49,24 +53,21 @@ h1 {
     margin-bottom: 30px;
 }
 
-input, button {
+input, button, select, textarea {
     width: 100%;
     padding: 10px;
-    margin-bottom: 15px;
-    background: var(--input-bg);
+    margin-bottom: 10px;
+    background-color: rgba(30, 30, 30, 0.7) !important;
     border: 1px solid var(--border-color);
-    color: var(--text-color);
+    color: white !important;
     font-family: 'Fira Code', monospace;
     font-size: 14px;
     box-sizing: border-box;
-    height: 40px;
 }
 
-button {
-    background-color: var(--button-bg);
+button, .invoke-button, .file-upload-button {
     cursor: pointer;
     transition: all 0.3s ease;
-    line-height: 20px;
 }
 
 button:hover {
@@ -76,30 +77,47 @@ button:hover {
 
 #results {
     margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-color);
-    font-size: 15px;
+    width: 100%;
+    max-height: 80vh; /* Increased height for main container */
+    overflow-y: auto;
+    padding: 10px;
+    box-sizing: border-box;
+    padding-right: 15px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
 .quotes-container {
-    border: 0px;
-    border-radius: 5px;
-    padding: 10px;
-    margin-top: 10px;
-    max-height: 400px;
+    max-height: 500px;
     overflow-y: auto;
+    padding: 10px;
+    background-color: var(--bg-color);
+    border-radius: 5px;
+    margin-top: 10px;
 }
 
 .quote {
-    margin-bottom: 15px;
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    border-left: 4px solid transparent;
+    background-color: var(--bg-color);
+}
+
+.quote.complete {
+    border-left-color: #4CAF50;
+}
+
+.quote.incomplete {
+    border-left-color: #FFC107;
 }
 
 .quote-info {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: var(--accent-color);
+    margin-top: 5px;
 }
 
 .ascii-art {
@@ -108,8 +126,9 @@ button:hover {
     white-space: pre;
     font-family: 'Fira Code', monospace;
     color: var(--accent-color);
-    text-align: left;
-    margin: 20px 0;
+    text-align: center;
+    margin: 20px auto;
+    max-width: 800px;
 }
 
 .error {
@@ -119,16 +138,44 @@ button:hover {
 
 .title-container {
     position: relative;
-    height: 200px; /* Match the height of titleCanvas */
-    margin-bottom: -75px;
+    height: 120px;
+    margin-bottom: 35px;
+    text-align: center;
+    background: var(--bg-color) !important;
+    overflow: visible;
+    z-index: 1;
 }
 
 #titleCanvas {
-    position: absolute;
-    top: 0;
-    left: -20px;
+    position: absolute !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 100% !important;
+    max-width: 800px !important;
+    height: 100% !important;
+    z-index: 5 !important;
+    background: transparent !important;
+}
+
+.search-form {
+    margin-top: 20px;
+    position: relative;
+    z-index: 5;
+    background-color: transparent !important;
+    padding: 0;
+}
+
+/* Add some spacing between the form and content */
+.content {
+    position: relative;
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 800px;
     width: 100%;
-    height: 100%;
+    box-sizing: border-box;
+    z-index: 2;
+    background-color: var(--bg-color);
 }
 
 /* Sidebar styling */
@@ -152,11 +199,25 @@ button:hover {
     text-decoration: none;
     font-size: 13px;
     transition: background 0.1s ease;
-    border-bottom: 0.2px solid var(--border-color);
+    border: none;
 }
 
 .sidebar a:hover {
     background-color: var(--button-hover-bg);
+}
+
+/* Add just the sidebar-title style */
+.sidebar-title {
+    font-family: 'Fira Code', monospace;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+    color: #d8d8d8;
+    margin-top: 10px;
+    padding: 10px 10px;
+    border: none;
+    outline: none;
+    letter-spacing: 0.5px;
 }
 
 .file-upload {
@@ -180,15 +241,6 @@ button:hover {
 
 #fileInput {
     display: none;
-}
-
-
-#content {
-    margin-left: 200px; /* Make room for the sidebar */
-    padding: 20px;
-    overflow-y: auto;
-    height: calc(100vh - 40px); /* Full height minus padding */
-    flex: 1;
 }
 
 @media (max-width: 768px) {
@@ -221,5 +273,1085 @@ button:hover {
         height: auto; /* Set to auto to avoid height issues */
     }     
 
-   
+    .title-container {
+        height: 150px;
+    }
+    
+    .ascii-art {
+        font-size: 8px;
+        line-height: 8px;
+    }
+}
+
+.processing-info {
+    background-color: var(--bg-color);
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+
+.processing-info p {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: var(--accent-color);
+}
+
+/* Create a more uniform scientific theme for the program box */
+
+/* Main container */
+.input-group {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: rgba(33, 35, 38, 0.95) !important;
+    border-radius: 3px;
+    border: 1px solid #333;
+}
+
+/* Form elements */
+.form-group {
+    margin-bottom: 15px;
+    width: 100%;
+    padding: 0;
+}
+
+/* Form group label */
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #b8b8b8;
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+}
+
+/* Scientific input styling */
+input, select, textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+    background-color: rgba(35, 37, 40, 0.9) !important;
+    border: 1px solid #333;
+    color: #d8d8d8 !important;
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+/* Remove hover effects */
+button:hover, .invoke-button:hover, .file-upload-button:hover {
+    background-color: rgba(35, 37, 40, 0.9) !important;
+    box-shadow: none !important;
+}
+
+/* Consistent source inputs */
+.source-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    margin-top: 5px;
+    background-color: transparent;
+}
+
+/* File upload container */
+.file-upload-container {
+    background-color: rgba(35, 37, 40, 0.9);
+    border-radius: 3px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #333;
+}
+
+/* File button styling */
+.file-upload-button {
+    background-color: rgba(35, 37, 40, 0.9) !important;
+    color: #d8d8d8 !important;
+    border: 1px solid #333;
+    padding: 8px 12px;
+    white-space: nowrap;
+    width: auto;
+    margin-bottom: 0;
+    cursor: pointer;
+    transition: none;
+    font-size: 13px;
+}
+
+/* File name styling */
+#fileName {
+    color: #999 !important;
+    font-size: 13px;
+    font-family: 'Fira Code', monospace;
+}
+
+/* Submit button styling */
+.invoke-button {
+    background-color: rgba(35, 37, 40, 0.9) !important;
+    color: #d8d8d8 !important;
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    font-weight: normal;
+    border: 1px solid #333;
+    cursor: pointer;
+    transition: none;
+    letter-spacing: 0.5px;
+    font-size: 13px;
+}
+
+/* Remove old source button styles */
+.source-buttons,
+.source-button {
+    display: none;
+}
+
+#loading {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading p {
+    margin-top: 10px;
+    font-family: 'Fira Code', monospace;
+}
+
+.error {
+    color: var(--error-color);
+    padding: 10px;
+    margin: 10px 0;
+    background: rgba(255,68,68,0.1);
+    border-radius: 4px;
+}
+
+.no-results {
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    font-family: 'Fira Code', monospace;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.results-list {
+    margin-top: 20px;
+}
+
+.quote-text {
+    color: #fff;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.quote-sum {
+    color: #3498db;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.quote-breakdown {
+    color: #aaa;
+    font-size: 0.9em;
+    margin-top: 5px;
+    font-family: 'Fira Code', monospace;
+}
+
+.results-list h3 {
+    color: #fff;
+    margin: 20px 0 10px;
+    font-family: 'Fira Code', monospace;
+    font-size: 1.2em;
+}
+
+.summary {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+}
+
+.summary p {
+    color: #fff;
+    margin: 5px 0;
+}
+
+.summary-box {
+    background: rgba(40, 40, 40, 0.4);
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.summary-box p {
+    margin: 5px 0;
+    color: var(--text-color);
+    font-family: 'Fira Code', monospace;
+    font-size: 14px;
+}
+
+#quotes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: visible; /* Remove nested scrolling */
+    padding-right: 10px;
+}
+
+#quotes-container h3 {
+    color: var(--text-color);
+    font-family: 'Fira Code', monospace;
+    font-size: 16px;
+    margin: 20px 0 10px;
+    padding-bottom: 5px;
+    border-bottom: none;
+}
+
+.quote {
+    background: rgba(40, 40, 40, 0.4);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    background-color: var(--bg-color);
+}
+
+.quote.complete {
+    border-left: 4px solid #4CAF50;
+}
+
+.quote.incomplete {
+    border-left: 4px solid #FFC107;
+}
+
+.quote-text {
+    color: var(--text-color);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.quote-sum {
+    color: var(--accent-color);
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.quote-breakdown {
+    color: var(--accent-color);
+    font-size: 12px;
+    font-family: 'Fira Code', monospace;
+}
+
+.error {
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+    padding: 15px;
+    border-radius: 4px;
+    margin: 20px 0;
+    font-family: 'Fira Code', monospace;
+}
+
+/* Advanced Analytics Styles */
+.analytics-section {
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.toggle-analytics-btn {
+    background-color: var(--button-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    font-family: 'Fira Code', monospace;
+    width: auto;
+    display: inline-block;
+}
+
+.toggle-analytics-btn:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.analytics-content {
+    max-height: none; /* Remove max height limitation */
+    overflow-y: visible; /* Remove nested scrolling */
+    padding: 10px;
+}
+
+.analytics-overall {
+    margin-bottom: 20px;
+}
+
+.analytics-strategies {
+    margin-bottom: 20px;
+}
+
+.analytics-overall h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 100%;
+}
+
+.analytics-item {
+    background-color: rgba(30, 30, 30, 0.5);
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.analytics-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+}
+
+.analytics-label {
+    font-size: 0.7rem;
+    color: var(--accent-color);
+}
+
+.analytics-distributions h3,
+.analytics-strategies h3,
+.analytics-overall h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.analytics-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 20px;
+    font-size: 0.75rem;
+    table-layout: fixed;
+}
+
+.analytics-table th, 
+.analytics-table td {
+    padding: 4px 6px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.analytics-table th {
+    background-color: var(--button-bg);
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.analytics-table tr:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.analytics-distributions h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+.analytics-distributions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    max-width: 100%;
+    margin-top: 10px;
+}
+
+.distribution-card {
+    background-color: var(--button-bg);
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    max-width: 100%;
+    position: relative; /* For tooltip positioning */
+}
+
+.distribution-card h4 {
+    margin: 0 0 3px 0;
+    font-size: 11px;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.distribution-card h4::after {
+    content: "ⓘ";
+    display: inline-block;
+    margin-left: 5px;
+    font-size: 10px;
+    opacity: 0.7;
+    cursor: help;
+}
+
+.distribution-card h4:hover::after {
+    opacity: 1;
+}
+
+.distribution-card .tooltip {
+    visibility: hidden;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    text-align: center;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    width: 150px;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.distribution-card h4:hover + .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.word-count-chart {
+    display: flex;
+    align-items: flex-end;
+    height: 70px;
+    gap: 1px;
+    max-width: 100%;
+    margin-top: 2px;
+}
+
+.chart-bar-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+}
+
+.chart-bar {
+    width: 90%;
+    background-color: var(--accent-color);
+    border-radius: 1px 1px 0 0;
+    transition: height 0.3s ease;
+    position: relative; /* For positioning the count indicator */
+}
+
+.count-indicator {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: var(--text-color);
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 1px 3px;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+.chart-label {
+    margin-top: 2px;
+    font-size: 8px;
+    color: var(--accent-color);
+}
+
+/* Responsive styles for analytics */
+@media (max-width: 992px) {
+    .analytics-distributions {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .analytics-distributions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .analytics-table {
+        font-size: 0.75rem;
+    }
+    
+    .analytics-table th, 
+    .analytics-table td {
+        padding: 0.4rem 0.2rem;
+    }
+}
+
+@media (max-width: 500px) {
+    .analytics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .analytics-value {
+        font-size: 1.1rem;
+    }
+    
+    .analytics-label {
+        font-size: 0.65rem;
+    }
+    
+    .analytics-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        width: 100%;
+        font-size: 0.7rem;
+    }
+}
+
+/* Scientific Paper Styles */
+.about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: "Georgia", serif;
+    line-height: 1.6;
+    text-align: justify;
+    color: #c0c8d0; /* Soft blue-silver color for text */
+}
+
+.scientific-paper {
+    background-color: rgba(12, 12, 14, 0.8);
+    padding: 30px;
+    border-radius: 6px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    border: none;
+}
+
+.scientific-paper h1 {
+    font-size: 22px;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+    color: #9a9d9e; /* Subdued silver for main title, Nier-inspired */
+    padding-bottom: 20px;
+    letter-spacing: 0.5px;
+    border-bottom: none;
+    font-family: "Garamond", "Times New Roman", serif;
+    text-transform: uppercase;
+}
+
+.scientific-paper h2 {
+    font-size: 18px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    font-weight: bold;
+    color: #7d7f83; /* Darker silver-gray for section headings, Nier-inspired */
+    letter-spacing: 0.3px;
+    border-bottom: none;
+    font-family: "Garamond", "Times New Roman", serif;
+}
+
+.scientific-paper h3 {
+    font-size: 16px;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #6e7072; /* Even darker silver for subsection headings, Nier-inspired */
+    letter-spacing: 0.2px;
+    font-family: "Garamond", "Times New Roman", serif;
+}
+
+.scientific-paper p {
+    margin-bottom: 18px;
+    font-size: 15px;
+    line-height: 1.65;
+}
+
+.scientific-paper em {
+    font-style: italic;
+    color: #a1a4a8; /* Light silver for italics, Nier-inspired */
+}
+
+.scientific-paper ol, .scientific-paper ul {
+    margin-left: 25px;
+    margin-bottom: 20px;
+    color: #c0c8d0; /* Match the main text color */
+    font-size: 15px;
+}
+
+.scientific-paper li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.paper-metadata {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: none;
+}
+
+.paper-author {
+    font-style: italic;
+    color: #8a8d93;
+    margin-bottom: 10px;
+    font-family: "Garamond", "Times New Roman", serif;
+    font-size: 15px;
+}
+
+.paper-date {
+    color: #7d7f83;
+    font-size: 0.9em;
+    font-family: "Garamond", "Times New Roman", serif;
+}
+
+.pseudocode {
+    background-color: rgba(16, 18, 20, 0.7);
+    border: none;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #a1a4a8; /* Light silver for code, Nier-inspired */
+}
+
+.equation {
+    background-color: rgba(16, 18, 20, 0.7);
+    border: none;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #a1a4a8; /* Light silver for equations, Nier-inspired */
+}
+
+.code {
+    font-family: "Consolas", "Monaco", monospace;
+    color: #8a8d93;
+    font-size: 13px;
+}
+
+.complexity-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 25px 0;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    font-size: 0.85em;
+    font-family: "Georgia", serif;
+}
+
+.complexity-table th, .complexity-table td {
+    border: none;
+    padding: 10px;
+    text-align: center;
+}
+
+.complexity-table th {
+    background-color: rgba(22, 24, 26, 0.8); /* Dark slate for header, Nier-inspired */
+    font-weight: bold;
+    color: #9a9d9e;
+}
+
+.complexity-table tr:nth-child(even) {
+    background-color: rgba(18, 20, 22, 0.5);
+}
+
+.complexity-table tr:nth-child(odd) {
+    background-color: rgba(20, 22, 24, 0.5);
+}
+
+.complexity-table tr:hover {
+    background-color: rgba(24, 26, 28, 0.6);
+}
+
+.paper-section {
+    margin-bottom: 40px;
+}
+
+.references-list {
+    padding-left: 25px;
+    font-size: 14px;
+}
+
+.references-list li {
+    margin-bottom: 12px;
+    text-indent: -25px;
+    padding-left: 25px;
+}
+
+@media (max-width: 768px) {
+    .about-content {
+        padding: 15px;
+    }
+    
+    .scientific-paper {
+        padding: 15px;
+    }
+    
+    .scientific-paper h1 {
+        font-size: 18px;
+    }
+    
+    .scientific-paper h2 {
+        font-size: 16px;
+    }
+    
+    .scientific-paper h3 {
+        font-size: 14px;
+    }
+    
+    .scientific-paper p, .scientific-paper li {
+        font-size: 14px;
+    }
+    
+    .pseudocode, .equation {
+        font-size: 12px;
+        padding: 10px;
+    }
+}
+
+/* Adjust content for absence of title */
+#content {
+    margin-left: 150px;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+    background-color: var(--bg-color);
+}
+
+/* Ensure the search form is properly positioned */
+.search-form {
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Reset any overridden background colors to match site */
+input, button, select, textarea {
+    background-color: rgba(25, 25, 25, 0.6) !important;
+    border: 1px solid var(--border-color);
+    color: white !important;
+}
+
+/* Fix parent container backgrounds */
+.input-group, .form-group, .summary-box, .processing-info, .quote, .quotes-container {
+    background-color: rgba(40, 40, 40, 0.4);
+    border-color: var(--border-color);
+}
+
+/* Title container that might have black background */
+.title-container {
+    position: relative;
+    height: 120px;
+    margin-bottom: 35px;
+    text-align: center;
+    background: var(--bg-color) !important;
+    overflow: visible;
+    z-index: 1;
+}
+
+/* Make sure the search form doesn't have black background */
+.search-form {
+    margin-top: 20px;
+    position: relative;
+    z-index: 5;
+    background-color: var(--bg-color) !important;
+}
+
+/* Standardize all background colors to exactly the same shade */
+.input-group, 
+.form-group, 
+.file-upload-container, 
+.source-inputs, 
+.url-input, 
+input, 
+select, 
+textarea, 
+.invoke-button, 
+.file-upload-button,
+.search-form {
+    background-color: rgba(33, 35, 38, 0.9) !important;
+    border-color: #333 !important;
+}
+
+/* The only container that needs a slightly different background */
+.input-group {
+    background-color: rgba(33, 35, 38, 0.95) !important;
+    padding: 20px;
+    border-radius: 3px;
+    border: 1px solid #333;
+}
+
+/* Make table header sticky for easier reference */
+.analytics-table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #1a1a1a;
+    z-index: 10;
+}
+
+/* Improve scrollbar appearance */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    border: 2px solid var(--bg-color);
+    transition: background 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#complete-quotes, #incomplete-quotes {
+    max-height: none; /* Remove max height limitation */
+    overflow-y: visible; /* Remove nested scrolling */
+    padding: 15px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.05);
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quote {
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s;
+}
+
+.quote:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.quote.complete {
+    border-left: 3px solid #4caf50;
+}
+
+.quote.incomplete {
+    border-left: 3px solid #ff9800;
+}
+
+.quote-text {
+    font-size: 16px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.quote-sum, .quote-breakdown {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 5px 0;
+}
+
+#quotes-container h2, .analytics-section h3 {
+    position: sticky;
+    top: 0;
+    margin-top: 0;
+    padding: 10px 15px;
+    background-color: var(--bg-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.summary-box {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toggle-analytics-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.toggle-analytics-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Improve the table header appearance */
+.analytics-table {
+    position: relative;
+}
+
+.analytics-table thead th {
+    position: sticky;
+    top: 45px; /* Positioned below section header */
+    background-color: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 9;
+    padding: 10px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Add separators between quote sections */
+.quote-section {
+    position: relative;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+}
+
+/* Improve transitions between sections */
+#results > * {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+#results:hover > *:not(:hover) {
+    opacity: 0.95;
+}
+
+/* Modal styles for advanced analytics */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Lighter background */
+    backdrop-filter: blur(3px); /* Add blur effect */
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-container {
+    width: 90%;
+    max-width: 1000px;
+    max-height: 90vh;
+    background-color: var(--bg-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(20px);
+    transition: transform 0.3s;
+}
+
+.modal-overlay.active .modal-container {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.modal-close:hover {
+    opacity: 1;
+    background: none !important;
+}
+
+.modal-body {
+    padding: 15px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Make table headers sticky in the modal */
+.modal-body .analytics-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }

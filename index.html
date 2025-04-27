@@ -3,24 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sigil Gematria Quote Finder</title>
+    <title>SFYNX 7</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="sidebar">
-        <a href="#" data-page="home">Home</a>
-        <a href="#" data-page="about">About</a>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <!-- Only the JavaScript will add the title here -->
     </div>
 
-    <svg id="background-sigil" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
-        <!-- Complex sigil pattern will be generated here -->
-    </svg>
+    <!-- Removed titleCanvas -->
+
+    <!-- Removed SVG background sigil -->
 
     <div id="content">
         <!-- Dynamic content will be loaded here -->
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
+    <script src="about.js"></script>
+    <script src="home.js"></script>
+    <script>
+        // Initialize the page after all scripts are loaded
+        function initializePage() {
+            try {
+                console.log("Initializing page...");
+                
+                // Check if the loadHomePage and loadAboutPage functions are available
+                if (typeof window.loadHomePage !== 'function') {
+                    console.error('loadHomePage function not found on window object');
+                }
+                
+                if (typeof window.loadAboutPage !== 'function') {
+                    console.error('loadAboutPage function not found on window object');
+                }
+                
+                // Initialize the navigation (setupNavigation function from script.js)
+                if (typeof window.initApp === 'function') {
+                    window.initApp();
+                } else {
+                    console.error('initApp function not found on window object');
+                }
+            } catch (error) {
+                console.error('Error initializing page:', error);
+            }
+        }
+
+        // Wait for the window to load
+        if (window.addEventListener) {
+            window.addEventListener('load', initializePage);
+        } else if (window.attachEvent) {
+            window.attachEvent('onload', initializePage);
+        } else {
+            window.onload = initializePage;
+        }
+    </script>
 </body>
 </html>

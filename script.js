@@ -1,63 +1,147 @@
 // Global variables and constants
-const pageTitle = 'SFINX RESEARCH AIN';
-const ASCII_SIGIL_INTERVAL = 3330;
+const pageTitle = 'SFYNX 7';
 
-// Mouse object for particle interaction
-const mouse = {
-    x: null,
-    y: null,
-    radius: 100
-};
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Only call initApp here - don't call it in other places to avoid duplication
+    initApp();
+});
 
-// Async function to load content dynamically
-async function loadContent(page) {
-    console.log(`Loading content for page: ${page}`);
-    const contentDiv = document.getElementById('content');
-    if (!contentDiv) {
-        console.error("Content div not found");
-        return;
+// Initialize the application
+function initApp() {
+    console.log("initApp called");
+    
+    // Clear any existing title first to prevent duplicates
+    const existingTitle = document.querySelector('.sidebar-title');
+    if (existingTitle) {
+        existingTitle.remove();
     }
     
-    try {
-        let content;
-        switch (page) {
-            case 'home':
-                console.log("Loading home page");
-                const { loadHomePage } = await import('./home.js');
-                content = loadHomePage();
-                break;
-            case 'about':
-                console.log("Loading about page");
-                const { loadAboutPage } = await import('./about.js');
-                content = loadAboutPage();
-                break;
-            default:
-                console.log(`Loading default content for ${page}`);
-                content = `<h2>${page}</h2><p>Content for ${page} goes here.</p>`;
-        }
-        
-        contentDiv.innerHTML = content;
-        console.log("Content loaded into div");
-        
-        if (page === 'home') {
-            console.log("Setting up home page components");
-            setupCanvasTitle(pageTitle);
-            generateAsciiSigil();
-            setupFileInputListener();
-        }
-    } catch (error) {
-        console.error(`Error loading ${page} content:`, error);
-        contentDiv.innerHTML = `<p>Error loading content. Please try again.</p>`;
+    setupNavigation();
+    loadHomePage();
+    addStaticTitle();
+}
+
+// Set up navigation between pages
+function setupNavigation() {
+    const homeLink = document.querySelector('a[href="#home"]');
+    const aboutLink = document.querySelector('a[href="#about"]');
+    
+    if (homeLink) {
+        homeLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            loadPage('home');
+        });
+    }
+    
+    if (aboutLink) {
+        aboutLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            loadPage('about');
+        });
+    }
+    
+    // Check for hash in URL on page load
+    const hash = window.location.hash;
+    if (hash === '#about') {
+        loadPage('about');
+    } else {
+        loadPage('home');
     }
 }
 
+// Add static title below "About" in navigation
+function addStaticTitle() {
+    // Get the sidebar
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+    
+    // Check if title already exists and remove if it does
+    const existingTitle = document.querySelector('.sidebar-title');
+    if (existingTitle) {
+        existingTitle.remove();
+    }
+    
+    // Create title element
+    const titleElement = document.createElement('div');
+    titleElement.className = 'sidebar-title';
+    titleElement.textContent = pageTitle;
+    
+    // Add title after About link
+    sidebar.appendChild(titleElement);
+    
+    // Add CSS for the title
+    const style = document.createElement('style');
+    style.textContent = `
+        .sidebar-title {
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: left;
+            color: #d8d8d8;
+            margin-top: 10px;
+            padding: 10px 10px;
+            letter-spacing: 0.5px;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Load the specified page content
+function loadPage(page) {
+    const contentDiv = document.getElementById('content');
+    if (!contentDiv) return;
+    
+    // Update URL hash
+    window.location.hash = page;
+    console.log(`Loading page: ${page}`);
+    
+    if (page === 'home') {
+        contentDiv.innerHTML = window.loadHomePage();
+        
+        // Re-setup event listeners for the home page
+        const fileButton = document.getElementById('fileButton');
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const searchForm = document.getElementById('searchForm');
+        
+        if (fileButton && fileInput && fileName) {
+            fileButton.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    fileName.textContent = this.files[0].name;
+                } else {
+                    fileName.textContent = 'No file chosen';
+                }
+            });
+        }
+        
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                window.searchQuotes();
+            });
+        }
+    } else if (page === 'about') {
+        console.log("About to load about page...");
+        console.log("loadAboutPage available:", typeof window.loadAboutPage === 'function');
+        contentDiv.innerHTML = window.loadAboutPage();
+        console.log("About page loaded.");
+    }
+}
+
+// Make key functions globally available
+window.initApp = initApp;
+window.setupNavigation = setupNavigation;
+window.loadPage = loadPage;
+
 // Function to initialize the page
 function initializePage() {
-    console.log("Initializing page");
-    generateSigil();
-    loadContent('home');
+    console.log("Initializing page - script.js");
     setupEventListeners();
-    setInterval(generateAsciiSigil, ASCII_SIGIL_INTERVAL);
 }
 
 // Setup event listeners
@@ -73,10 +157,6 @@ function setupEventListeners() {
 
     window.addEventListener('resize', debounce(() => {
         console.log("Window resized");
-        const canvas = document.getElementById('titleCanvas');
-        if (canvas) {
-            setupCanvasTitle(pageTitle);
-        }
     }, 250));
 }
 
@@ -93,248 +173,48 @@ function debounce(func, wait) {
     };
 }
 
-function setupFileInputListener() {
-    const fileInput = document.getElementById('fileInput');
-    if (fileInput) {
-        fileInput.addEventListener('change', function(event) {
-            const fileName = event.target.files[0]?.name;
-            const label = document.querySelector('.file-label');
-            if (label) {
-                label.textContent = fileName ? `File selected: ${fileName}` : 'Upload a file (PDF or TXT)';
-            }
-        });
-    }
-}
-
-// Function to set up the canvas title
-function setupCanvasTitle(title = pageTitle) {
-    const canvas = document.getElementById('titleCanvas');
-    if (!canvas) return;  // Exit if canvas doesn't exist
-
-    const ctx = canvas.getContext('2d');
-    canvas.width = canvas.offsetWidth;
-    canvas.height = 200;
-
-    // Get canvas position
-    const canvasRect = canvas.getBoundingClientRect();
-
-    // Update mouse position relative to canvas
-    function updateMousePos(e) {
-        mouse.x = e.clientX - canvasRect.left;
-        mouse.y = e.clientY - canvasRect.top;
-    }
-
-    // Add mousemove event listener to canvas
-    canvas.addEventListener('mousemove', updateMousePos);
-
-    const particles = [];
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    const text = title;
-
-    // Class for each particle
-    class Particle {
-        constructor(x, y, char, isTitle = false) {
-            this.x = x;
-            this.y = y;
-            this.char = char;
-            this.size = isTitle ? 18 : 12;
-            this.color = isTitle ? '#ffffff' : 'rgba(255, 255, 255, 0.5)';
-            this.baseX = x;
-            this.baseY = y;
-            this.density = isTitle ? (Math.random() * 50) + 5 : (Math.random() * 30) + 1;
-        }
-
-        draw() {
-            ctx.fillStyle = this.color;
-            ctx.font = `${this.size}px Courier`;
-            ctx.fillText(this.char, this.x, this.y);
-        }
-
-        update() {
-            if (mouse.x === null || mouse.y === null) return;
-
-            let dx = mouse.x - this.x;
-            let dy = mouse.y - this.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-            let forceDirectionX = dx / distance;
-            let forceDirectionY = dy / distance;
-            let maxDistance = mouse.radius;
-            let force = (maxDistance - distance) / maxDistance;
-            let directionX = forceDirectionX * force * this.density;
-            let directionY = forceDirectionY * force * this.density;
-
-            if (distance < mouse.radius) {
-                this.x -= directionX;
-                this.y -= directionY;
-            } else {
-                if (this.x !== this.baseX) {
-                    let dx = this.x - this.baseX;
-                    this.x -= dx / 10;
-                }
-                if (this.y !== this.baseY) {
-                    let dy = this.y - this.baseY;
-                    this.y -= dy / 10;
-                }
-            }
-        }
-    }
-
-    // Initialize particles based on the title text and random characters
-    function initParticles() {
-        particles.length = 0;
-
-        let size = 20;
-        let x = 20;  // Start from the left edge with a small padding
-        let y = 100;
-
-        ctx.font = `${size}px Courier`;
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'left';
-        ctx.fillText(text, x, y);
-
-        const pixelData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-
-        for (let y = 0; y < canvas.height; y += 4) {
-            for (let x = 0; x < canvas.width; x += 4) {
-                if (pixelData[(y * canvas.width + x) * 4 + 3] > 128) {
-                    let posX = x + Math.random() * 4;
-                    let posY = y + Math.random() * 4;
-                    particles.push(new Particle(posX, posY, chars[Math.floor(Math.random() * chars.length)]));
-                }
-            }
-        }
-
-        for (let i = 0; i < text.length; i++) {
-            let posX = x + i * 20;
-            let posY = 100;
-            particles.push(new Particle(posX, posY, text[i], true));
-        }
-    }
-
-    // Animate the particles
-    function animateParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(particle => {
-            particle.draw();
-            particle.update();// Initialize the page when the DOM is fully loaded
-            document.addEventListener('DOMContentLoaded', initializePage);
-            
-        });
-        requestAnimationFrame(animateParticles);
-    }
-
-    initParticles();
-    animateParticles();
-
-    // Cleanup function
-    return function cleanup() {
-        canvas.removeEventListener('mousemove', updateMousePos);
-    };
-}
-
-// Function to generate complex sigil pattern
-function generateSigil() {
-    const svg = document.getElementById('background-sigil');
-    const numPaths = 50;
-    let paths = '';
-
-    for (let i = 0; i < numPaths; i++) {
-        const points = [];
-        for (let j = 0; j < 5; j++) {
-            points.push(`${Math.random() * 1000},${Math.random() * 1000}`);
-        }
-        paths += `<path d="M${points.join(' L')}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" />`;
-    }
-
-    svg.innerHTML = paths;
-}
-
-// Generate ASCII sigil art
-function generateAsciiSigil() {
-    const ascii = document.getElementById('ascii-sigil');
-    if (ascii) {
-        const chars = '╔╗╚╝║═╠╣╦╩╬';
-        let art = '';
-        for (let i = 0; i < 10; i++) {
-            for (let j = 0; j < 40; j++) {
-                art += chars[Math.floor(Math.random() * chars.length)];
-            }
-            art += '\n';
-        }
-        ascii.textContent = art;
-    }
-}
-
-// Search quotes function
-async function searchQuotes() {
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = 'Invoking...';
-
-    const url = document.getElementById('urlInput').value;
-    const file = document.getElementById('fileInput').files[0];
-    const targetSum = document.getElementById('targetSum').value;
-
-    if (!targetSum) {
-        resultsDiv.innerHTML = 'Please enter a target sum.';
-        return;
-    }
-
-    let formData = new FormData();
-    formData.append('targetSum', targetSum);
-
-    if (file) {
-        formData.append('file', file);
-    } else if (url) {
-        formData.append('url', url);
-    } else {
-        resultsDiv.innerHTML = 'Please provide either a URL or upload a file.';
+// Async function to load content dynamically
+async function loadContent(page) {
+    console.log(`Loading content for page: ${page}`);
+    const contentDiv = document.getElementById('content');
+    if (!contentDiv) {
+        console.error("Content div not found");
         return;
     }
 
     try {
-        const response = await fetch('/api/gematria', {
-            method: 'POST',
-            body: formData
-        });
+        let content;
+        switch (page) {
+            case 'home':
+                console.log("Loading home page using global function");
+                if (typeof window.loadHomePage === 'function') {
+                    content = window.loadHomePage();
+                } else {
+                    throw new Error('loadHomePage function not found on window object');
+                }
+                break;
+            case 'about':
+                console.log("Loading about page (assuming global loadAboutPage)");
+                if (typeof window.loadAboutPage === 'function') {
+                     content = window.loadAboutPage();
+                 } else {
+                     content = `<h2>About</h2><p>About page content not loaded.</p>`;
+                     console.warn('loadAboutPage function not found');
+                 }
+                break;
+            default:
+                console.log(`Loading default content for ${page}`);
+                content = `<h2>${page}</h2><p>Content for ${page} goes here.</p>`;
+        }
         
-        const data = await response.json();
+        contentDiv.innerHTML = content;
+        console.log("Content loaded into div");
         
-        if (data.success) {
-            if (data.quotes.length === 0) {
-                resultsDiv.innerHTML = 'No matching quotes found.';
-            } else {
-                resultsDiv.innerHTML = `
-                    <p>Total quotes found: ${data.quotes.length}</p>
-                    <div class="quotes-container">
-                        ${data.quotes.map(quote => `
-                            <div class="quote">
-                                <p>${quote.text}</p>
-                                <p class="quote-info">Sum: ${quote.sum}, Source: ${quote.url}</p>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-        } else {
-            resultsDiv.innerHTML = `Error: ${data.error}`;
-            if (data.traceback) {
-                console.error('Server traceback:', data.traceback);
-            }
+        if (page === 'home') {
+            console.log("Setting up home page components after content load");
         }
     } catch (error) {
-        console.error('Fetch error:', error);
-        resultsDiv.innerHTML = `An error occurred: ${error.message}`;
+        console.error(`Error loading ${page} content:`, error);
+        contentDiv.innerHTML = `<p>Error loading content. Please try again.</p>`;
     }
 }
-
-
-// Initialize the page when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM fully loaded");
-    initializePage();
-});
-
-
-// Expose necessary functions to global scope
-window.searchQuotes = searchQuotes;
-window.generateAsciiSigil = generateAsciiSigil;

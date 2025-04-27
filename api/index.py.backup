@@ -182,7 +182,6 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
         logger.info(f"Using primary calculation type: {calculation_type}")
 
         # --- Simple NLTK setup and tokenization ---
-        sentences = []
         try:
             # Only download if not already done
             try:
@@ -202,7 +201,7 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
             # Simple backup tokenization - split by periods and basic cleanup
             sentences = [s.strip() for s in text.split('.') if s.strip()]
             logger.info(f"Tokenized into {len(sentences)} sentences using fallback method.")
-        
+            
         # Run search strategies
         all_matches = []
         original_word_index = 0

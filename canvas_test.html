@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #121212;
+            color: white;
+            font-family: monospace;
+        }
+        
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .content {
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            text-align: center;
+            pointer-events: none;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div class="content">
+        <h1>ASCII Animation Test</h1>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM loaded, setting up canvas");
+            
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas dimensions
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // ASCII particles
+            const particles = [];
+            const particleCount = 200;
+            const mouse = {
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2,
+                radius: 150,
+                active: false
+            };
+            
+            // ASCII characters
+            const chars = '.+*:;=?%#@';
+            
+            // Listen for mouse movement
+            window.addEventListener('mousemove', function(e) {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                mouse.active = true;
+                
+                clearTimeout(mouse.timeout);
+                mouse.timeout = setTimeout(() => {
+                    mouse.active = false;
+                }, 2000);
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                
+                // Re-initialize particles
+                initParticles();
+            });
+            
+            // Particle class
+            class Particle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.baseX = x;
+                    this.baseY = y;
+                    this.size = Math.random() * 12 + 10;
+                    this.char = chars[Math.floor(Math.random() * chars.length)];
+                    this.color = `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.5})`;
+                }
+                
+                draw() {
+                    ctx.font = `${this.size}px monospace`;
+                    ctx.fillStyle = this.color;
+                    ctx.fillText(this.char, this.x, this.y);
+                }
+                
+                update() {
+                    // Distance between mouse and particle
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Move away from mouse
+                    if (mouse.active && distance < mouse.radius) {
+                        const force = (mouse.radius - distance) / mouse.radius;
+                        const directionX = dx / distance;
+                        const directionY = dy / distance;
+                        
+                        this.x -= directionX * force * 10;
+                        this.y -= directionY * force * 10;
+                    } else {
+                        // Return to original position
+                        const dx = this.baseX - this.x;
+                        const dy = this.baseY - this.y;
+                        
+                        this.x += dx * 0.05;
+                        this.y += dy * 0.05;
+                    }
+                }
+            }
+            
+            // Initialize particles
+            function initParticles() {
+                particles.length = 0;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    particles.push(new Particle(x, y));
+                }
+            }
+            
+            // Animation loop
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                
+                requestAnimationFrame(animate);
+            }
+            
+            // Start animation
+            initParticles();
+            animate();
+            
+            console.log("Canvas animation started");
+        });
+    </script>
+</body>
+</html> 
