@@ -212,8 +212,10 @@ window.searchQuotes = function() {
         console.log(`API response status: ${response.status} ${response.statusText}`);
         if (!response.ok) {
             return response.json().then(data => {
+                console.error("Server error details:", data);
                 throw new Error(data.error || `Server error: ${response.status} ${response.statusText}`);
-            }).catch(() => {
+            }).catch(err => {
+                console.error("Error parsing error response:", err);
                 throw new Error(`Server error: ${response.status} ${response.statusText}`);
             });
         }
@@ -224,6 +226,9 @@ window.searchQuotes = function() {
         hideLoading();
         if (data.error) {
             console.error("API returned error:", data.error);
+            if (data.traceback) {
+                console.error("Server traceback:", data.traceback);
+            }
             alert(data.error);
             return;
         }
