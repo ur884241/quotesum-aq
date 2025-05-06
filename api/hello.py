@@ -12,29 +12,14 @@ class Handler(BaseHTTPRequestHandler):
             "status": "OK"
         }
         self.wfile.write(json.dumps(response_data).encode())
-
-def handler(request, response):
-    if request.method == 'POST':
-        return {
-            "statusCode": 200,
-            "body": json.dumps({
-                "message": "Hello from Vercel serverless function (POST)",
-                "status": "OK"
-            }),
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            }
+        
+    def do_POST(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
+        response_data = {
+            "message": "Hello from Vercel serverless function (POST)",
+            "status": "OK"
         }
-    else:
-        return {
-            "statusCode": 200,
-            "body": json.dumps({
-                "message": "Hello from Vercel serverless function (GET)",
-                "status": "OK"
-            }),
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            }
-        } 
+        self.wfile.write(json.dumps(response_data).encode()) 

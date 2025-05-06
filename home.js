@@ -190,113 +190,144 @@ window.searchQuotes = function() {
     const isVercelDeployment = window.location.hostname.includes('vercel.app');
     console.log("Detected environment:", isVercelDeployment ? "Vercel deployment" : "Local development");
 
-    if (isVercelDeployment && fileInput.files.length > 0) {
-        alert('File uploads are not supported in the deployed version. Please use a URL instead.');
-        return;
-    }
-    
-    let formData;
-    let fetchOptions;
-
-    if (isVercelDeployment) {
-        // For Vercel, use URLSearchParams for better compatibility with serverless functions
-        const params = new URLSearchParams();
-        params.append('targetSum', targetSum);
-        params.append('calculationType', calculationType);
+    // Test the API connection first
+    console.log("Testing API connection...");
+    fetch('/api/test')
+        .then(response => {
+            console.log("Test API response:", response.status, response.statusText);
+            if (!response.ok) {
+                console.error("Test API failed");
+                throw new Error(`API test failed: ${response.status} ${response.statusText}`);
+            }
+            return response.text();
+        })
+        .then(text => {
+            console.log("Test API response text:", text);
+            try {
+                const data = JSON.parse(text);
+                console.log("Test API JSON response:", data);
+                
+                // If test passed, proceed with the actual search
+                proceedWithSearch();
+            } catch (e) {
+                console.error("Failed to parse test API response:", e);
+                alert("API test failed: Invalid JSON response");
+            }
+        })
+        .catch(error => {
+            console.error("API test failed:", error);
+            alert(`API test failed: ${error.message}`);
+        });
         
-        if (url) {
-            params.append('url', url);
-        } else {
-            alert('Please provide a URL for the deployed version');
+    function proceedWithSearch() {
+        if (isVercelDeployment && fileInput.files.length > 0) {
+            alert('File uploads are not supported in the deployed version. Please use a URL instead.');
             return;
         }
+        
+        let formData;
+        let fetchOptions;
 
-        fetchOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: params
-        };
-    } else {
-        // For local development, use FormData (supports file uploads)
-        formData = new FormData();
-        formData.append('targetSum', targetSum);
-        formData.append('calculationType', calculationType);
+        if (isVercelDeployment) {
+            // For Vercel, use URLSearchParams for better compatibility with serverless functions
+            const params = new URLSearchParams();
+            params.append('targetSum', targetSum);
+            params.append('calculationType', calculationType);
+            
+            if (url) {
+                params.append('url', url);
+            } else {
+                alert('Please provide a URL for the deployed version');
+                return;
+            }
 
-        if (url) {
-            formData.append('source_type', 'url');
-            formData.append('url', url);
-        } else if (fileInput.files.length > 0) {
-            formData.append('source_type', 'file');
-            formData.append('file', fileInput.files[0]);
+            fetchOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: params
+            };
         } else {
-            alert('Please provide either a URL or upload a file');
-            return;
+            // For local development, use FormData (supports file uploads)
+            formData = new FormData();
+            formData.append('targetSum', targetSum);
+            formData.append('calculationType', calculationType);
+
+            if (url) {
+                formData.append('source_type', 'url');
+                formData.append('url', url);
+            } else if (fileInput.files.length > 0) {
+                formData.append('source_type', 'file');
+                formData.append('file', fileInput.files[0]);
+            } else {
+                alert('Please provide either a URL or upload a file');
+                return;
+            }
+
+            fetchOptions = {
+                method: 'POST',
+                body: formData
+            };
         }
 
-        fetchOptions = {
-            method: 'POST',
-            body: formData
-        };
-    }
-
-    console.log("Showing loading indicator and making API request...");
-    showLoading();
-    
-    fetch('/api/search', fetchOptions)
-    .then(response => {
-        console.log(`API response status: ${response.status} ${response.statusText}`);
-        if (!response.ok) {
+        console.log("Showing loading indicator and making API request...");
+        showLoading();
+        
+        fetch('/api/search', fetchOptions)
+        .then(response => {
+            console.log(`API response status: ${response.status} ${response.statusText}`);
+            if (!response.ok) {
+                return response.text().then(text => {
+                    console.error("Raw error response:", text);
+                    try {
+                        return JSON.parse(text);
+                    } catch (err) {
+                        console.error("Error parsing response:", err);
+                        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                    }
+                }).then(data => {
+                    console.error("Server error details:", data);
+                    throw new Error(data.error || `Server error: ${response.status} ${response.statusText}`);
+                }).catch(err => {
+                    console.error("Error parsing error response:", err);
+                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                });
+            }
             return response.text().then(text => {
-                console.error("Raw error response:", text);
+                console.log("Raw response text:", text);
                 try {
                     return JSON.parse(text);
                 } catch (err) {
-                    console.error("Error parsing response:", err);
-                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                    console.error("Error parsing JSON response:", err);
+                    throw new Error("Invalid JSON response from server");
                 }
-            }).then(data => {
-                console.error("Server error details:", data);
-                throw new Error(data.error || `Server error: ${response.status} ${response.statusText}`);
-            }).catch(err => {
-                console.error("Error parsing error response:", err);
-                throw new Error(`Server error: ${response.status} ${response.statusText}`);
             });
-        }
-        return response.text().then(text => {
-            console.log("Raw response text:", text);
-            try {
-                return JSON.parse(text);
-            } catch (err) {
-                console.error("Error parsing JSON response:", err);
-                throw new Error("Invalid JSON response from server");
+        })
+        .then(data => {
+            console.log("Raw API response received:", data);
+            hideLoading();
+            if (data.error) {
+                console.error("API returned error:", data.error);
+                if (data.traceback) {
+                    console.error("Server traceback:", data.traceback);
+                }
+                alert(data.error);
+                return;
             }
+            
+            console.log(`Data received: success=${data.success}, complete_quotes=${data.complete_quotes?.length || 0}, incomplete_quotes=${data.incomplete_quotes?.length || 0}`);
+            displayResults(data);
+            
+            // After displaying results, ensure modal listeners are set up
+            setTimeout(window.afterPageUpdate, 300);
+        })
+        .catch(error => {
+            console.error("API request failed:", error);
+            hideLoading();
+            alert('An error occurred: ' + error.message);
         });
-    })
-    .then(data => {
-        console.log("Raw API response received:", data);
-        hideLoading();
-        if (data.error) {
-            console.error("API returned error:", data.error);
-            if (data.traceback) {
-                console.error("Server traceback:", data.traceback);
-            }
-            alert(data.error);
-            return;
-        }
-        
-        console.log(`Data received: success=${data.success}, complete_quotes=${data.complete_quotes?.length || 0}, incomplete_quotes=${data.incomplete_quotes?.length || 0}`);
-        displayResults(data);
-        
-        // After displaying results, ensure modal listeners are set up
-        setTimeout(window.afterPageUpdate, 300);
-    })
-    .catch(error => {
-        console.error("API request failed:", error);
-        hideLoading();
-        alert('An error occurred: ' + error.message);
-    });
+    }
 };
 
 // Make helper functions globally available

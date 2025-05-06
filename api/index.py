@@ -6,6 +6,7 @@ import os # Import os module
 from typing import List, Dict, Any
 import nltk
 from nltk.tokenize.punkt import PunktSentenceTokenizer # Import specific tokenizer
+from http.server import BaseHTTPRequestHandler
 
 # Import search strategy functions
 from .search_strategies import STRATEGY_FUNCTIONS, ALL_STRATEGIES
@@ -383,7 +384,6 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
 # The main calculate_all_sums in this file is used after aggregation.
 
 # Vercel serverless function handler
-from http.server import BaseHTTPRequestHandler
 import json
 import traceback
 import urllib.parse
@@ -533,3 +533,58 @@ def handler(event, context):
                 'Content-Type': 'application/json'
             }
         }
+
+class VercelHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
+        self.wfile.write(json.dumps({"status": "API is running"}).encode())
+
+    def do_POST(self):
+        content_length = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_length).decode('utf-8')
+        content_type = self.headers.get('Content-Type', '')
+        
+        # Parse form data
+        form_data = {}
+        if 'application/x-www-form-urlencoded' in content_type:
+            form_data = urllib.parse.parse_qs(post_data)
+            # Extract single values from lists
+            form_data = {k: v[0] if isinstance(v, list) and len(v) == 1 else v for k, v in form_data.items()}
+        elif 'application/json' in content_type:
+            form_data = json.loads(post_data)
+            
+        # Process request
+        try:
+            target_sum = form_data.get('targetSum')
+            url = form_data.get('url')
+            calculation_type = form_data.get('calculationType', 'eq')
+            
+            if not target_sum or not url:
+                self.send_response(400)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": "Target sum and URL are required"}).encode())
+                return
+                
+            # Fetch text and find matches
+            text = fetch_text(url)
+            results = find_matching_quotes(text, int(target_sum), url, calculation_type=calculation_type)
+            
+            # Send success response
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(results).encode())
+            
+        except Exception as e:
+            # Send error response
+            self.send_response(500)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(e)}).encode())
