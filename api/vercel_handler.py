@@ -4,7 +4,8 @@ import traceback
 import os
 import json
 import tempfile
-from api.index import find_matching_quotes, fetch_text
+from api.core import fetch_text
+from api.search import find_matching_quotes
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

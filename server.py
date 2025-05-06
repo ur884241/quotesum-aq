@@ -1,5 +1,6 @@
 from flask import Flask, request, send_from_directory, jsonify, Response
-from api.index import process_request
+from api.search import find_matching_quotes
+from api.core import fetch_text
 import os
 import traceback
 import json
@@ -7,6 +8,10 @@ import json
 app = Flask(__name__, 
             static_folder='.',
             static_url_path='')
+
+def process_request(target_sum, url, calculation_type='eq'):
+    text = fetch_text(url)
+    return find_matching_quotes(text, int(target_sum), url, calculation_type=calculation_type)
 
 @app.route('/api/search', methods=['POST'])
 def search_handler():

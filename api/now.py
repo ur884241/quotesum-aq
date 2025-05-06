@@ -9,7 +9,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import the core functionality
-from api.index import fetch_text, find_matching_quotes
+from api.core import fetch_text
+from api.search import find_matching_quotes
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

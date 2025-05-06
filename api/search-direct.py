@@ -1,6 +1,15 @@
 import json
 import sys
 import os
+import logging
+import traceback
+from urllib.parse import urlparse
+import requests
+from bs4 import BeautifulSoup
+import nltk
+from nltk.tokenize import sent_tokenize
+from api.core import fetch_text
+from api.search import find_matching_quotes
 
 # Add parent directory to path
 current_dir = os.path.dirname(os.path.abspath(__file__))

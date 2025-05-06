@@ -3,7 +3,8 @@ from flask_cors import CORS
 import tempfile
 import os
 import traceback
-from api.index import find_matching_quotes, fetch_text
+from api.core import fetch_text
+from api.search import find_matching_quotes
 import logging
 
 # Configure logging
