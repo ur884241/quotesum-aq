@@ -1,14 +1,16 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/vercel_handler.py", "use": "@vercel/python" },
+    { "src": "api/hello.py", "use": "@vercel/python" },
+    { "src": "api/search.py", "use": "@vercel/python" },
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "*.css", "use": "@vercel/static" },
     { "src": "*.js", "use": "@vercel/static" },
     { "src": "*.txt", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/vercel_handler.py" },
+    { "src": "/api/hello", "dest": "/api/hello.py" },
+    { "src": "/api/search", "dest": "/api/search.py" },
     { "src": "^/static/(.*)", "dest": "/static/$1" },
     { "src": "^/favicon.ico", "dest": "/favicon.ico" },
     { "src": "^/(.*)\\.(html|css|js|txt)$", "dest": "/$1.$2" },
