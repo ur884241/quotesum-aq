@@ -203,12 +203,20 @@ window.searchQuotes = function() {
 
     console.log("Showing loading indicator and making API request...");
     showLoading();
+    
     fetch('/api/search', {
         method: 'POST',
         body: formData
     })
     .then(response => {
         console.log(`API response status: ${response.status} ${response.statusText}`);
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.error || `Server error: ${response.status} ${response.statusText}`);
+            }).catch(() => {
+                throw new Error(`Server error: ${response.status} ${response.statusText}`);
+            });
+        }
         return response.json();
     })
     .then(data => {

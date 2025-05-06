@@ -3,9 +3,22 @@ from flask_cors import CORS
 import tempfile
 import os
 from api.index import find_matching_quotes, fetch_text
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
+
+# Error handler for all exceptions
+@app.errorhandler(Exception)
+def handle_error(error):
+    logger.error(f"Unhandled error: {str(error)}")
+    return jsonify({
+        'error': f'Server error: {str(error)}'
+    }), 500
 
 @app.route('/api/search', methods=['POST'])
 def search():
@@ -41,13 +54,11 @@ def search():
             return jsonify(results)
 
         except Exception as e:
-            # Log the specific error for debugging
-            app.logger.error(f"Error processing request: {str(e)}")
+            logger.error(f"Error processing request: {str(e)}")
             return jsonify({'error': f'Error processing request: {str(e)}'}), 500
 
     except Exception as e:
-        # Log the specific error for debugging
-        app.logger.error(f"Server error: {str(e)}")
+        logger.error(f"Server error: {str(e)}")
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
 @app.route('/')
