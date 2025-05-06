@@ -225,29 +225,14 @@ window.searchQuotes = function() {
             return result;
         })).then(processedResults => {
             const workingEndpoints = processedResults.filter(r => r.ok);
+            const minimalSearchWorks = workingEndpoints.find(r => r.endpoint === 'minimal-search');
             
-            if (workingEndpoints.length > 0) {
-                console.log(`${workingEndpoints.length} endpoints are working. Proceeding with search.`);
-                
-                // Check if our direct endpoint is working
-                const minimalSearchWorks = workingEndpoints.find(r => r.endpoint === 'minimal-search');
-                const searchDirectWorks = workingEndpoints.find(r => r.endpoint === 'search-direct');
-                let endpointToUse = '/api/search';
-                
-                if (minimalSearchWorks) {
-                    console.log("Using minimal-search endpoint for search");
-                    endpointToUse = '/api/minimal-search';
-                } else if (searchDirectWorks) {
-                    console.log("Using search-direct endpoint for search");
-                    endpointToUse = '/api/search-direct';
-                } else {
-                    console.log("No preferred endpoints available, using fallback");
-                }
-                
-                proceedWithSearch(endpointToUse);
+            if (minimalSearchWorks) {
+                console.log("Minimal search endpoint is working. Proceeding with search using /api/minimal-search.");
+                proceedWithSearch('/api/minimal-search'); // Force using minimal-search
             } else {
-                console.error("All API endpoints failed");
-                alert("Unable to connect to any API endpoints. Please try again later.");
+                console.error("Minimal search endpoint (/api/minimal-search) failed. Cannot proceed.");
+                alert("Critical API endpoint (/api/minimal-search) failed. Please check server logs.");
             }
         });
     })
