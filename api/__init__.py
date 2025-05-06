@@ -1,5 +1,6 @@
 # This file marks the api directory as a Python package
 from .core import fetch_text
 from .search import find_matching_quotes
+from .search_strategies import STRATEGY_FUNCTIONS, ALL_STRATEGIES
 
-__all__ = ['find_matching_quotes', 'fetch_text'] 
+__all__ = ['find_matching_quotes', 'fetch_text', 'STRATEGY_FUNCTIONS', 'ALL_STRATEGIES'] 
