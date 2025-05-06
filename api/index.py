@@ -7,6 +7,9 @@ from typing import List, Dict, Any
 import nltk
 from nltk.tokenize.punkt import PunktSentenceTokenizer # Import specific tokenizer
 from http.server import BaseHTTPRequestHandler
+import json
+import traceback
+import urllib.parse
 
 # Import search strategy functions
 from .search_strategies import STRATEGY_FUNCTIONS, ALL_STRATEGIES
@@ -380,17 +383,7 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
             "error": f"An internal error occurred during search: {str(e)}"
         }
 
-# Note: The placeholder calculate_all_sums in search_strategies.py is not used.
-# The main calculate_all_sums in this file is used after aggregation.
-
 # Vercel serverless function handler
-import json
-import traceback
-import urllib.parse
-from io import BytesIO
-import base64
-
-# This is the entry point for the Vercel serverless platform
 def handler(event, context):
     """Serverless function handler for Vercel"""
     try:
