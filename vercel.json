@@ -8,6 +8,8 @@
     { "src": "*.txt", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/api/minimal-search", "dest": "/api/minimal-search.py" },
+    { "src": "/api/search-direct", "dest": "/api/search-direct.py" },
     { "src": "/api/simple", "dest": "/api/simple.py" },
     { "src": "/api/hello-world", "dest": "/api/hello-world.py" },
     { "src": "/api/endpoint", "dest": "/api/endpoint.py" },

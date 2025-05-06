@@ -195,30 +195,68 @@ window.searchQuotes = function() {
     
     // Try different endpoints to see which ones work
     Promise.all([
-        fetch('/api/simple').then(r => ({endpoint: 'simple', status: r.status, ok: r.ok})).catch(e => ({endpoint: 'simple', error: e.message})),
-        fetch('/api/hello-world').then(r => ({endpoint: 'hello-world', status: r.status, ok: r.ok})).catch(e => ({endpoint: 'hello-world', error: e.message})),
-        fetch('/api/endpoint').then(r => ({endpoint: 'endpoint', status: r.status, ok: r.ok})).catch(e => ({endpoint: 'endpoint', error: e.message})),
-        fetch('/api/test').then(r => ({endpoint: 'test', status: r.status, ok: r.ok})).catch(e => ({endpoint: 'test', error: e.message})),
-        fetch('/api/hello').then(r => ({endpoint: 'hello', status: r.status, ok: r.ok})).catch(e => ({endpoint: 'hello', error: e.message}))
+        fetch('/api/minimal-search').then(r => ({endpoint: 'minimal-search', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'minimal-search', error: e.message, ok: false})),
+        fetch('/api/search-direct').then(r => ({endpoint: 'search-direct', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'search-direct', error: e.message, ok: false})),
+        fetch('/api/simple').then(r => ({endpoint: 'simple', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'simple', error: e.message, ok: false})),
+        fetch('/api/hello-world').then(r => ({endpoint: 'hello-world', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'hello-world', error: e.message, ok: false})),
+        fetch('/api/endpoint').then(r => ({endpoint: 'endpoint', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'endpoint', error: e.message, ok: false})),
+        fetch('/api/test').then(r => ({endpoint: 'test', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'test', error: e.message, ok: false})),
+        fetch('/api/hello').then(r => ({endpoint: 'hello', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'hello', error: e.message, ok: false}))
     ])
     .then(results => {
         console.log("API test results:", results);
-        const workingEndpoints = results.filter(r => r.ok);
         
-        if (workingEndpoints.length > 0) {
-            console.log(`${workingEndpoints.length} endpoints are working. Proceeding with search.`);
-            proceedWithSearch();
-        } else {
-            console.error("All API endpoints failed");
-            alert("Unable to connect to any API endpoints. Please try again later.");
-        }
+        // Process each result to get detailed info
+        Promise.all(results.map(async result => {
+            if (result.ok && result.text) {
+                try {
+                    const responseText = await result.text();
+                    console.log(`Response from ${result.endpoint}:`, responseText);
+                    try {
+                        const json = JSON.parse(responseText);
+                        result.json = json;
+                    } catch (e) {
+                        console.warn(`Failed to parse JSON from ${result.endpoint}:`, e);
+                    }
+                } catch (e) {
+                    console.error(`Error getting text from ${result.endpoint}:`, e);
+                }
+            }
+            return result;
+        })).then(processedResults => {
+            const workingEndpoints = processedResults.filter(r => r.ok);
+            
+            if (workingEndpoints.length > 0) {
+                console.log(`${workingEndpoints.length} endpoints are working. Proceeding with search.`);
+                
+                // Check if our direct endpoint is working
+                const minimalSearchWorks = workingEndpoints.find(r => r.endpoint === 'minimal-search');
+                const searchDirectWorks = workingEndpoints.find(r => r.endpoint === 'search-direct');
+                let endpointToUse = '/api/search';
+                
+                if (minimalSearchWorks) {
+                    console.log("Using minimal-search endpoint for search");
+                    endpointToUse = '/api/minimal-search';
+                } else if (searchDirectWorks) {
+                    console.log("Using search-direct endpoint for search");
+                    endpointToUse = '/api/search-direct';
+                } else {
+                    console.log("No preferred endpoints available, using fallback");
+                }
+                
+                proceedWithSearch(endpointToUse);
+            } else {
+                console.error("All API endpoints failed");
+                alert("Unable to connect to any API endpoints. Please try again later.");
+            }
+        });
     })
     .catch(error => {
         console.error("API test failed:", error);
         alert(`API test failed: ${error.message}`);
     });
     
-    function proceedWithSearch() {
+    function proceedWithSearch(apiEndpoint) {
         if (isVercelDeployment && fileInput.files.length > 0) {
             alert('File uploads are not supported in the deployed version. Please use a URL instead.');
             return;
@@ -273,7 +311,7 @@ window.searchQuotes = function() {
         console.log("Showing loading indicator and making API request...");
         showLoading();
         
-        fetch('/api/search', fetchOptions)
+        fetch(apiEndpoint, fetchOptions)
         .then(response => {
             console.log(`API response status: ${response.status} ${response.statusText}`);
             if (!response.ok) {
