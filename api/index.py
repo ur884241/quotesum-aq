@@ -381,3 +381,88 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
 
 # Note: The placeholder calculate_all_sums in search_strategies.py is not used.
 # The main calculate_all_sums in this file is used after aggregation.
+
+# Vercel serverless function handler
+from http.server import BaseHTTPRequestHandler
+import json
+import traceback
+
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps({"status": "API is running"}).encode())
+        
+    def do_POST(self):
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length)
+            
+            # Parse form data based on content type
+            content_type = self.headers.get('Content-Type', '')
+            
+            if '/api/search' in self.path:
+                if 'application/x-www-form-urlencoded' in content_type:
+                    import urllib.parse
+                    form_data = urllib.parse.parse_qs(post_data.decode('utf-8'))
+                    
+                    # Convert lists to single values
+                    form_data = {k: v[0] if isinstance(v, list) and len(v) == 1 else v 
+                               for k, v in form_data.items()}
+                    
+                    target_sum = form_data.get('targetSum')
+                    url = form_data.get('url')
+                    calculation_type = form_data.get('calculationType', 'eq')
+                    
+                    if not target_sum:
+                        self.send_error_json(400, "Target sum is required")
+                        return
+                    
+                    if not url:
+                        self.send_error_json(400, "URL is required")
+                        return
+                    
+                    try:
+                        text = fetch_text(url)
+                        
+                        if not text:
+                            self.send_error_json(400, "Failed to read text content")
+                            return
+                        
+                        results = find_matching_quotes(
+                            text, 
+                            int(target_sum), 
+                            url, 
+                            calculation_type=calculation_type
+                        )
+                        
+                        self.send_response(200)
+                        self.send_header('Content-type', 'application/json')
+                        self.end_headers()
+                        self.wfile.write(json.dumps(results).encode())
+                        
+                    except Exception as e:
+                        logger.error(f"Error processing request: {str(e)}")
+                        logger.error(f"Traceback: {traceback.format_exc()}")
+                        self.send_error_json(500, f"Error processing request: {str(e)}")
+                        
+                elif 'multipart/form-data' in content_type:
+                    # This would require more complex parsing
+                    # For now, just return an error suggesting to use URL method
+                    self.send_error_json(400, "File uploads are currently unsupported on Vercel. Please use a URL instead.")
+                else:
+                    self.send_error_json(400, "Unsupported content type")
+            else:
+                self.send_error_json(404, "Not Found")
+                
+        except Exception as e:
+            logger.error(f"Unhandled error: {str(e)}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            self.send_error_json(500, f"Server error: {str(e)}")
+    
+    def send_error_json(self, status, message):
+        self.send_response(status)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps({"error": message}).encode())

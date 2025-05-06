@@ -186,32 +186,77 @@ window.searchQuotes = function() {
 
     console.log(`Search parameters: targetSum=${targetSum}, calculationType=${calculationType}, url=${url || "none"}, file=${fileInput.files.length > 0 ? fileInput.files[0].name : "none"}`);
 
-    const formData = new FormData();
-    formData.append('targetSum', targetSum);
-    formData.append('calculationType', calculationType);
+    // Check if we're on Vercel deployment
+    const isVercelDeployment = window.location.hostname.includes('vercel.app');
+    console.log("Detected environment:", isVercelDeployment ? "Vercel deployment" : "Local development");
 
-    if (url) {
-        formData.append('source_type', 'url');
-        formData.append('url', url);
-    } else if (fileInput.files.length > 0) {
-        formData.append('source_type', 'file');
-        formData.append('file', fileInput.files[0]);
-    } else {
-        alert('Please provide either a URL or upload a file');
+    if (isVercelDeployment && fileInput.files.length > 0) {
+        alert('File uploads are not supported in the deployed version. Please use a URL instead.');
         return;
+    }
+    
+    let formData;
+    let fetchOptions;
+
+    if (isVercelDeployment) {
+        // For Vercel, use URLSearchParams for better compatibility with serverless functions
+        const params = new URLSearchParams();
+        params.append('targetSum', targetSum);
+        params.append('calculationType', calculationType);
+        
+        if (url) {
+            params.append('url', url);
+        } else {
+            alert('Please provide a URL for the deployed version');
+            return;
+        }
+
+        fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params
+        };
+    } else {
+        // For local development, use FormData (supports file uploads)
+        formData = new FormData();
+        formData.append('targetSum', targetSum);
+        formData.append('calculationType', calculationType);
+
+        if (url) {
+            formData.append('source_type', 'url');
+            formData.append('url', url);
+        } else if (fileInput.files.length > 0) {
+            formData.append('source_type', 'file');
+            formData.append('file', fileInput.files[0]);
+        } else {
+            alert('Please provide either a URL or upload a file');
+            return;
+        }
+
+        fetchOptions = {
+            method: 'POST',
+            body: formData
+        };
     }
 
     console.log("Showing loading indicator and making API request...");
     showLoading();
     
-    fetch('/api/search', {
-        method: 'POST',
-        body: formData
-    })
+    fetch('/api/search', fetchOptions)
     .then(response => {
         console.log(`API response status: ${response.status} ${response.statusText}`);
         if (!response.ok) {
-            return response.json().then(data => {
+            return response.text().then(text => {
+                console.error("Raw error response:", text);
+                try {
+                    return JSON.parse(text);
+                } catch (err) {
+                    console.error("Error parsing response:", err);
+                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                }
+            }).then(data => {
                 console.error("Server error details:", data);
                 throw new Error(data.error || `Server error: ${response.status} ${response.statusText}`);
             }).catch(err => {
@@ -219,7 +264,15 @@ window.searchQuotes = function() {
                 throw new Error(`Server error: ${response.status} ${response.statusText}`);
             });
         }
-        return response.json();
+        return response.text().then(text => {
+            console.log("Raw response text:", text);
+            try {
+                return JSON.parse(text);
+            } catch (err) {
+                console.error("Error parsing JSON response:", err);
+                throw new Error("Invalid JSON response from server");
+            }
+        });
     })
     .then(data => {
         console.log("Raw API response received:", data);
