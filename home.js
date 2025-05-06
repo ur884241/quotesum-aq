@@ -3,7 +3,7 @@ window.loadHomePage = function() {
     return `
         <div class="content">
             <div class="title-container">
-                <canvas id="titleCanvas" style="z-index: 10; position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
+                <!-- Removed canvas element -->
             </div>
             
             <form id="searchForm" class="search-form">
@@ -128,14 +128,6 @@ function setupModalListeners() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM loaded in home.js");
     
-    // Force canvas setup immediately
-    if (typeof window.setupCanvas === 'function') {
-        console.log("Calling setupCanvas from home.js");
-        setTimeout(window.setupCanvas, 300);
-    } else {
-        console.error("setupCanvas function not available on window object");
-    }
-    
     const fileButton = document.getElementById('fileButton');
     const fileInput = document.getElementById('fileInput');
     const fileName = document.getElementById('fileName');
@@ -173,7 +165,7 @@ window.afterPageUpdate = function() {
 
 // Make searchQuotes globally available
 window.searchQuotes = function() {
-    console.log("searchQuotes function called - SIMPLIFIED FOR VERCELL TEST");
+    console.log("searchQuotes function called");
     const targetSum = document.getElementById('targetSum').value;
     const calculationType = document.getElementById('calculationType').value;
     const url = document.getElementById('urlInput').value;
@@ -187,7 +179,7 @@ window.searchQuotes = function() {
         return;
     }
 
-    console.log(`TESTING /api/minimal-search: targetSum=${targetSum}, calculationType=${calculationType}, url=${url}`);
+    console.log(`Making request with: targetSum=${targetSum}, calculationType=${calculationType}, url=${url}`);
 
     const params = new URLSearchParams();
     params.append('targetSum', targetSum);
@@ -202,33 +194,34 @@ window.searchQuotes = function() {
         body: params
     };
 
-    console.log("Showing loading indicator and making request to /api/minimal-search...");
+    console.log("Showing loading indicator and making request...");
     showLoading();
         
     fetch('/api/minimal-search', fetchOptions)
     .then(response => {
-        console.log(`Response from /api/minimal-search: ${response.status} ${response.statusText}`);
-        return response.text().then(text => ({status: response.status, ok: response.ok, text: text}));
-    })
-    .then(data => {
-        console.log("Raw text from /api/minimal-search:", data.text);
-        hideLoading();
-        if (!data.ok) {
-            alert(`Error from /api/minimal-search: ${data.status}. Response: ${data.text}`);
-            return;
+        console.log(`Response status: ${response.status} ${response.statusText}`);
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`Server returned ${response.status}: ${text}`);
+            });
         }
+        return response.text();
+    })
+    .then(text => {
+        console.log("Raw response:", text);
         try {
-            const jsonData = JSON.parse(data.text);
-            console.log("Parsed JSON from /api/minimal-search:", jsonData);
-            displayResults(jsonData); // This will display mock data
+            const data = JSON.parse(text);
+            console.log("Parsed response:", data);
+            hideLoading();
+            displayResults(data);
         } catch (e) {
-            alert(`Failed to parse JSON from /api/minimal-search: ${e}. Response: ${data.text}`);
+            throw new Error(`Failed to parse JSON response: ${e.message}. Raw response: ${text}`);
         }
     })
     .catch(error => {
-        console.error("Fetch to /api/minimal-search failed:", error);
+        console.error("Request failed:", error);
         hideLoading();
-        alert('An error occurred fetching /api/minimal-search: ' + error.message);
+        alert('Error: ' + error.message);
     });
 };
 
