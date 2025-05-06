@@ -192,33 +192,32 @@ window.searchQuotes = function() {
 
     // Test the API connection first
     console.log("Testing API connection...");
-    fetch('/api/test')
-        .then(response => {
-            console.log("Test API response:", response.status, response.statusText);
-            if (!response.ok) {
-                console.error("Test API failed");
-                throw new Error(`API test failed: ${response.status} ${response.statusText}`);
-            }
-            return response.text();
-        })
-        .then(text => {
-            console.log("Test API response text:", text);
-            try {
-                const data = JSON.parse(text);
-                console.log("Test API JSON response:", data);
-                
-                // If test passed, proceed with the actual search
-                proceedWithSearch();
-            } catch (e) {
-                console.error("Failed to parse test API response:", e);
-                alert("API test failed: Invalid JSON response");
-            }
-        })
-        .catch(error => {
-            console.error("API test failed:", error);
-            alert(`API test failed: ${error.message}`);
-        });
+    
+    // Try different endpoints to see which ones work
+    Promise.all([
+        fetch('/api/simple').then(r => ({endpoint: 'simple', status: r.status, ok: r.ok})).catch(e => ({endpoint: 'simple', error: e.message})),
+        fetch('/api/hello-world').then(r => ({endpoint: 'hello-world', status: r.status, ok: r.ok})).catch(e => ({endpoint: 'hello-world', error: e.message})),
+        fetch('/api/endpoint').then(r => ({endpoint: 'endpoint', status: r.status, ok: r.ok})).catch(e => ({endpoint: 'endpoint', error: e.message})),
+        fetch('/api/test').then(r => ({endpoint: 'test', status: r.status, ok: r.ok})).catch(e => ({endpoint: 'test', error: e.message})),
+        fetch('/api/hello').then(r => ({endpoint: 'hello', status: r.status, ok: r.ok})).catch(e => ({endpoint: 'hello', error: e.message}))
+    ])
+    .then(results => {
+        console.log("API test results:", results);
+        const workingEndpoints = results.filter(r => r.ok);
         
+        if (workingEndpoints.length > 0) {
+            console.log(`${workingEndpoints.length} endpoints are working. Proceeding with search.`);
+            proceedWithSearch();
+        } else {
+            console.error("All API endpoints failed");
+            alert("Unable to connect to any API endpoints. Please try again later.");
+        }
+    })
+    .catch(error => {
+        console.error("API test failed:", error);
+        alert(`API test failed: ${error.message}`);
+    });
+    
     function proceedWithSearch() {
         if (isVercelDeployment && fileInput.files.length > 0) {
             alert('File uploads are not supported in the deployed version. Please use a URL instead.');
