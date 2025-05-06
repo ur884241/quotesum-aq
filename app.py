@@ -20,27 +20,35 @@ def search():
             return jsonify({'error': 'Target sum is required'}), 400
 
         text = None
-        if url:
-            text = fetch_text(url)
-        elif file and file.filename.endswith('.txt'):
-            # Save the file temporarily
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.txt') as temp_file:
-                file.save(temp_file.name)
-                with open(temp_file.name, 'r', encoding='utf-8') as f:
-                    text = f.read()
-            # Clean up the temporary file
-            os.unlink(temp_file.name)
-        else:
-            return jsonify({'error': 'Either URL or a valid .txt file is required'}), 400
+        try:
+            if url:
+                text = fetch_text(url)
+            elif file and file.filename.endswith('.txt'):
+                # Save the file temporarily
+                with tempfile.NamedTemporaryFile(delete=False, suffix='.txt') as temp_file:
+                    file.save(temp_file.name)
+                    with open(temp_file.name, 'r', encoding='utf-8') as f:
+                        text = f.read()
+                # Clean up the temporary file
+                os.unlink(temp_file.name)
+            else:
+                return jsonify({'error': 'Either URL or a valid .txt file is required'}), 400
 
-        if not text:
-            return jsonify({'error': 'Failed to read text content'}), 400
+            if not text:
+                return jsonify({'error': 'Failed to read text content'}), 400
 
-        results = find_matching_quotes(text, int(target_sum), url, calculation_type=calculation_type, source_type=source_type)
-        return jsonify(results)
+            results = find_matching_quotes(text, int(target_sum), url, calculation_type=calculation_type, source_type=source_type)
+            return jsonify(results)
+
+        except Exception as e:
+            # Log the specific error for debugging
+            app.logger.error(f"Error processing request: {str(e)}")
+            return jsonify({'error': f'Error processing request: {str(e)}'}), 500
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        # Log the specific error for debugging
+        app.logger.error(f"Server error: {str(e)}")
+        return jsonify({'error': f'Server error: {str(e)}'}), 500
 
 @app.route('/')
 def index():

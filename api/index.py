@@ -49,7 +49,11 @@ def fetch_text_from_url(url):
         return response.text
     except requests.RequestException as e:
         logger.error(f"Error fetching URL {url}: {e}")
-        raise Exception(f"Error fetching URL: {e}")
+        if hasattr(e.response, 'status_code'):
+            error_msg = f"HTTP {e.response.status_code}: {str(e)}"
+        else:
+            error_msg = str(e)
+        raise Exception(f"Error fetching URL: {error_msg}")
 
 def fetch_text(url):
     """
@@ -63,7 +67,12 @@ def fetch_text(url):
             url = 'http://' + url
             
         logger.info(f"Fetching text from URL: {url}")
-        return fetch_text_from_url(url)
+        text = fetch_text_from_url(url)
+        
+        if not text or not text.strip():
+            raise Exception("Retrieved empty text content")
+            
+        return text
     except Exception as e:
         logger.error(f"Error in fetch_text: {str(e)}")
         raise Exception(f"Failed to fetch text from URL: {str(e)}")
