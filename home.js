@@ -173,183 +173,63 @@ window.afterPageUpdate = function() {
 
 // Make searchQuotes globally available
 window.searchQuotes = function() {
-    console.log("searchQuotes function called");
+    console.log("searchQuotes function called - SIMPLIFIED FOR VERCELL TEST");
     const targetSum = document.getElementById('targetSum').value;
     const calculationType = document.getElementById('calculationType').value;
     const url = document.getElementById('urlInput').value;
-    const fileInput = document.getElementById('fileInput');
 
     if (!targetSum) {
         alert('Please enter a target sum');
         return;
     }
+    if (!url) {
+        alert('Please enter a URL for this test');
+        return;
+    }
 
-    console.log(`Search parameters: targetSum=${targetSum}, calculationType=${calculationType}, url=${url || "none"}, file=${fileInput.files.length > 0 ? fileInput.files[0].name : "none"}`);
+    console.log(`TESTING /api/minimal-search: targetSum=${targetSum}, calculationType=${calculationType}, url=${url}`);
 
-    // Check if we're on Vercel deployment
-    const isVercelDeployment = window.location.hostname.includes('vercel.app');
-    console.log("Detected environment:", isVercelDeployment ? "Vercel deployment" : "Local development");
+    const params = new URLSearchParams();
+    params.append('targetSum', targetSum);
+    params.append('calculationType', calculationType);
+    params.append('url', url);
 
-    // Test the API connection first
-    console.log("Testing API connection...");
-    
-    // Try different endpoints to see which ones work
-    Promise.all([
-        fetch('/api/minimal-search').then(r => ({endpoint: 'minimal-search', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'minimal-search', error: e.message, ok: false})),
-        fetch('/api/search-direct').then(r => ({endpoint: 'search-direct', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'search-direct', error: e.message, ok: false})),
-        fetch('/api/simple').then(r => ({endpoint: 'simple', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'simple', error: e.message, ok: false})),
-        fetch('/api/hello-world').then(r => ({endpoint: 'hello-world', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'hello-world', error: e.message, ok: false})),
-        fetch('/api/endpoint').then(r => ({endpoint: 'endpoint', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'endpoint', error: e.message, ok: false})),
-        fetch('/api/test').then(r => ({endpoint: 'test', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'test', error: e.message, ok: false})),
-        fetch('/api/hello').then(r => ({endpoint: 'hello', status: r.status, ok: r.ok, text: () => r.text()})).catch(e => ({endpoint: 'hello', error: e.message, ok: false}))
-    ])
-    .then(results => {
-        console.log("API test results:", results);
+    const fetchOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params
+    };
+
+    console.log("Showing loading indicator and making request to /api/minimal-search...");
+    showLoading();
         
-        // Process each result to get detailed info
-        Promise.all(results.map(async result => {
-            if (result.ok && result.text) {
-                try {
-                    const responseText = await result.text();
-                    console.log(`Response from ${result.endpoint}:`, responseText);
-                    try {
-                        const json = JSON.parse(responseText);
-                        result.json = json;
-                    } catch (e) {
-                        console.warn(`Failed to parse JSON from ${result.endpoint}:`, e);
-                    }
-                } catch (e) {
-                    console.error(`Error getting text from ${result.endpoint}:`, e);
-                }
-            }
-            return result;
-        })).then(processedResults => {
-            const workingEndpoints = processedResults.filter(r => r.ok);
-            const minimalSearchWorks = workingEndpoints.find(r => r.endpoint === 'minimal-search');
-            
-            if (minimalSearchWorks) {
-                console.log("Minimal search endpoint is working. Proceeding with search using /api/minimal-search.");
-                proceedWithSearch('/api/minimal-search'); // Force using minimal-search
-            } else {
-                console.error("Minimal search endpoint (/api/minimal-search) failed. Cannot proceed.");
-                alert("Critical API endpoint (/api/minimal-search) failed. Please check server logs.");
-            }
-        });
+    fetch('/api/minimal-search', fetchOptions)
+    .then(response => {
+        console.log(`Response from /api/minimal-search: ${response.status} ${response.statusText}`);
+        return response.text().then(text => ({status: response.status, ok: response.ok, text: text}));
     })
-    .catch(error => {
-        console.error("API test failed:", error);
-        alert(`API test failed: ${error.message}`);
-    });
-    
-    function proceedWithSearch(apiEndpoint) {
-        if (isVercelDeployment && fileInput.files.length > 0) {
-            alert('File uploads are not supported in the deployed version. Please use a URL instead.');
+    .then(data => {
+        console.log("Raw text from /api/minimal-search:", data.text);
+        hideLoading();
+        if (!data.ok) {
+            alert(`Error from /api/minimal-search: ${data.status}. Response: ${data.text}`);
             return;
         }
-        
-        let formData;
-        let fetchOptions;
-
-        if (isVercelDeployment) {
-            // For Vercel, use URLSearchParams for better compatibility with serverless functions
-            const params = new URLSearchParams();
-            params.append('targetSum', targetSum);
-            params.append('calculationType', calculationType);
-            
-            if (url) {
-                params.append('url', url);
-            } else {
-                alert('Please provide a URL for the deployed version');
-                return;
-            }
-
-            fetchOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: params
-            };
-        } else {
-            // For local development, use FormData (supports file uploads)
-            formData = new FormData();
-            formData.append('targetSum', targetSum);
-            formData.append('calculationType', calculationType);
-
-            if (url) {
-                formData.append('source_type', 'url');
-                formData.append('url', url);
-            } else if (fileInput.files.length > 0) {
-                formData.append('source_type', 'file');
-                formData.append('file', fileInput.files[0]);
-            } else {
-                alert('Please provide either a URL or upload a file');
-                return;
-            }
-
-            fetchOptions = {
-                method: 'POST',
-                body: formData
-            };
+        try {
+            const jsonData = JSON.parse(data.text);
+            console.log("Parsed JSON from /api/minimal-search:", jsonData);
+            displayResults(jsonData); // This will display mock data
+        } catch (e) {
+            alert(`Failed to parse JSON from /api/minimal-search: ${e}. Response: ${data.text}`);
         }
-
-        console.log("Showing loading indicator and making API request...");
-        showLoading();
-        
-        fetch(apiEndpoint, fetchOptions)
-        .then(response => {
-            console.log(`API response status: ${response.status} ${response.statusText}`);
-            if (!response.ok) {
-                return response.text().then(text => {
-                    console.error("Raw error response:", text);
-                    try {
-                        return JSON.parse(text);
-                    } catch (err) {
-                        console.error("Error parsing response:", err);
-                        throw new Error(`Server error: ${response.status} ${response.statusText}`);
-                    }
-                }).then(data => {
-                    console.error("Server error details:", data);
-                    throw new Error(data.error || `Server error: ${response.status} ${response.statusText}`);
-                }).catch(err => {
-                    console.error("Error parsing error response:", err);
-                    throw new Error(`Server error: ${response.status} ${response.statusText}`);
-                });
-            }
-            return response.text().then(text => {
-                console.log("Raw response text:", text);
-                try {
-                    return JSON.parse(text);
-                } catch (err) {
-                    console.error("Error parsing JSON response:", err);
-                    throw new Error("Invalid JSON response from server");
-                }
-            });
-        })
-        .then(data => {
-            console.log("Raw API response received:", data);
-            hideLoading();
-            if (data.error) {
-                console.error("API returned error:", data.error);
-                if (data.traceback) {
-                    console.error("Server traceback:", data.traceback);
-                }
-                alert(data.error);
-                return;
-            }
-            
-            console.log(`Data received: success=${data.success}, complete_quotes=${data.complete_quotes?.length || 0}, incomplete_quotes=${data.incomplete_quotes?.length || 0}`);
-            displayResults(data);
-            
-            // After displaying results, ensure modal listeners are set up
-            setTimeout(window.afterPageUpdate, 300);
-        })
-        .catch(error => {
-            console.error("API request failed:", error);
-            hideLoading();
-            alert('An error occurred: ' + error.message);
-        });
-    }
+    })
+    .catch(error => {
+        console.error("Fetch to /api/minimal-search failed:", error);
+        hideLoading();
+        alert('An error occurred fetching /api/minimal-search: ' + error.message);
+    });
 };
 
 // Make helper functions globally available
