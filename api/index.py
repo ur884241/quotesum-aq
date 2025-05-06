@@ -13,6 +13,8 @@ import urllib.parse
 
 # Import search strategy functions
 from .search_strategies import STRATEGY_FUNCTIONS, ALL_STRATEGIES
+from .core import fetch_text
+from .search import find_matching_quotes
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
