@@ -1,20 +1,12 @@
 import logging
 from typing import List, Dict, Any
+from .index import calculate_all_sums
 
 logger = logging.getLogger(__name__)
 
 # Define calculation dictionaries (or import them if they remain in index.py)
 # For now, let's assume they might be passed or redefined here if needed.
 # We'll need access to the main value_dict and calculate_all_sums
-
-# Placeholder for calculate_all_sums - this should ideally be shared or imported
-def calculate_all_sums(text, value_dicts):
-    # This needs to be implemented based on the main index.py logic
-    # or passed as an argument/imported.
-    # For now, return an empty dict.
-    # logger.warning("calculate_all_sums needs proper implementation/import in search_strategies.py")
-    return {}
-
 
 def search_sliding_window(
     sentence_words: List[str],      # Lowercase words for calculation
