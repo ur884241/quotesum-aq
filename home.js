@@ -181,48 +181,40 @@ window.searchQuotes = function() {
 
     console.log(`Making request with: targetSum=${targetSum}, calculationType=${calculationType}, url=${url}`);
 
-    const params = new URLSearchParams();
-    params.append('targetSum', targetSum);
-    params.append('calculationType', calculationType);
-    params.append('url', url);
+    const requestData = {
+        target_sum: parseInt(targetSum),
+        calculation_type: calculationType,
+        url: url
+    };
 
     const fetchOptions = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
         },
-        body: params
+        body: JSON.stringify(requestData)
     };
 
     console.log("Showing loading indicator and making request...");
     showLoading();
-        
-    fetch('/api/minimal-search', fetchOptions)
-    .then(response => {
-        console.log(`Response status: ${response.status} ${response.statusText}`);
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`Server returned ${response.status}: ${text}`);
-            });
-        }
-        return response.text();
-    })
-    .then(text => {
-        console.log("Raw response:", text);
-        try {
-            const data = JSON.parse(text);
-            console.log("Parsed response:", data);
+    
+    fetch('/api/search', fetchOptions)
+        .then(response => {
+            console.log("Response status:", response.status);
+            if (!response.ok) {
+                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
             hideLoading();
             displayResults(data);
-        } catch (e) {
-            throw new Error(`Failed to parse JSON response: ${e.message}. Raw response: ${text}`);
-        }
-    })
-    .catch(error => {
-        console.error("Request failed:", error);
-        hideLoading();
-        alert('Error: ' + error.message);
-    });
+        })
+        .catch(error => {
+            console.error("Request failed:", error);
+            hideLoading();
+            alert("Error: " + error.message);
+        });
 };
 
 // Make helper functions globally available

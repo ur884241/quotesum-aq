@@ -1,4 +1,4 @@
-from api.search import handler, vercel_handler
+from api.search import vercel_handler
 
-def lambda_handler(event, context):
-    return handler(event, context) 
+def handler(event, context):
+    return vercel_handler(event) 
