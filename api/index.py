@@ -388,111 +388,76 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
         }
 
 def handler(event, context):
-    """Serverless function handler for Vercel."""
+    """AWS Lambda handler function."""
     try:
         # Parse the request body
         body = json.loads(event.get('body', '{}'))
-        target_sum = body.get('targetSum')
-        url = body.get('url')
-        calculation_type = body.get('calculationType', 'eq')
-        
-        logger.info(f"Processing request: target_sum={target_sum}, url={url}, calculation_type={calculation_type}")
-        
-        if not target_sum or not url:
+        url = body.get('url', '')
+        target_sum = body.get('target_sum', 0)
+        calculation_type = body.get('calculation_type', 'eq')
+        source_type = body.get('source_type', 'other')
+
+        # Validate inputs
+        if not url:
             return {
                 'statusCode': 400,
-                'body': json.dumps({"error": "Target sum and URL are required"})
+                'body': json.dumps({'error': 'URL is required'})
             }
-            
-        # Process the request
+
+        # Fetch and process the text
         text = fetch_text(url)
-        if not text:
-            return {
-                'statusCode': 400,
-                'body': json.dumps({"error": "Failed to fetch text from URL"})
-            }
-            
-        # Find matching quotes
-        results = find_matching_quotes(text, int(target_sum), url, calculation_type=calculation_type)
-        
+        results = find_matching_quotes(text, target_sum, url, calculation_type, source_type)
+
         return {
             'statusCode': 200,
             'body': json.dumps(results)
         }
-        
     except Exception as e:
-        logger.error(f"Error processing request: {str(e)}")
-        logger.error(traceback.format_exc())
+        logger.error(f"Error in handler: {str(e)}")
         return {
             'statusCode': 500,
-            'body': json.dumps({"error": str(e)})
+            'body': json.dumps({'error': str(e)})
         }
 
 class VercelHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        """Handle GET requests."""
         self.send_response(200)
-        self.send_header('Content-Type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Content-type', 'application/json')
         self.end_headers()
-        self.wfile.write(json.dumps({"status": "API is ready"}).encode())
-        
+        self.wfile.write(json.dumps({'status': 'ok'}).encode())
+
     def do_POST(self):
+        """Handle POST requests."""
         try:
-            content_length = int(self.headers.get('Content-Length', 0))
-            post_data = self.rfile.read(content_length).decode('utf-8')
-            content_type = self.headers.get('Content-Type', '')
-            
-            logger.info(f"Received POST request with content type: {content_type}")
-            
-            # Parse form data
-            form_data = {}
-            if 'application/x-www-form-urlencoded' in content_type:
-                form_data = urllib.parse.parse_qs(post_data)
-                # Extract single values from lists
-                form_data = {k: v[0] if isinstance(v, list) and len(v) == 1 else v for k, v in form_data.items()}
-            elif 'application/json' in content_type:
-                form_data = json.loads(post_data)
-                
-            # Extract parameters
-            target_sum = form_data.get('targetSum')
-            url = form_data.get('url')
-            calculation_type = form_data.get('calculationType', 'eq')
-            
-            logger.info(f"Processing request: target_sum={target_sum}, url={url}, calculation_type={calculation_type}")
-            
-            if not target_sum or not url:
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            body = json.loads(post_data.decode('utf-8'))
+
+            url = body.get('url', '')
+            target_sum = body.get('target_sum', 0)
+            calculation_type = body.get('calculation_type', 'eq')
+            source_type = body.get('source_type', 'other')
+
+            # Validate inputs
+            if not url:
                 self.send_response(400)
-                self.send_header('Content-Type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Content-type', 'application/json')
                 self.end_headers()
-                self.wfile.write(json.dumps({"error": "Target sum and URL are required"}).encode())
+                self.wfile.write(json.dumps({'error': 'URL is required'}).encode())
                 return
-                
-            # Process the request
+
+            # Fetch and process the text
             text = fetch_text(url)
-            if not text:
-                self.send_response(400)
-                self.send_header('Content-Type', 'application/json')
-                self.send_header('Access-Control-Allow-Origin', '*')
-                self.end_headers()
-                self.wfile.write(json.dumps({"error": "Failed to fetch text from URL"}).encode())
-                return
-                
-            # Find matching quotes
-            results = find_matching_quotes(text, int(target_sum), url, calculation_type=calculation_type)
-            
-            # Send response
+            results = find_matching_quotes(text, target_sum, url, calculation_type, source_type)
+
             self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps(results).encode())
-            
         except Exception as e:
-            logger.error(f"Error processing request: {str(e)}")
-            logger.error(traceback.format_exc())
+            logger.error(f"Error in POST handler: {str(e)}")
             self.send_response(500)
-            self.send_header('Content-Type', 'application/json')
-            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
+            self.wfile.write(json.dumps({'error': str(e)}).encode())
