@@ -11,9 +11,9 @@ import json
 import traceback
 import urllib.parse
 
-# Import search strategy functions using absolute imports
-from api.search_strategies import STRATEGY_FUNCTIONS, ALL_STRATEGIES
-from api.core import (
+# Import search strategy functions using relative imports
+from .search_strategies import STRATEGY_FUNCTIONS, ALL_STRATEGIES
+from .core import (
     fetch_text, calculate_all_sums, VALUE_DICTS,
     WORD_PATTERN, load_punkt_tokenizer, find_matching_quotes
 )
