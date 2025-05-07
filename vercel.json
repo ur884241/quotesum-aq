@@ -13,32 +13,22 @@
   "routes": [
     {
       "src": "/api/search",
-      "dest": "api/search.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "api/search.py"
-    },
-    {
-      "src": "/api/minimal-search",
       "methods": ["GET", "POST", "OPTIONS"],
-      "dest": "/api/minimal-search.py",
+      "dest": "api/search.py",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type"
       }
     },
-    { "src": "/api/search-direct", "dest": "/api/search-direct.py" },
-    { "src": "/api/simple", "dest": "/api/simple.py" },
-    { "src": "/api/hello-world", "dest": "/api/hello-world.py" },
-    { "src": "/api/endpoint", "dest": "/api/endpoint.py" },
-    { "src": "/api/hello", "dest": "/api/hello.py" },
-    { "src": "/api/test", "dest": "/api/test.py" },
+    {
+      "src": "/(.*)",
+      "dest": "api/search.py"
+    },
     { "src": "^/static/(.*)", "dest": "/static/$1" },
     { "src": "^/favicon.ico", "dest": "/favicon.ico" },
     { "src": "^/(.*)\\.(html|css|js|txt)$", "dest": "/$1.$2" },
     { "src": "^/(.*)", "dest": "/index.html" },
     { "src": "/aboutContent.txt", "dest": "/aboutContent.txt" }
   ]
-}
+} 
