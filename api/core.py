@@ -139,32 +139,43 @@ def calculate_all_sums(text):
 # Word tokenization pattern (consistent)
 WORD_PATTERN = re.compile(r'\b\w+\b')
 
-# Global variable to hold the loaded tokenizer to avoid reloading every time
-PUNKT_TOKENIZER = None
-
-def load_punkt_tokenizer():
-    """Loads the NLTK Punkt tokenizer, downloading if necessary to local dir."""
-    global PUNKT_TOKENIZER
-    if PUNKT_TOKENIZER is None:
-        try:
-            logger.info(f"Loading NLTK Punkt tokenizer (expecting data in {LOCAL_NLTK_DATA_DIR})...")
-            # Load using the resource identifier; NLTK will check nltk.data.path
-            PUNKT_TOKENIZER = nltk.data.load('tokenizers/punkt/english.pickle') 
-            logger.info("NLTK Punkt tokenizer loaded successfully.")
-        except LookupError:
-            logger.warning(f"NLTK 'punkt' resource not found in {nltk.data.path}. Downloading to {LOCAL_NLTK_DATA_DIR}...")
-            try:
-                # Download specifically to the local directory
-                nltk.download('punkt', download_dir=LOCAL_NLTK_DATA_DIR, quiet=True, raise_on_error=True)
-                logger.info(f"NLTK 'punkt' downloaded to {LOCAL_NLTK_DATA_DIR}. Reloading tokenizer...")
-                # Try loading again after download, using the identifier
-                PUNKT_TOKENIZER = nltk.data.load('tokenizers/punkt/english.pickle')
-                logger.info("NLTK Punkt tokenizer reloaded successfully from local dir.")
-            except Exception as download_exc:
-                logger.error(f"Failed to download NLTK 'punkt' resource to {LOCAL_NLTK_DATA_DIR}: {download_exc}")
-                PUNKT_TOKENIZER = None 
-                raise LookupError(f"Failed to load NLTK Punkt tokenizer after download attempt to {LOCAL_NLTK_DATA_DIR}.")
-    return PUNKT_TOKENIZER 
+def simple_sentence_tokenize(text):
+    """A simple sentence tokenizer that doesn't rely on NLTK."""
+    # Split on common sentence endings
+    sentences = []
+    current = []
+    
+    # Common sentence endings
+    endings = ['.', '!', '?', '...']
+    
+    # Split text into lines first
+    lines = text.split('\n')
+    
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+            
+        # Split on sentence endings
+        parts = []
+        current_part = []
+        
+        for char in line:
+            current_part.append(char)
+            if char in endings:
+                parts.append(''.join(current_part))
+                current_part = []
+                
+        if current_part:
+            parts.append(''.join(current_part))
+            
+        # Clean up and add non-empty sentences
+        for part in parts:
+            part = part.strip()
+            if part:
+                sentences.append(part)
+                
+    return sentences
 
 def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_type='other'):
     """Find quotes in the text that match the target sum using multiple strategies."""
@@ -175,27 +186,9 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
         primary_value_dict = VALUE_DICTS.get(calculation_type, VALUE_DICTS['eq'])
         logger.info(f"Using primary calculation type: {calculation_type}")
 
-        # --- Simple NLTK setup and tokenization ---
-        sentences = []
-        try:
-            # Only download if not already done
-            try:
-                nltk.data.find('tokenizers/punkt')
-                logger.info("NLTK 'punkt' found in data path.")
-            except LookupError:
-                logger.info("NLTK 'punkt' not found. Downloading to default location...")
-                nltk.download('punkt', quiet=True)
-
-            # Simple usage of sent_tokenize with no fancy loading
-            sentences = nltk.tokenize.sent_tokenize(text)
-            logger.info(f"Tokenized into {len(sentences)} sentences using nltk.tokenize.sent_tokenize.")
-        except Exception as e:
-            logger.error(f"Error during sentence tokenization: {e}")
-            # Fall back to simple split by periods if NLTK fails
-            logger.warning("Falling back to simple sentence splitting by periods.")
-            # Simple backup tokenization - split by periods and basic cleanup
-            sentences = [s.strip() for s in text.split('.') if s.strip()]
-            logger.info(f"Tokenized into {len(sentences)} sentences using fallback method.")
+        # Use simple sentence tokenization
+        sentences = simple_sentence_tokenize(text)
+        logger.info(f"Tokenized into {len(sentences)} sentences using simple tokenizer.")
         
         # Run search strategies
         all_matches = []
@@ -250,116 +243,53 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
                         sentence_words_lower,
                         sentence_word_sums,
                         target_sum,
-                        primary_value_dict, 
-                        url,
-                        original_word_index,
-                        original_sentence_words
+                        original_sentence_words,
+                        original_word_index
                     )
                     
-                    strategy_count = len(strategy_matches)
-                    logger.info(f"'{strategy_name}' strategy found {strategy_count} matches with target sum {target_sum}")
-                    
-                    # Update analytics
-                    if strategy_count > 0:
+                    if strategy_matches:
                         sentence_has_matches = True
-                        strategy_stats[strategy_name]["total_matches"] += strategy_count
+                        all_matches.extend(strategy_matches)
                         
+                        # Update strategy stats
+                        stats = strategy_stats[strategy_name]
+                        stats["total_matches"] += len(strategy_matches)
+                        stats["complete_matches"] += sum(1 for m in strategy_matches if m["is_complete"])
+                        stats["incomplete_matches"] += sum(1 for m in strategy_matches if not m["is_complete"])
+                        
+                        # Update word count distribution
                         for match in strategy_matches:
-                            word_count = len(match.get("word_sums", []))
-                            if word_count in strategy_stats[strategy_name]["word_count_distribution"]:
-                                strategy_stats[strategy_name]["word_count_distribution"][word_count] += 1
-                            else:
-                                strategy_stats[strategy_name]["word_count_distribution"][word_count] = 1
-                                
-                            if match.get("is_complete_sentence", False):
-                                strategy_stats[strategy_name]["complete_matches"] += 1
-                            else:
-                                strategy_stats[strategy_name]["incomplete_matches"] += 1
-                                
-                            strategy_stats[strategy_name]["longest_match"] = max(strategy_stats[strategy_name]["longest_match"], word_count)
-                            strategy_stats[strategy_name]["shortest_match"] = min(strategy_stats[strategy_name]["shortest_match"], word_count)
-                    
-                    all_matches.extend(strategy_matches)
-                else:
-                    logger.warning(f"Strategy '{strategy_name}' not found in STRATEGY_FUNCTIONS")
+                            word_count = len(match["words"])
+                            stats["word_count_distribution"][word_count] = stats["word_count_distribution"].get(word_count, 0) + 1
+                            stats["longest_match"] = max(stats["longest_match"], word_count)
+                            stats["shortest_match"] = min(stats["shortest_match"], word_count)
             
             if sentence_has_matches:
                 sentences_with_matches += 1
-                for strategy_name in ALL_STRATEGIES:
-                    if strategy_name in STRATEGY_FUNCTIONS and any(match.get("strategy", "") == strategy_name for match in all_matches):
-                        strategy_stats[strategy_name]["sentences_with_matches"] += 1
+                for stats in strategy_stats.values():
+                    stats["sentences_with_matches"] += 1
+            
+            original_word_index += len(original_sentence_words)
 
-            # Update the starting index for the next sentence
-            original_word_index += len(sentence_words_lower)
+        # Calculate average match lengths
+        for stats in strategy_stats.values():
+            if stats["total_matches"] > 0:
+                total_length = sum(length * count for length, count in stats["word_count_distribution"].items())
+                stats["avg_match_length"] = total_length / stats["total_matches"]
 
-        logger.info(f"Found {len(all_matches)} raw matches across all strategies for target sum {target_sum}.")
-
-        # Process and deduplicate results
-        complete_quotes = []
-        incomplete_quotes = []
-        seen_quotes_text = set()
-
-        for match in all_matches:
-            quote_text = match["text"]  # Use the original case version
-            if quote_text not in seen_quotes_text:
-                seen_quotes_text.add(quote_text)
-                
-                # Calculate all sums for this match (using the lowercase text)
-                if "text_lower" in match:
-                    match['all_sums'] = calculate_all_sums(match["text_lower"])
-                else:
-                    match['all_sums'] = calculate_all_sums(quote_text.lower())
-                
-                # Add the search strategy to the output
-                strategy_name = match.get('strategy', 'unknown')
-                    
-                # Classify based on completeness
-                if match.get('is_complete_sentence', False):
-                    # Log complete sentence finds (these are more interesting)
-                    logger.info(f"Found complete sentence match using '{strategy_name}' strategy: '{quote_text}'")
-                    complete_quotes.append(match)
-                else:
-                    incomplete_quotes.append(match)
-        
-        # Calculate average match length for each strategy
-        for strategy_name in ALL_STRATEGIES:
-            total_matches = strategy_stats[strategy_name]["total_matches"]
-            if total_matches > 0:
-                total_words = sum(count * word_count for word_count, count in strategy_stats[strategy_name]["word_count_distribution"].items())
-                strategy_stats[strategy_name]["avg_match_length"] = round(total_words / total_matches, 2)
-            # Handle case where no matches were found
-            if strategy_stats[strategy_name]["shortest_match"] == float('inf'):
-                strategy_stats[strategy_name]["shortest_match"] = 0
-                
-        # Calculate overall statistics
-        overall_stats = {
-            "total_sentences": sentences_analyzed,
-            "sentences_with_matches": sentences_with_matches,
-            "match_rate": round(sentences_with_matches / sentences_analyzed * 100, 2) if sentences_analyzed > 0 else 0,
-            "total_raw_matches": len(all_matches),
-            "unique_complete_quotes": len(complete_quotes),
-            "unique_incomplete_quotes": len(incomplete_quotes),
-            "total_unique_quotes": len(complete_quotes) + len(incomplete_quotes)
-        }
-        
-        logger.info(f"Found {len(complete_quotes)} unique complete quotes and {len(incomplete_quotes)} unique incomplete quotes after deduplication.")
-        
-        return {
-            "success": True,
-            "complete_quotes": complete_quotes,
-            "incomplete_quotes": incomplete_quotes,
-            "text_length": original_word_index,
-            "calculation_type": calculation_type,
-            "source_type": source_type,
-            "advanced_analytics": {
-                "overall": overall_stats,
-                "strategies": strategy_stats
+        # Prepare the response
+        response = {
+            "matches": all_matches,
+            "stats": {
+                "total_sentences": sentences_analyzed,
+                "sentences_with_matches": sentences_with_matches,
+                "total_matches": len(all_matches),
+                "strategy_stats": strategy_stats
             }
         }
-        
+
+        return response
+
     except Exception as e:
-        logger.exception(f"Error in find_matching_quotes: {str(e)}") # Log full traceback
-        return {
-            "success": False,
-            "error": f"An internal error occurred during search: {str(e)}"
-        } 
+        logger.error(f"Error in find_matching_quotes: {str(e)}")
+        raise Exception(f"Error finding matching quotes: {str(e)}") 
