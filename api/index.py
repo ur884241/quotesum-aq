@@ -11,9 +11,10 @@ import json
 import traceback
 import urllib.parse
 
-# Import search strategy functions
-from .core import fetch_text
-from .search import find_matching_quotes
+# Import search strategy functions using absolute imports
+from api.search_strategies import STRATEGY_FUNCTIONS, ALL_STRATEGIES
+from api.core import fetch_text
+from api.search import find_matching_quotes
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)

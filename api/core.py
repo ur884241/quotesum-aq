@@ -1,17 +1,16 @@
 import re
 import requests
 import logging
-import math
 import os
-from typing import List, Dict, Any
 import nltk
-from nltk.tokenize.punkt import PunktSentenceTokenizer
+from typing import Dict, List, Any
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # --- NLTK Data Setup --- 
+# Define a local directory for NLTK data within the project
 LOCAL_NLTK_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'nltk_data')
 
 # Ensure the local directory exists
@@ -32,7 +31,7 @@ def fetch_text_from_url(url):
     try:
         logger.info(f"Making HTTP request to URL: {url}")
         response = requests.get(url, timeout=10)
-        response.raise_for_status()
+        response.raise_for_status()  # Raise an exception for HTTP errors
         logger.info(f"Successfully retrieved content from URL: {url}")
         return response.text
     except requests.RequestException as e:
@@ -44,8 +43,12 @@ def fetch_text_from_url(url):
         raise Exception(f"Error fetching URL: {error_msg}")
 
 def fetch_text(url):
-    """Fetch text content from a URL, handling basic error cases."""
+    """
+    Fetch text content from a URL, handling basic error cases.
+    This function is used by app.py to retrieve text from a URL.
+    """
     try:
+        # Add basic http:// if not present
         if not url.startswith(('http://', 'https://')):
             logger.info(f"Adding http:// prefix to URL: {url}")
             url = 'http://' + url
@@ -63,6 +66,7 @@ def fetch_text(url):
 
 def create_eq_dict():
     """Create a dictionary mapping letters and numbers to their English Qaballa values."""
+    # English Qaballa alphanumerical values
     eq_values = {
         # Numbers
         '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
@@ -144,17 +148,20 @@ def load_punkt_tokenizer():
     if PUNKT_TOKENIZER is None:
         try:
             logger.info(f"Loading NLTK Punkt tokenizer (expecting data in {LOCAL_NLTK_DATA_DIR})...")
-            PUNKT_TOKENIZER = nltk.data.load('tokenizers/punkt/english.pickle')
+            # Load using the resource identifier; NLTK will check nltk.data.path
+            PUNKT_TOKENIZER = nltk.data.load('tokenizers/punkt/english.pickle') 
             logger.info("NLTK Punkt tokenizer loaded successfully.")
         except LookupError:
             logger.warning(f"NLTK 'punkt' resource not found in {nltk.data.path}. Downloading to {LOCAL_NLTK_DATA_DIR}...")
             try:
+                # Download specifically to the local directory
                 nltk.download('punkt', download_dir=LOCAL_NLTK_DATA_DIR, quiet=True, raise_on_error=True)
                 logger.info(f"NLTK 'punkt' downloaded to {LOCAL_NLTK_DATA_DIR}. Reloading tokenizer...")
+                # Try loading again after download, using the identifier
                 PUNKT_TOKENIZER = nltk.data.load('tokenizers/punkt/english.pickle')
                 logger.info("NLTK Punkt tokenizer reloaded successfully from local dir.")
             except Exception as download_exc:
                 logger.error(f"Failed to download NLTK 'punkt' resource to {LOCAL_NLTK_DATA_DIR}: {download_exc}")
-                PUNKT_TOKENIZER = None
+                PUNKT_TOKENIZER = None 
                 raise LookupError(f"Failed to load NLTK Punkt tokenizer after download attempt to {LOCAL_NLTK_DATA_DIR}.")
     return PUNKT_TOKENIZER 

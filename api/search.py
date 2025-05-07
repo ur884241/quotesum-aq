@@ -6,11 +6,11 @@ import logging
 import urllib.parse
 import nltk
 from typing import List, Dict, Any
-from .core import (
+from api.core import (
     fetch_text, calculate_all_sums, VALUE_DICTS,
     WORD_PATTERN, load_punkt_tokenizer
 )
-from .search_strategies import STRATEGY_FUNCTIONS, ALL_STRATEGIES
+from api.search_strategies import STRATEGY_FUNCTIONS, ALL_STRATEGIES
 
 # Add parent directory to path
 current_dir = os.path.dirname(os.path.abspath(__file__))
