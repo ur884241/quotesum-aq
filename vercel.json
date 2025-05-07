@@ -1,12 +1,9 @@
 {
   "version": 2,
   "builds": [
-    { 
-      "src": "api/*.py", 
-      "use": "@vercel/python",
-      "config": {
-        "runtime": "python3.11"
-      }
+    {
+      "src": "api/search.py",
+      "use": "@vercel/python"
     },
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "*.css", "use": "@vercel/static" },
@@ -15,19 +12,17 @@
   ],
   "routes": [
     {
+      "src": "/api/search",
+      "dest": "api/search.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "api/search.py"
+    },
+    {
       "src": "/api/minimal-search",
       "methods": ["GET", "POST", "OPTIONS"],
       "dest": "/api/minimal-search.py",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
-      }
-    },
-    {
-      "src": "/api/search",
-      "methods": ["GET", "POST", "OPTIONS"],
-      "dest": "/api/search.py",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",

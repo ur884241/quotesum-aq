@@ -17,7 +17,6 @@ from api.core import (
     fetch_text, calculate_all_sums, VALUE_DICTS,
     WORD_PATTERN, load_punkt_tokenizer, find_matching_quotes
 )
-from api.search import handler, VercelHandler
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -48,11 +47,37 @@ except LookupError:
     logger.info("NLTK 'punkt' not found in local dir at startup. Will attempt download on first use.")
 # --- End NLTK Data Setup ---
 
-def lambda_handler(event, context):
-    return handler(event, context)
+def handler(event, context):
+    """AWS Lambda handler function."""
+    try:
+        # Parse the request body
+        body = json.loads(event.get('body', '{}'))
+        url = body.get('url', '')
+        target_sum = body.get('target_sum', 0)
+        calculation_type = body.get('calculation_type', 'eq')
+        source_type = body.get('source_type', 'other')
 
-def vercel_handler(request):
-    return VercelHandler(request)
+        # Validate inputs
+        if not url:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({'error': 'URL is required'})
+            }
+
+        # Fetch and process the text
+        text = fetch_text(url)
+        results = find_matching_quotes(text, target_sum, url, calculation_type, source_type)
+
+        return {
+            'statusCode': 200,
+            'body': json.dumps(results)
+        }
+    except Exception as e:
+        logger.error(f"Error in handler: {str(e)}")
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'error': str(e)})
+        }
 
 class VercelHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -95,4 +120,4 @@ class VercelHandler(BaseHTTPRequestHandler):
             self.send_response(500)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({'error': str(e)}).encode())
+            self.wfile.write(json.dumps({'error': str(e)}).encode()) 
