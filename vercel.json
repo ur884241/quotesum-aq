@@ -14,7 +14,7 @@
     {
       "src": "/api/search",
       "methods": ["GET", "POST", "OPTIONS"],
-      "dest": "api/search.py",
+      "dest": "/api/search.py",
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -22,13 +22,20 @@
       }
     },
     {
-      "src": "/(.*)",
-      "dest": "api/search.py"
+      "src": "^/static/(.*)",
+      "dest": "/static/$1"
     },
-    { "src": "^/static/(.*)", "dest": "/static/$1" },
-    { "src": "^/favicon.ico", "dest": "/favicon.ico" },
-    { "src": "^/(.*)\\.(html|css|js|txt)$", "dest": "/$1.$2" },
-    { "src": "^/(.*)", "dest": "/index.html" },
-    { "src": "/aboutContent.txt", "dest": "/aboutContent.txt" }
+    {
+      "src": "^/favicon.ico",
+      "dest": "/favicon.ico"
+    },
+    {
+      "src": "^/(.*)\\.(html|css|js|txt)$",
+      "dest": "/$1.$2"
+    },
+    {
+      "src": "^/(.*)",
+      "dest": "/index.html"
+    }
   ]
 } 
