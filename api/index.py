@@ -2,10 +2,10 @@ import re
 import requests
 import logging
 import math
-import os # Import os module
+import os
 from typing import List, Dict, Any
 import nltk
-from nltk.tokenize.punkt import PunktSentenceTokenizer # Import specific tokenizer
+from nltk.tokenize.punkt import PunktSentenceTokenizer
 from http.server import BaseHTTPRequestHandler
 import json
 import traceback
@@ -13,8 +13,10 @@ import urllib.parse
 
 # Import search strategy functions using absolute imports
 from api.search_strategies import STRATEGY_FUNCTIONS, ALL_STRATEGIES
-from api.core import fetch_text
-from api.search import find_matching_quotes
+from api.core import (
+    fetch_text, calculate_all_sums, VALUE_DICTS,
+    WORD_PATTERN, load_punkt_tokenizer, find_matching_quotes
+)
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
