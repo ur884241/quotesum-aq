@@ -385,148 +385,45 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
             "error": f"An internal error occurred during search: {str(e)}"
         }
 
-# Vercel serverless function handler
 def handler(event, context):
-    """Serverless function handler for Vercel"""
+    """Serverless function handler for Vercel."""
     try:
-        logger.info("Received serverless request")
-        logger.info(f"Event data: {event}")
+        # Parse the request body
+        body = json.loads(event.get('body', '{}'))
+        target_sum = body.get('targetSum')
+        url = body.get('url')
+        calculation_type = body.get('calculationType', 'eq')
         
-        # Extract path info
-        path = event.get('path', '')
-        method = event.get('httpMethod', '')
+        logger.info(f"Processing request: target_sum={target_sum}, url={url}, calculation_type={calculation_type}")
         
-        if path == "/api/search" and method == "POST":
-            logger.info("Processing /api/search request")
-            
-            # Get request body and content type
-            headers = event.get('headers', {})
-            content_type = headers.get('content-type', '')
-            body = event.get('body', '')
-            
-            # Parse form data
-            params = {}
-            
-            if content_type == 'application/x-www-form-urlencoded':
-                # Parse URL encoded form data
-                params = urllib.parse.parse_qs(body)
-                # Extract single values from lists
-                params = {k: v[0] if isinstance(v, list) and len(v) == 1 else v for k, v in params.items()}
-            elif 'multipart/form-data' in content_type:
-                # For now, just return an error for file uploads
-                return {
-                    'statusCode': 400,
-                    'body': json.dumps({"error": "File uploads are not supported in the server version. Please use a URL instead."}),
-                    'headers': {
-                        'Content-Type': 'application/json'
-                    }
-                }
-            else:
-                # Try to parse as JSON
-                try:
-                    params = json.loads(body)
-                except json.JSONDecodeError:
-                    return {
-                        'statusCode': 400,
-                        'body': json.dumps({"error": "Unsupported content type or invalid request format"}),
-                        'headers': {
-                            'Content-Type': 'application/json'
-                        }
-                    }
-            
-            # Extract parameters
-            target_sum = params.get('targetSum')
-            url = params.get('url')
-            calculation_type = params.get('calculationType', 'eq')
-            
-            logger.info(f"Extracted params: target_sum={target_sum}, url={url}, calculation_type={calculation_type}")
-            
-            if not target_sum:
-                return {
-                    'statusCode': 400,
-                    'body': json.dumps({"error": "Target sum is required"}),
-                    'headers': {
-                        'Content-Type': 'application/json'
-                    }
-                }
-            
-            if not url:
-                return {
-                    'statusCode': 400,
-                    'body': json.dumps({"error": "URL is required"}),
-                    'headers': {
-                        'Content-Type': 'application/json'
-                    }
-                }
-            
-            try:
-                # Fetch text from URL
-                logger.info(f"Fetching text from URL: {url}")
-                text = fetch_text(url)
-                
-                if not text:
-                    return {
-                        'statusCode': 400,
-                        'body': json.dumps({"error": "Failed to read text content"}),
-                        'headers': {
-                            'Content-Type': 'application/json'
-                        }
-                    }
-                
-                # Find matching quotes
-                logger.info(f"Starting search with text length: {len(text)}")
-                results = find_matching_quotes(text, int(target_sum), url, calculation_type=calculation_type)
-                
-                # Success response
-                return {
-                    'statusCode': 200,
-                    'body': json.dumps(results),
-                    'headers': {
-                        'Content-Type': 'application/json'
-                    }
-                }
-                
-            except Exception as e:
-                # Log the error
-                logger.error(f"Error processing request: {str(e)}")
-                logger.error(f"Traceback: {traceback.format_exc()}")
-                
-                # Return error response
-                return {
-                    'statusCode': 500,
-                    'body': json.dumps({
-                        "error": f"Error processing request: {str(e)}",
-                        "traceback": traceback.format_exc()
-                    }),
-                    'headers': {
-                        'Content-Type': 'application/json'
-                    }
-                }
-        
-        # Return 404 for other paths
-        return {
-            'statusCode': 404,
-            'body': json.dumps({"error": "Not Found"}),
-            'headers': {
-                'Content-Type': 'application/json'
+        if not target_sum or not url:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({"error": "Target sum and URL are required"})
             }
+            
+        # Process the request
+        text = fetch_text(url)
+        if not text:
+            return {
+                'statusCode': 400,
+                'body': json.dumps({"error": "Failed to fetch text from URL"})
+            }
+            
+        # Find matching quotes
+        results = find_matching_quotes(text, int(target_sum), url, calculation_type=calculation_type)
+        
+        return {
+            'statusCode': 200,
+            'body': json.dumps(results)
         }
         
     except Exception as e:
-        # Log the error
-        logger.error(f"Unhandled error in handler: {str(e)}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        
-        # Return error response
+        logger.error(f"Error processing request: {str(e)}")
+        logger.error(traceback.format_exc())
         return {
             'statusCode': 500,
-            'body': json.dumps({
-                "error": f"Server error: {str(e)}",
-                "traceback": traceback.format_exc()
-            }),
-            'headers': {
-                'Content-Type': 'application/json'
-            }
+            'body': json.dumps({"error": str(e)})
         }
 
 class VercelHandler(BaseHTTPRequestHandler):
@@ -535,27 +432,31 @@ class VercelHandler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
-        self.wfile.write(json.dumps({"status": "API is running"}).encode())
-
-    def do_POST(self):
-        content_length = int(self.headers.get('Content-Length', 0))
-        post_data = self.rfile.read(content_length).decode('utf-8')
-        content_type = self.headers.get('Content-Type', '')
+        self.wfile.write(json.dumps({"status": "API is ready"}).encode())
         
-        # Parse form data
-        form_data = {}
-        if 'application/x-www-form-urlencoded' in content_type:
-            form_data = urllib.parse.parse_qs(post_data)
-            # Extract single values from lists
-            form_data = {k: v[0] if isinstance(v, list) and len(v) == 1 else v for k, v in form_data.items()}
-        elif 'application/json' in content_type:
-            form_data = json.loads(post_data)
-            
-        # Process request
+    def do_POST(self):
         try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length).decode('utf-8')
+            content_type = self.headers.get('Content-Type', '')
+            
+            logger.info(f"Received POST request with content type: {content_type}")
+            
+            # Parse form data
+            form_data = {}
+            if 'application/x-www-form-urlencoded' in content_type:
+                form_data = urllib.parse.parse_qs(post_data)
+                # Extract single values from lists
+                form_data = {k: v[0] if isinstance(v, list) and len(v) == 1 else v for k, v in form_data.items()}
+            elif 'application/json' in content_type:
+                form_data = json.loads(post_data)
+                
+            # Extract parameters
             target_sum = form_data.get('targetSum')
             url = form_data.get('url')
             calculation_type = form_data.get('calculationType', 'eq')
+            
+            logger.info(f"Processing request: target_sum={target_sum}, url={url}, calculation_type={calculation_type}")
             
             if not target_sum or not url:
                 self.send_response(400)
@@ -565,11 +466,20 @@ class VercelHandler(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps({"error": "Target sum and URL are required"}).encode())
                 return
                 
-            # Fetch text and find matches
+            # Process the request
             text = fetch_text(url)
+            if not text:
+                self.send_response(400)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": "Failed to fetch text from URL"}).encode())
+                return
+                
+            # Find matching quotes
             results = find_matching_quotes(text, int(target_sum), url, calculation_type=calculation_type)
             
-            # Send success response
+            # Send response
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
@@ -577,7 +487,8 @@ class VercelHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(results).encode())
             
         except Exception as e:
-            # Send error response
+            logger.error(f"Error processing request: {str(e)}")
+            logger.error(traceback.format_exc())
             self.send_response(500)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
