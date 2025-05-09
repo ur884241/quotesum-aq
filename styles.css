@@ -97,21 +97,44 @@ button:hover {
 }
 
 .quote {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    padding: 12px;
     border-radius: 4px;
-    font-family: 'Fira Code', monospace;
-    border-left: 4px solid transparent;
-    background-color: var(--bg-color);
+    background-color: rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s;
+    position: relative;
 }
 
-.quote.complete {
-    border-left-color: #4CAF50;
+.quote-header {
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: flex-end;
 }
 
-.quote.incomplete {
-    border-left-color: #FFC107;
+.quote-strategy {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    cursor: help;
+    transition: background-color 0.2s;
+}
+
+.quote-strategy:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.quote.complete .quote-strategy {
+    border-left: 3px solid #4caf50;
+}
+
+.quote.incomplete .quote-strategy {
+    border-left: 3px solid #ff9800;
+}
+
+.quote:hover {
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 .quote-info {

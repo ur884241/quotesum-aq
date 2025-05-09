@@ -381,6 +381,11 @@ window.displayResults = function(data) {
             console.log(`Rendering ${data.complete_quotes.length} complete quotes`);
             const completeHTML = data.complete_quotes.map(quote => `
                 <div class="quote complete">
+                    <div class="quote-header">
+                        <span class="quote-strategy" title="${getStrategyDescription(quote.strategy)}">
+                            ${formatStrategyName(quote.strategy)}
+                        </span>
+                    </div>
                     <p class="quote-text">${quote.text}</p>
                     <p class="quote-sum">Sum: ${quote.sum}</p>
                     <p class="quote-breakdown">Word breakdown: ${quote.word_sums ? quote.word_sums.join(' + ') : 'N/A'}</p>
@@ -401,9 +406,15 @@ window.displayResults = function(data) {
                 const text = quote && quote.text ? quote.text : 'Invalid quote data';
                 const sum = quote && quote.sum !== undefined ? quote.sum : 'N/A';
                 const word_sums = quote && Array.isArray(quote.word_sums) ? quote.word_sums.join(' + ') : 'N/A';
+                const strategy = quote && quote.strategy ? quote.strategy : 'unknown';
                 
                 return `
                     <div class="quote incomplete">
+                        <div class="quote-header">
+                            <span class="quote-strategy" title="${getStrategyDescription(strategy)}">
+                                ${formatStrategyName(strategy)}
+                            </span>
+                        </div>
                         <p class="quote-text">${text}</p>
                         <p class="quote-sum">Sum: ${sum}</p>
                         <p class="quote-breakdown">Word breakdown: ${word_sums}</p>
@@ -662,4 +673,24 @@ function createWordCountDistribution(data, title, container) {
 
 function createQuoteCard(quote) {
     // ... existing code ...
+}
+
+// Add helper functions for strategy formatting and descriptions
+function formatStrategyName(strategy) {
+    if (!strategy) return 'Unknown Strategy';
+    return strategy
+        .split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+function getStrategyDescription(strategy) {
+    const descriptions = {
+        'prefix': 'Found by checking if the sum of words from the start of the sentence matches the target sum',
+        'suffix': 'Found by checking if the sum of words from the end of the sentence matches the target sum',
+        'sliding_window': 'Found by checking all possible consecutive word sequences within the sentence',
+        'subsequence': 'Found by checking all possible word combinations that can form the target sum',
+        'unknown': 'Strategy information not available'
+    };
+    return descriptions[strategy] || descriptions['unknown'];
 }
