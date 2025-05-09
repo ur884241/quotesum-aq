@@ -867,7 +867,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     margin: 0 auto;
     padding: 3rem;
     background: transparent;
-    font-family: 'Lora', 'Georgia', serif;
+    font-family: 'Merriweather', 'Georgia', serif;
     line-height: 1.9;
     color: #c0c8d0;
     letter-spacing: 0.3px;
@@ -898,7 +898,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     font-size: 2.6rem;
     margin: 0;
     font-weight: 400;
-    font-family: 'Lora', 'Georgia', serif;
+    font-family: 'Playfair Display', 'Times New Roman', serif;
     letter-spacing: 0.5px;
     color: #d4d4d4;
     line-height: 1.4;
@@ -908,7 +908,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     font-size: 1.3rem;
     margin: 2rem 0 0;
     opacity: 0.85;
-    font-family: 'Lora', 'Georgia', serif;
+    font-family: 'Playfair Display', 'Times New Roman', serif;
     color: #9a9d9e;
     font-weight: 300;
     line-height: 1.6;
@@ -917,11 +917,11 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 /* Section headings with refined spacing */
 .about-section h2 {
     color: #d4d4d4;
-    font-size: 1.8rem;
+    font-size: 1.9rem;
     margin: 4rem 0 2.5rem;
     padding-bottom: 0.6rem;
     border-bottom: 1px solid rgba(125, 127, 131, 0.15);
-    font-family: 'Lora', 'Georgia', serif;
+    font-family: 'Playfair Display', 'Times New Roman', serif;
     letter-spacing: 0.3px;
     font-weight: 400;
     text-align: left;
@@ -930,9 +930,9 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 
 .about-section h3 {
     color: #9a9d9e;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     margin: 3rem 0 2rem;
-    font-family: 'Lora', 'Georgia', serif;
+    font-family: 'Playfair Display', 'Times New Roman', serif;
     letter-spacing: 0.2px;
     font-weight: 400;
     text-align: left;
@@ -953,7 +953,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     border-radius: 5px;
     padding: 2.5rem;
     margin: 2.5rem 0;
-    font-family: 'Fira Code', 'Consolas', monospace;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
     font-size: 0.95rem;
     line-height: 1.7;
     overflow-x: auto;
@@ -969,17 +969,23 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 }
 
 /* Syntax highlighting colors - VS Code dark theme */
-.keyword { color: #569cd6; }
-.string { color: #ce9178; }
-.comment { color: #6a9955; }
-.function { color: #dcdcaa; }
-.number { color: #b5cea8; }
-.operator { color: #d4d4d4; }
-.variable { color: #9cdcfe; }
-.property { color: #9cdcfe; }
-.punctuation { color: #d4d4d4; }
-.regex { color: #d16969; }
-.builtin { color: #4ec9b0; }
+.code-example .keyword { color: #569cd6; }
+.code-example .string { color: #ce9178; }
+.code-example .comment { color: #6a9955; }
+.code-example .function { color: #dcdcaa; }
+.code-example .number { color: #b5cea8; }
+.code-example .operator { color: #d4d4d4; }
+.code-example .variable { color: #9cdcfe; }
+.code-example .property { color: #9cdcfe; }
+.code-example .punctuation { color: #d4d4d4; }
+.code-example .regex { color: #d16969; }
+.code-example .builtin { color: #4ec9b0; }
+
+/* Pre-formatted code block styles */
+pre {
+    margin: 0;
+    padding: 0;
+}
 
 /* Strategy and Method cards - refined zen style */
 .strategy-card, .method-card {
@@ -992,7 +998,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     color: #9a9d9e;
     margin-top: 0;
     margin-bottom: 1.5rem;
-    font-family: 'Lora', 'Georgia', serif;
+    font-family: 'Playfair Display', 'Times New Roman', serif;
     text-align: left;
 }
 
@@ -1008,7 +1014,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 .example h4 {
     color: #9a9d9e;
     margin: 0 0 1.5rem 0;
-    font-family: 'Lora', 'Georgia', serif;
+    font-family: 'Playfair Display', 'Times New Roman', serif;
     text-align: left;
     font-size: 1.1rem;
 }
@@ -1055,7 +1061,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     transition: all 0.4s ease;
     display: block;
     padding: 0.7rem 0;
-    font-family: 'Lora', 'Georgia', serif;
+    font-family: 'Merriweather', 'Georgia', serif;
 }
 
 .about-section:first-child a:hover {

@@ -479,6 +479,23 @@ document.addEventListener('DOMContentLoaded', function() {
         const originalCode = codeBlock.textContent;
         codeBlock.innerHTML = highlightSyntax(originalCode);
     });
+
+    // Add direct inline styles for syntax highlighting
+    const style = document.createElement('style');
+    style.textContent = `
+        .code-example .keyword { color: #569cd6 !important; }
+        .code-example .string { color: #ce9178 !important; }
+        .code-example .comment { color: #6a9955 !important; }
+        .code-example .function { color: #dcdcaa !important; }
+        .code-example .number { color: #b5cea8 !important; }
+        .code-example .operator { color: #d4d4d4 !important; }
+        .code-example .variable { color: #9cdcfe !important; }
+        .code-example .property { color: #9cdcfe !important; }
+        .code-example .punctuation { color: #d4d4d4 !important; }
+        .code-example .regex { color: #d16969 !important; }
+        .code-example .builtin { color: #4ec9b0 !important; }
+    `;
+    document.head.appendChild(style);
 });
 
 function highlightSyntax(code) {
@@ -488,7 +505,7 @@ function highlightSyntax(code) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-    // Apply syntax highlighting with global classes
+    // Apply syntax highlighting with scoped classes
     return escapedCode
         .replace(/\b(function|return|let|const|for|of|in|if|else|async|await)\b/g, '<span class="keyword">$1</span>')
         .replace(/'([^']*)'|"([^"]*)"/g, '<span class="string">$&</span>')
