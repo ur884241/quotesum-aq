@@ -867,13 +867,14 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     margin: 0 auto;
     padding: 2rem;
     background: transparent;
-    font-family: 'Source Code Pro', 'Consolas', monospace;
-    line-height: 1.6;
+    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+    line-height: 1.8;
     color: #c0c8d0;
+    letter-spacing: 0.2px;
 }
 
 .about-section {
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
     padding-bottom: 2rem;
 }
 
@@ -882,65 +883,71 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     padding-bottom: 0;
 }
 
-/* Title section - more minimal */
+/* Title section - zen style */
 .title-container {
     background: transparent;
     color: #9a9d9e;
-    padding: 3rem 0;
-    margin-bottom: 2rem;
+    padding: 4rem 0;
+    margin-bottom: 3rem;
     text-align: center;
-    border-bottom: 1px solid rgba(125, 127, 131, 0.3);
+    border-bottom: 1px solid rgba(125, 127, 131, 0.2);
 }
 
 .title-container h1 {
     font-size: 2.5rem;
     margin: 0;
-    font-weight: 500;
-    font-family: 'Source Code Pro', 'Consolas', monospace;
+    font-weight: 400;
+    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
     letter-spacing: 0.5px;
     color: #d4d4d4;
 }
 
 .title-container .subtitle {
     font-size: 1.2rem;
-    margin: 1rem 0 0;
+    margin: 1.5rem 0 0;
     opacity: 0.9;
-    font-family: 'Source Code Pro', 'Consolas', monospace;
+    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
     color: #9a9d9e;
+    font-weight: 300;
 }
 
-/* Section headings with consistent alignment */
+/* Section headings with zen spacing */
 .about-section h2 {
     color: #d4d4d4;
     font-size: 1.8rem;
-    margin: 2rem 0 1.5rem;
+    margin: 3rem 0 2rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(125, 127, 131, 0.3);
-    font-family: 'Source Code Pro', 'Consolas', monospace;
+    border-bottom: 1px solid rgba(125, 127, 131, 0.2);
+    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
     letter-spacing: 0.3px;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .about-section h3 {
     color: #9a9d9e;
     font-size: 1.4rem;
-    margin: 1.5rem 0 1rem;
-    font-family: 'Source Code Pro', 'Consolas', monospace;
+    margin: 2.5rem 0 1.5rem;
+    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
     letter-spacing: 0.2px;
-    font-weight: 500;
-    padding-left: 1rem;
-    border-left: 2px solid rgba(125, 127, 131, 0.3);
+    font-weight: 400;
+}
+
+.about-section p {
+    margin-bottom: 1.8rem;
+    text-align: justify;
+    color: #c0c8d0;
+    line-height: 1.8;
 }
 
 /* Code blocks with syntax highlighting */
 .code-example {
     background: rgba(16, 18, 20, 0.95);
     border-radius: 4px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    font-family: 'Source Code Pro', 'Consolas', monospace;
+    padding: 2rem;
+    margin: 2rem 0;
+    font-family: 'IBM Plex Mono', 'Consolas', monospace;
     font-size: 0.9rem;
-    line-height: 1.5;
+    line-height: 1.6;
     overflow-x: auto;
     color: #d4d4d4;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -966,51 +973,49 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 .code-example code .regex { color: #d16969 !important; }
 .code-example code .builtin { color: #4ec9b0 !important; }
 
-/* Strategy and Method cards - more minimal */
+/* Strategy and Method cards - zen style */
 .strategy-card, .method-card {
     background: transparent;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    border-left: 2px solid rgba(125, 127, 131, 0.3);
+    padding: 2rem;
+    margin: 2rem 0;
 }
 
 .strategy-card h3, .method-card h3 {
     color: #9a9d9e;
     margin-top: 0;
-    font-family: 'Source Code Pro', 'Consolas', monospace;
+    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
 }
 
-/* Examples - more minimal */
+/* Examples - zen style */
 .example {
     background: transparent;
-    border-left: 2px solid rgba(125, 127, 131, 0.3);
-    padding: 1rem 1.5rem;
-    margin: 1rem 0;
+    padding: 1.5rem 2rem;
+    margin: 1.5rem 0;
 }
 
 .example h4 {
     color: #9a9d9e;
-    margin: 0 0 0.5rem 0;
-    font-family: 'Source Code Pro', 'Consolas', monospace;
+    margin: 0 0 1rem 0;
+    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
 }
 
-/* Lists with consistent alignment */
+/* Lists with zen spacing */
 .about-section ul, .about-section ol {
-    margin: 1rem 0;
+    margin: 1.5rem 0;
     padding-left: 2rem;
     color: #c0c8d0;
 }
 
 .about-section li {
-    margin-bottom: 0.5rem;
-    padding-left: 0.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
 }
 
-/* Table of Contents - more minimal */
+/* Table of Contents - zen style */
 .about-section:first-child {
     background: transparent;
     padding: 2rem;
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
 }
 
 .about-section:first-child ol {
@@ -1020,26 +1025,24 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 }
 
 .about-section:first-child li {
-    margin: 0.5rem 0;
+    margin: 1rem 0;
 }
 
 .about-section:first-child a {
     color: #d4d4d4;
     text-decoration: none;
     font-size: 1.1rem;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     display: block;
-    padding: 0.3rem 0;
-    border-left: 2px solid transparent;
-    padding-left: 1rem;
-    font-family: 'Source Code Pro', 'Consolas', monospace;
+    padding: 0.5rem 0;
+    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
 }
 
 .about-section:first-child a:hover {
     color: #9a9d9e;
     text-decoration: none;
-    border-left: 2px solid #9a9d9e;
     background: rgba(255, 255, 255, 0.05);
+    padding-left: 1rem;
 }
 
 /* References */
@@ -1049,9 +1052,9 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 }
 
 .references-list li {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     color: #c0c8d0;
-    padding-left: 0.5rem;
+    line-height: 1.6;
 }
 
 /* Responsive adjustments */
