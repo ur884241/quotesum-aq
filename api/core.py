@@ -341,7 +341,8 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
                                 "is_complete_sentence": bool(match.get("is_complete_sentence", False)),
                                 "url": str(match.get("url", url)),
                                 "start_index": int(match.get("start_index", 0)),
-                                "end_index": int(match.get("end_index", 0))
+                                "end_index": int(match.get("end_index", 0)),
+                                "word_sums": [int(s) for s in match.get("word_sums", [])]
                             }
                             all_matches.append(match_data)
                         
@@ -375,16 +376,47 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
                 total_words = sum(int(count) * freq for count, freq in stats["word_count_distribution"].items())
                 stats["avg_match_length"] = total_words / stats["total_matches"]
 
-        # Prepare the response
+        # Separate complete and incomplete quotes
+        complete_quotes = [m for m in all_matches if m["is_complete_sentence"]]
+        incomplete_quotes = [m for m in all_matches if not m["is_complete_sentence"]]
+
+        # Prepare the response in the format expected by the frontend
         response = {
-            "matches": all_matches,
-            "stats": {
-                "total_sentences_analyzed": sentences_analyzed,
-                "sentences_with_matches": sentences_with_matches,
-                "total_matches": len(all_matches),
-                "strategy_stats": strategy_stats
+            "success": True,
+            "calculation_type": calculation_type,
+            "complete_quotes": complete_quotes,
+            "incomplete_quotes": incomplete_quotes,
+            "advanced_analytics": {
+                "overall": {
+                    "total_sentences": sentences_analyzed,
+                    "sentences_with_matches": sentences_with_matches,
+                    "match_rate": round((sentences_with_matches / sentences_analyzed * 100) if sentences_analyzed > 0 else 0, 2),
+                    "total_raw_matches": len(all_matches),
+                    "unique_complete_quotes": len(complete_quotes),
+                    "unique_incomplete_quotes": len(incomplete_quotes)
+                },
+                "strategies": strategy_stats,
+                "all_word_count_distribution": {},
+                "complete_word_count_distribution": {},
+                "incomplete_word_count_distribution": {}
             }
         }
+
+        # Calculate word count distributions
+        for match in all_matches:
+            word_count = len(match["text"].split())
+            response["advanced_analytics"]["all_word_count_distribution"][str(word_count)] = \
+                response["advanced_analytics"]["all_word_count_distribution"].get(str(word_count), 0) + 1
+
+        for match in complete_quotes:
+            word_count = len(match["text"].split())
+            response["advanced_analytics"]["complete_word_count_distribution"][str(word_count)] = \
+                response["advanced_analytics"]["complete_word_count_distribution"].get(str(word_count), 0) + 1
+
+        for match in incomplete_quotes:
+            word_count = len(match["text"].split())
+            response["advanced_analytics"]["incomplete_word_count_distribution"][str(word_count)] = \
+                response["advanced_analytics"]["incomplete_word_count_distribution"].get(str(word_count), 0) + 1
 
         return response
 
