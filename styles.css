@@ -893,15 +893,13 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     right: 5%;
     width: 200px;
     max-height: 70vh;
-    background-color: rgba(16, 18, 20, 0.4); /* More transparent */
-    backdrop-filter: blur(5px); /* Add blur effect if supported */
-    -webkit-backdrop-filter: blur(5px);
+    background-color: rgba(16, 18, 20, 0.2); /* Much more transparent */
     overflow-y: auto;
     padding: 1.5rem 1rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    box-shadow: none; /* No shadow/glow */
     z-index: 100;
     border-radius: 5px;
-    border: 1px solid rgba(125, 127, 131, 0.1);
+    border: none; /* No border */
     transition: opacity 0.3s ease;
 }
 
@@ -1008,110 +1006,28 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     font-size: 1.05rem;
 }
 
-/* Code blocks with inline styles for syntax highlighting */
+/* Code blocks - simple, no syntax highlighting */
 pre.code-example {
-    background: rgba(16, 18, 20, 0.95) !important;
-    border-radius: 5px !important;
-    padding: 2.5rem !important;
-    margin: 2.5rem 0 !important;
-    font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
-    font-size: 0.95rem !important;
-    line-height: 1.7 !important;
-    overflow-x: auto !important;
-    color: #d4d4d4 !important;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
-    position: relative !important;
-    display: block !important;
+    background: rgba(16, 18, 20, 0.9);
+    border-radius: 5px;
+    padding: 2rem;
+    margin: 2rem 0;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: #d4d4d4;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
 pre.code-example code {
-    display: block !important;
-    white-space: pre !important;
-    color: #d4d4d4 !important;
-    font-family: inherit !important;
+    display: block;
+    white-space: pre;
+    color: #d4d4d4;
+    font-family: inherit;
 }
 
-/* Direct styling for syntax highlighting */
-pre.code-example span.keyword { color: #569cd6 !important; }
-pre.code-example span.string { color: #ce9178 !important; }
-pre.code-example span.comment { color: #6a9955 !important; }
-pre.code-example span.function { color: #dcdcaa !important; }
-pre.code-example span.number { color: #b5cea8 !important; }
-pre.code-example span.operator { color: #d4d4d4 !important; }
-pre.code-example span.variable { color: #9cdcfe !important; }
-pre.code-example span.property { color: #9cdcfe !important; }
-pre.code-example span.punctuation { color: #d4d4d4 !important; }
-pre.code-example span.regex { color: #d16969 !important; }
-pre.code-example span.builtin { color: #4ec9b0 !important; }
-
-/* Strategy and Method cards - refined zen style */
-.strategy-card, .method-card {
-    background: transparent;
-    padding: 2.5rem 0;
-    margin: 2.5rem 0;
-}
-
-.strategy-card h3, .method-card h3 {
-    color: #9a9d9e;
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    font-family: 'Playfair Display', 'Times New Roman', serif;
-    text-align: left;
-}
-
-/* Examples - refined zen style */
-.example {
-    background: transparent;
-    padding: 2rem 0;
-    margin: 2rem 0;
-    border-top: 1px solid rgba(125, 127, 131, 0.1);
-    border-bottom: 1px solid rgba(125, 127, 131, 0.1);
-}
-
-.example h4 {
-    color: #9a9d9e;
-    margin: 0 0 1.5rem 0;
-    font-family: 'Playfair Display', 'Times New Roman', serif;
-    text-align: left;
-    font-size: 1.1rem;
-}
-
-/* Lists with refined spacing */
-.about-section ul, .about-section ol {
-    margin: 2rem 0;
-    padding-left: 2.5rem;
-    color: #c0c8d0;
-}
-
-.about-section li {
-    margin-bottom: 1.2rem;
-    line-height: 1.8;
-    font-size: 1.05rem;
-}
-
-/* References */
-.references-list {
-    list-style-type: decimal;
-    padding-left: 2.5rem;
-}
-
-.references-list li {
-    margin-bottom: 1.8rem;
-    color: #c0c8d0;
-    line-height: 1.8;
-}
-
-/* Mobile responsive styles */
-@media (max-width: 992px) {
-    .about-content {
-        padding: 2rem 1.5rem;
-    }
-    
-    .toc-sidebar {
-        position: static;
-        width: 100%;
-        max-height: none;
-        margin-bottom: 2rem;
-        box-shadow: none;
-    }
+/* Hide original table of contents */
+.about-section:first-child {
+    display: none;
 }
