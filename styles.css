@@ -876,11 +876,11 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 .about-section {
     margin-bottom: 3rem;
     padding-bottom: 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .about-section:last-child {
-    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
 .about-section h2 {
@@ -888,7 +888,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     font-size: 2rem;
     margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #7d7f83;
+    border-bottom: 1px solid rgba(125, 127, 131, 0.3);
     font-family: "Garamond", "Times New Roman", serif;
     letter-spacing: 0.3px;
 }
@@ -910,7 +910,6 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 /* Code blocks */
 .code-example {
     background: rgba(16, 18, 20, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     padding: 1.5rem;
     margin: 1.5rem 0;
@@ -924,7 +923,6 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 /* Strategy and Method cards */
 .strategy-card, .method-card {
     background: rgba(18, 20, 22, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     padding: 1.5rem;
     margin: 1.5rem 0;
@@ -939,7 +937,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 /* Examples */
 .example {
     background: rgba(20, 22, 24, 0.5);
-    border-left: 4px solid #7d7f83;
+    border-left: 3px solid rgba(125, 127, 131, 0.5);
     padding: 1rem 1.5rem;
     margin: 1rem 0;
 }
@@ -980,15 +978,17 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 }
 
 .about-section:first-child a {
-    color: #9a9d9e;
+    color: #c0c8d0;
     text-decoration: none;
     font-size: 1.1rem;
     transition: color 0.2s;
+    display: block;
+    padding: 0.3rem 0;
 }
 
 .about-section:first-child a:hover {
-    color: #c0c8d0;
-    text-decoration: underline;
+    color: #9a9d9e;
+    text-decoration: none;
 }
 
 /* Title section */
@@ -998,7 +998,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     padding: 3rem 0;
     margin-bottom: 2rem;
     text-align: center;
-    border-bottom: 2px solid #7d7f83;
+    border-bottom: 1px solid rgba(125, 127, 131, 0.3);
 }
 
 .title-container h1 {
@@ -1014,6 +1014,17 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     margin: 1rem 0 0;
     opacity: 0.9;
     font-family: "Garamond", "Times New Roman", serif;
+}
+
+/* References */
+.references-list {
+    list-style-type: decimal;
+    padding-left: 2rem;
+}
+
+.references-list li {
+    margin-bottom: 1rem;
+    color: #c0c8d0;
 }
 
 /* Responsive adjustments */
