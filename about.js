@@ -5,14 +5,14 @@ window.loadAboutPage = function() {
     const content = `
         <div class="content">
             <div class="toc-sidebar">
-                <h2>Table of Contents</h2>
+                <h2>Quick Navigation</h2>
                 <ol>
                     <li><a href="#introduction">1. Introduction</a></li>
-                    <li><a href="#theoretical-foundation">2. Theoretical Foundation</a></li>
-                    <li><a href="#calculation-methods">3. Calculation Methods</a></li>
-                    <li><a href="#search-strategies">4. Search Strategies</a></li>
-                    <li><a href="#implementation">5. Implementation Details</a></li>
-                    <li><a href="#results-analysis">6. Results Analysis</a></li>
+                    <li><a href="#theoretical-foundation">2. Foundation</a></li>
+                    <li><a href="#calculation-methods">3. Methods</a></li>
+                    <li><a href="#search-strategies">4. Strategies</a></li>
+                    <li><a href="#implementation">5. Implementation</a></li>
+                    <li><a href="#results-analysis">6. Results</a></li>
                     <li><a href="#conclusion">7. Conclusion</a></li>
                     <li><a href="#references">8. References</a></li>
                 </ol>

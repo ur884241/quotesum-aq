@@ -863,9 +863,9 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 
 /* Scientific Paper Styles */
 .about-content {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    margin-left: 260px; /* Make room for the sidebar */
+    margin-left: 0; /* Remove the margin for sidebar */
     padding: 3rem;
     background: transparent;
     font-family: 'Merriweather', 'Georgia', serif;
@@ -886,24 +886,25 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     padding-bottom: 0;
 }
 
-/* Fixed sidebar for table of contents */
+/* Fixed sidebar for table of contents - repositioned */
 .toc-sidebar {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 230px;
-    height: 100vh;
+    top: 200px;
+    right: 5%;
+    width: 200px;
+    max-height: 70vh;
     background-color: rgba(16, 18, 20, 0.7);
     overflow-y: auto;
-    padding: 2rem 1rem;
+    padding: 1.5rem 1rem;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
     z-index: 100;
+    border-radius: 5px;
 }
 
 .toc-sidebar h2 {
     color: #d4d4d4;
-    font-size: 1.3rem;
-    margin: 0 0 1.5rem;
+    font-size: 1.1rem;
+    margin: 0 0 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid rgba(125, 127, 131, 0.15);
     font-family: 'Playfair Display', 'Times New Roman', serif;
@@ -919,25 +920,25 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 }
 
 .toc-sidebar li {
-    margin: 0.7rem 0;
-    font-size: 0.95rem;
+    margin: 0.5rem 0;
+    font-size: 0.85rem;
 }
 
 .toc-sidebar a {
     color: #b0b8c0;
     text-decoration: none;
     display: block;
-    padding: 0.5rem 0.7rem;
+    padding: 0.4rem 0.5rem;
     border-radius: 3px;
     transition: all 0.3s ease;
     font-family: 'Merriweather', 'Georgia', serif;
-    line-height: 1.4;
+    line-height: 1.3;
 }
 
 .toc-sidebar a:hover {
     color: #d4d4d4;
     background-color: rgba(255, 255, 255, 0.05);
-    padding-left: 1rem;
+    padding-left: 0.7rem;
 }
 
 /* Title section - refined zen style */
@@ -1111,17 +1112,14 @@ pre {
 /* Mobile responsive styles */
 @media (max-width: 992px) {
     .about-content {
-        margin-left: 0;
         padding: 2rem 1.5rem;
     }
     
     .toc-sidebar {
+        position: static;
         width: 100%;
-        height: auto;
-        position: relative;
-        box-shadow: none;
-        padding: 1rem;
+        max-height: none;
         margin-bottom: 2rem;
-        transition: all 0.3s ease;
+        box-shadow: none;
     }
 }
