@@ -490,5 +490,6 @@ function highlightCode(code) {
         .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*):/g, '<span class="property">$1</span>:')
         .replace(/[{}[\]();,]/g, '<span class="punctuation">$&</span>')
         .replace(/\/[^/]+\//g, '<span class="regex">$&</span>')
-        .replace(/\b(console|Math|Object|Array|String|Number|Boolean|Date|RegExp|parseInt|charCodeAt|test|map|join|slice|push)\b/g, '<span class="builtin">$1</span>');
+        .replace(/\b(console|Math|Object|Array|String|Number|Boolean|Date|RegExp|parseInt|charCodeAt|test|map|join|slice|push)\b/g, '<span class="builtin">$1</span>')
+        .replace(/\n/g, '<br>'); // Add line breaks
 }
