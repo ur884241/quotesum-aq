@@ -472,6 +472,12 @@ async function parallelProcess(text, targetSum, calculationMethod) {
 
 // Update code examples with syntax highlighting
 function highlightCode(code) {
+    // First escape any HTML in the code
+    code = code.replace(/[<>&]/g, function(c) {
+        return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];
+    });
+    
+    // Then apply syntax highlighting
     return code
         .replace(/\b(function|return|if|for|let|const|async|await)\b/g, '<span class="keyword">$1</span>')
         .replace(/(['"])(.*?)\1/g, '<span class="string">$1$2$1</span>')
