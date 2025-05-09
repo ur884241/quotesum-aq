@@ -1,9 +1,10 @@
 // Make functions globally available
 window.loadHomePage = function() {
-    return `
-        <div class="content">
+    const content = `
+        <div class="content" data-page="home">
             <div class="title-container">
-                <!-- Removed canvas element -->
+                <h1>QuoteSum</h1>
+                <p class="subtitle">Find quotes that equal specific numerical values</p>
             </div>
             
             <form id="searchForm" class="search-form">
@@ -80,6 +81,11 @@ window.loadHomePage = function() {
             </div>
         </div>
     `;
+
+    // Set the page attribute for body element to help with CSS targeting
+    document.body.setAttribute('data-page', 'home');
+
+    return content;
 };
 
 // Function to setup modal event listeners

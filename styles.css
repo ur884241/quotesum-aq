@@ -1031,3 +1031,23 @@ pre.code-example code {
 .about-section:first-child {
     display: none;
 }
+
+/* Reduced padding for home page content */
+body[data-page="home"] .content,
+.content[data-page="home"] {
+    padding-top: 10px; /* Reduced from whatever it was before */
+}
+
+/* Title container with reduced top spacing for home page */
+body[data-page="home"] .title-container,
+div[data-page="home"] .title-container {
+    padding-top: 1rem; /* Reduced padding for home page */
+    margin-bottom: 2rem;
+}
+
+/* Keep normal spacing for about page */
+body[data-page="about"] .title-container,
+div[data-page="about"] .title-container {
+    padding: 4rem 0 3rem; /* Original padding */
+    margin-bottom: 4rem;
+}

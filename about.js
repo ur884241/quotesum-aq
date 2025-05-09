@@ -3,7 +3,7 @@
 // Function to load the "About" page content directly with basic formatting
 window.loadAboutPage = function() {
     const content = `
-        <div class="content">
+        <div class="content" data-page="about">
             <div class="title-container">
                 <h1>QuoteSum: A Novel Approach to Textual Pattern Discovery</h1>
                 <p class="subtitle">A Comprehensive Analysis of Numerical Pattern Matching in Natural Language</p>
@@ -469,11 +469,24 @@ async function parallelProcess(text, targetSum, calculationMethod) {
         </div>
     `;
 
+    // Set the page attribute for body element
+    document.body.setAttribute('data-page', 'about');
+
+    // After content is loaded, initialize the About page elements
+    setTimeout(() => {
+        initializeAboutPage();
+    }, 300);
+
     return content;
 };
 
 // Function to add the discrete TOC sidebar after page load
 function addTocSidebar() {
+    // Only add if we're on the About page
+    if (!window.location.hash.includes('about')) {
+        return;
+    }
+    
     // Create the TOC sidebar element
     const tocSidebar = document.createElement('div');
     tocSidebar.className = 'toc-sidebar';
@@ -503,22 +516,28 @@ function addTocSidebar() {
     }, 300);
 }
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+// Function to initialize the About page specific elements
+function initializeAboutPage() {
     // Hide the original table of contents
     const originalToc = document.querySelector('.about-section:first-child');
     if (originalToc) {
         originalToc.style.display = 'none';
     }
     
-    // Add our custom TOC sidebar
-    setTimeout(addTocSidebar, 300);
-});
+    // Add our custom TOC sidebar - only on About page
+    addTocSidebar();
+}
 
-// Backup initialization - in case DOMContentLoaded doesn't fire
-window.addEventListener('load', function() {
-    // Check if TOC exists, if not add it
-    if (!document.querySelector('.toc-sidebar')) {
+// Listen for hash changes to add/remove TOC for About page
+window.addEventListener('hashchange', function() {
+    // Remove existing TOC if present
+    const existingToc = document.querySelector('.toc-sidebar');
+    if (existingToc) {
+        existingToc.remove();
+    }
+    
+    // Add TOC if now on About page
+    if (window.location.hash.includes('about')) {
         addTocSidebar();
     }
 });
