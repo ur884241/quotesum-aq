@@ -478,7 +478,7 @@ function highlightCode(code) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-    // Apply syntax highlighting
+    // Apply syntax highlighting with global classes
     return escapedCode
         .replace(/\b(function|return|let|const|for|of|in|if|else|async|await)\b/g, '<span class="keyword">$1</span>')
         .replace(/'([^']*)'|"([^"]*)"/g, '<span class="string">$&</span>')

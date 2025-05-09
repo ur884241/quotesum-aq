@@ -867,7 +867,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     margin: 0 auto;
     padding: 2rem;
     background: transparent;
-    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+    font-family: 'Roboto', 'Open Sans', sans-serif;
     line-height: 1.8;
     color: #c0c8d0;
     letter-spacing: 0.2px;
@@ -876,6 +876,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 .about-section {
     margin-bottom: 4rem;
     padding-bottom: 2rem;
+    text-align: left;
 }
 
 .about-section:last-child {
@@ -889,7 +890,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     color: #9a9d9e;
     padding: 4rem 0;
     margin-bottom: 3rem;
-    text-align: center;
+    text-align: left;
     border-bottom: 1px solid rgba(125, 127, 131, 0.2);
 }
 
@@ -897,7 +898,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     font-size: 2.5rem;
     margin: 0;
     font-weight: 400;
-    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+    font-family: 'Roboto', 'Open Sans', sans-serif;
     letter-spacing: 0.5px;
     color: #d4d4d4;
 }
@@ -906,7 +907,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     font-size: 1.2rem;
     margin: 1.5rem 0 0;
     opacity: 0.9;
-    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+    font-family: 'Roboto', 'Open Sans', sans-serif;
     color: #9a9d9e;
     font-weight: 300;
 }
@@ -918,18 +919,20 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     margin: 3rem 0 2rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid rgba(125, 127, 131, 0.2);
-    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+    font-family: 'Roboto', 'Open Sans', sans-serif;
     letter-spacing: 0.3px;
     font-weight: 400;
+    text-align: left;
 }
 
 .about-section h3 {
     color: #9a9d9e;
     font-size: 1.4rem;
     margin: 2.5rem 0 1.5rem;
-    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+    font-family: 'Roboto', 'Open Sans', sans-serif;
     letter-spacing: 0.2px;
     font-weight: 400;
+    text-align: left;
 }
 
 .about-section p {
@@ -945,7 +948,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     border-radius: 4px;
     padding: 2rem;
     margin: 2rem 0;
-    font-family: 'IBM Plex Mono', 'Consolas', monospace;
+    font-family: 'Roboto Mono', 'Consolas', monospace;
     font-size: 0.9rem;
     line-height: 1.6;
     overflow-x: auto;
@@ -961,17 +964,17 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 }
 
 /* Syntax highlighting colors - VS Code dark theme */
-.code-example code .keyword { color: #569cd6 !important; }
-.code-example code .string { color: #ce9178 !important; }
-.code-example code .comment { color: #6a9955 !important; }
-.code-example code .function { color: #dcdcaa !important; }
-.code-example code .number { color: #b5cea8 !important; }
-.code-example code .operator { color: #d4d4d4 !important; }
-.code-example code .variable { color: #9cdcfe !important; }
-.code-example code .property { color: #9cdcfe !important; }
-.code-example code .punctuation { color: #d4d4d4 !important; }
-.code-example code .regex { color: #d16969 !important; }
-.code-example code .builtin { color: #4ec9b0 !important; }
+.keyword { color: #569cd6 !important; }
+.string { color: #ce9178 !important; }
+.comment { color: #6a9955 !important; }
+.function { color: #dcdcaa !important; }
+.number { color: #b5cea8 !important; }
+.operator { color: #d4d4d4 !important; }
+.variable { color: #9cdcfe !important; }
+.property { color: #9cdcfe !important; }
+.punctuation { color: #d4d4d4 !important; }
+.regex { color: #d16969 !important; }
+.builtin { color: #4ec9b0 !important; }
 
 /* Strategy and Method cards - zen style */
 .strategy-card, .method-card {
@@ -983,7 +986,8 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 .strategy-card h3, .method-card h3 {
     color: #9a9d9e;
     margin-top: 0;
-    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+    font-family: 'Roboto', 'Open Sans', sans-serif;
+    text-align: left;
 }
 
 /* Examples - zen style */
@@ -996,7 +1000,8 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 .example h4 {
     color: #9a9d9e;
     margin: 0 0 1rem 0;
-    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+    font-family: 'Roboto', 'Open Sans', sans-serif;
+    text-align: left;
 }
 
 /* Lists with zen spacing */
@@ -1016,6 +1021,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     background: transparent;
     padding: 2rem;
     margin-bottom: 4rem;
+    text-align: left;
 }
 
 .about-section:first-child ol {
@@ -1035,7 +1041,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     transition: all 0.3s ease;
     display: block;
     padding: 0.5rem 0;
-    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+    font-family: 'Roboto', 'Open Sans', sans-serif;
 }
 
 .about-section:first-child a:hover {
