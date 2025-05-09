@@ -160,7 +160,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Make sure to call this function whenever the page content is updated
 window.afterPageUpdate = function() {
+    console.log("Setting up event listeners after page update");
     setupModalListeners();
+    
+    // Also set up form event listeners
+    const fileButton = document.getElementById('fileButton');
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+    const searchForm = document.getElementById('searchForm');
+    
+    if (fileButton && fileInput && fileName) {
+        fileButton.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+            } else {
+                fileName.textContent = 'No file chosen';
+            }
+        });
+    }
+    
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            window.searchQuotes();
+        });
+    }
 };
 
 // Make searchQuotes globally available
@@ -396,6 +424,9 @@ window.displayResults = function(data) {
             // Show the analytics button
             if (analyticsBtn) {
                 analyticsBtn.style.display = 'block';
+                console.log("Analytics button shown");
+            } else {
+                console.error("Analytics button container not found");
             }
             
             // Clear previous analytics content
@@ -545,8 +576,13 @@ window.displayResults = function(data) {
                 
                 analyticsContent.appendChild(distributionSection);
                 console.log("Advanced analytics prepared for modal display");
+            } else {
+                console.error("Analytics content container not found");
             }
         }
+        
+        // Set up modal event listeners after content is updated
+        window.afterPageUpdate();
         
         console.log("Results display completed successfully");
     } catch (error) {
