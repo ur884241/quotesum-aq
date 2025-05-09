@@ -273,7 +273,7 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
                 "word_count_distribution": {},
                 "sentences_with_matches": 0,
                 "longest_match": 0,
-                "shortest_match": float('inf'),
+                "shortest_match": 0,  # Changed from float('inf') to 0
                 "avg_match_length": 0
             } for strategy_name in ALL_STRATEGIES
         }
@@ -336,7 +336,8 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
                             
                             # Update longest/shortest match
                             stats["longest_match"] = max(stats["longest_match"], word_count)
-                            stats["shortest_match"] = min(stats["shortest_match"], word_count)
+                            if stats["shortest_match"] == 0 or word_count < stats["shortest_match"]:
+                                stats["shortest_match"] = word_count
             
             # Update sentence start index for next sentence
             sentence_start_index += len(original_sentence_words)
