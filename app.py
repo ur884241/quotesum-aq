@@ -28,35 +28,27 @@ def handle_error(error):
 def search():
     try:
         logger.info("Received search request")
-        target_sum = request.form.get('targetSum')
-        url = request.form.get('url')
-        file = request.files.get('file')
-        calculation_type = request.form.get('calculationType', 'eq')
-        source_type = request.form.get('sourceType', 'other')
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No JSON data provided"}), 400
+
+        # Extract parameters with support for both camelCase and snake_case
+        target_sum = data.get('targetSum') or data.get('target_sum')
+        url = data.get('url')
+        calculation_type = data.get('calculationType') or data.get('calculation_type', 'eq')
+        source_type = data.get('sourceType') or data.get('source_type', 'other')
 
         logger.info(f"Request parameters: target_sum={target_sum}, url={url}, calculation_type={calculation_type}")
 
         if not target_sum:
             return jsonify({'error': 'Target sum is required'}), 400
+        if not url:
+            return jsonify({'error': 'URL is required'}), 400
 
-        text = None
         try:
-            if url:
-                logger.info(f"Fetching text from URL: {url}")
-                text = fetch_text(url)
-                logger.info(f"Successfully fetched text from URL, length: {len(text) if text else 0}")
-            elif file and file.filename.endswith('.txt'):
-                logger.info(f"Processing uploaded file: {file.filename}")
-                # Save the file temporarily
-                with tempfile.NamedTemporaryFile(delete=False, suffix='.txt') as temp_file:
-                    file.save(temp_file.name)
-                    with open(temp_file.name, 'r', encoding='utf-8') as f:
-                        text = f.read()
-                # Clean up the temporary file
-                os.unlink(temp_file.name)
-                logger.info(f"Successfully processed file, length: {len(text) if text else 0}")
-            else:
-                return jsonify({'error': 'Either URL or a valid .txt file is required'}), 400
+            logger.info(f"Fetching text from URL: {url}")
+            text = fetch_text(url)
+            logger.info(f"Successfully fetched text from URL, length: {len(text) if text else 0}")
 
             if not text:
                 return jsonify({'error': 'Failed to read text content'}), 400
