@@ -426,7 +426,7 @@ window.displayResults = function(data) {
                             <div class="analytics-label">Total Raw Matches</div>
                         </div>
                         <div class="analytics-item">
-                            <div class="analytics-value">${overall.unique_complete_quotes}</div>
+                            <div class="analytics-value">${overall.unique_complete_quotes || 0}</div>
                             <div class="analytics-label">Unique Complete Quotes</div>
                         </div>
                         <div class="analytics-item">
