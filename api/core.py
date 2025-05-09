@@ -67,19 +67,32 @@ def fetch_text(url):
         lines = text.split('\n')
         logger.info(f"Found {len(lines)} lines in text")
         
+        # Log the first few lines to understand the structure
+        logger.info("First 10 lines of text:")
+        for i, line in enumerate(lines[:10]):
+            logger.info(f"Line {i}: {line[:100]}")
+        
         # Find the start and end of the actual content
         start_markers = [
             "*** START OF THIS PROJECT GUTENBERG EBOOK",
             "*** START OF THE PROJECT GUTENBERG EBOOK",
             "*** START OF THIS PROJECT GUTENBERG",
-            "*** START OF THE PROJECT GUTENBERG"
+            "*** START OF THE PROJECT GUTENBERG",
+            "***START OF THIS PROJECT GUTENBERG EBOOK",
+            "***START OF THE PROJECT GUTENBERG EBOOK",
+            "***START OF THIS PROJECT GUTENBERG",
+            "***START OF THE PROJECT GUTENBERG"
         ]
         
         end_markers = [
             "*** END OF THIS PROJECT GUTENBERG EBOOK",
             "*** END OF THE PROJECT GUTENBERG EBOOK",
             "*** END OF THIS PROJECT GUTENBERG",
-            "*** END OF THE PROJECT GUTENBERG"
+            "*** END OF THE PROJECT GUTENBERG",
+            "***END OF THIS PROJECT GUTENBERG EBOOK",
+            "***END OF THE PROJECT GUTENBERG EBOOK",
+            "***END OF THIS PROJECT GUTENBERG",
+            "***END OF THE PROJECT GUTENBERG"
         ]
         
         content_start = 0
@@ -87,21 +100,39 @@ def fetch_text(url):
         
         # Find the start of content
         for i, line in enumerate(lines):
+            line = line.strip()
             if any(marker in line for marker in start_markers):
                 content_start = i + 1
-                logger.info(f"Found content start at line {content_start}")
+                logger.info(f"Found content start at line {content_start}: {line}")
                 break
         
         # Find the end of content
         for i in range(len(lines) - 1, content_start, -1):
-            if any(marker in lines[i] for marker in end_markers):
+            line = lines[i].strip()
+            if any(marker in line for marker in end_markers):
                 content_end = i
-                logger.info(f"Found content end at line {content_end}")
+                logger.info(f"Found content end at line {content_end}: {line}")
                 break
+        
+        # If we didn't find markers, try to find content by looking for the first substantial line
+        if content_start == 0:
+            logger.info("No start marker found, looking for first substantial line")
+            for i, line in enumerate(lines):
+                line = line.strip()
+                if len(line) > 50 and any(c.isalpha() for c in line):
+                    content_start = i
+                    logger.info(f"Found potential content start at line {content_start}: {line[:100]}")
+                    break
         
         # Extract the content section
         content_lines = lines[content_start:content_end]
         logger.info(f"Extracted {len(content_lines)} lines of content")
+        
+        # Log a sample of the content
+        if content_lines:
+            logger.info("Sample of extracted content:")
+            for i, line in enumerate(content_lines[:5]):
+                logger.info(f"Content line {i}: {line[:100]}")
         
         # Clean up the content
         cleaned_lines = []
