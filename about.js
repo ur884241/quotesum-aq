@@ -2,21 +2,9 @@
 
 // Function to load the "About" page content directly with basic formatting
 window.loadAboutPage = function() {
+    // Ensure basic content first, add TOC later to avoid loading bugs
     const content = `
         <div class="content">
-            <div class="toc-sidebar">
-                <h2>Quick Navigation</h2>
-                <ol>
-                    <li><a href="#introduction">1. Introduction</a></li>
-                    <li><a href="#theoretical-foundation">2. Foundation</a></li>
-                    <li><a href="#calculation-methods">3. Methods</a></li>
-                    <li><a href="#search-strategies">4. Strategies</a></li>
-                    <li><a href="#implementation">5. Implementation</a></li>
-                    <li><a href="#results-analysis">6. Results</a></li>
-                    <li><a href="#conclusion">7. Conclusion</a></li>
-                    <li><a href="#references">8. References</a></li>
-                </ol>
-            </div>
             <div class="title-container">
                 <h1>QuoteSum: A Novel Approach to Textual Pattern Discovery</h1>
                 <p class="subtitle">A Comprehensive Analysis of Numerical Pattern Matching in Natural Language</p>
@@ -485,58 +473,80 @@ async function parallelProcess(text, targetSum, calculationMethod) {
     return content;
 };
 
-// Function to manually apply syntax highlighting to code blocks
-document.addEventListener('DOMContentLoaded', function() {
-    // Apply syntax highlighting to all code blocks - with a delay to ensure DOM is fully loaded
+// Function to add the TOC sidebar after page content is loaded
+function addTocSidebar() {
+    // Create the TOC sidebar element
+    const tocSidebar = document.createElement('div');
+    tocSidebar.className = 'toc-sidebar';
+    tocSidebar.style.opacity = '0'; // Start invisible for smooth transition
+    
+    // Add heading and links
+    tocSidebar.innerHTML = `
+        <h2>Quick Navigation</h2>
+        <ol>
+            <li><a href="#introduction">1. Introduction</a></li>
+            <li><a href="#theoretical-foundation">2. Foundation</a></li>
+            <li><a href="#calculation-methods">3. Methods</a></li>
+            <li><a href="#search-strategies">4. Strategies</a></li>
+            <li><a href="#implementation">5. Implementation</a></li>
+            <li><a href="#results-analysis">6. Results</a></li>
+            <li><a href="#conclusion">7. Conclusion</a></li>
+            <li><a href="#references">8. References</a></li>
+        </ol>
+    `;
+    
+    // Add to the DOM
+    document.body.appendChild(tocSidebar);
+    
+    // Fade in the sidebar
     setTimeout(() => {
-        console.log('Applying syntax highlighting');
-        
-        // Apply syntax highlighting to each code block
-        const codeBlocks = document.querySelectorAll('.code-example code');
-        console.log('Found code blocks:', codeBlocks.length);
-        
-        codeBlocks.forEach(function(codeBlock) {
-            const originalCode = codeBlock.textContent;
-            codeBlock.innerHTML = highlightSyntax(originalCode);
-            console.log('Highlighted code block');
-        });
+        tocSidebar.style.opacity = '1';
+    }, 300);
+}
 
-        // Add direct inline styles for syntax highlighting
-        const style = document.createElement('style');
-        style.textContent = `
-            .code-example span.keyword { color: #569cd6 !important; }
-            .code-example span.string { color: #ce9178 !important; }
-            .code-example span.comment { color: #6a9955 !important; }
-            .code-example span.function { color: #dcdcaa !important; }
-            .code-example span.number { color: #b5cea8 !important; }
-            .code-example span.operator { color: #d4d4d4 !important; }
-            .code-example span.variable { color: #9cdcfe !important; }
-            .code-example span.property { color: #9cdcfe !important; }
-            .code-example span.punctuation { color: #d4d4d4 !important; }
-            .code-example span.regex { color: #d16969 !important; }
-            .code-example span.builtin { color: #4ec9b0 !important; }
-        `;
-        document.head.appendChild(style);
-        console.log('Added inline styles');
-
-        // For testing - directly apply colors to ensure they work
-        document.querySelectorAll('.code-example span.keyword').forEach(el => {
-            el.style.setProperty('color', '#569cd6', 'important');
-        });
-        document.querySelectorAll('.code-example span.string').forEach(el => {
-            el.style.setProperty('color', '#ce9178', 'important');
-        });
-        document.querySelectorAll('.code-example span.comment').forEach(el => {
-            el.style.setProperty('color', '#6a9955', 'important');
-        });
-        document.querySelectorAll('.code-example span.function').forEach(el => {
-            el.style.setProperty('color', '#dcdcaa', 'important');
-        });
+// Function to apply syntax highlighting with direct inline styles
+function applySyntaxHighlighting() {
+    console.log('Applying syntax highlighting to code blocks');
+    
+    const codeBlocks = document.querySelectorAll('pre.code-example code');
+    console.log(`Found ${codeBlocks.length} code blocks`);
+    
+    if (codeBlocks.length === 0) {
+        console.log('No code blocks found, will retry');
+        setTimeout(applySyntaxHighlighting, 500);
+        return;
+    }
+    
+    codeBlocks.forEach((codeBlock, index) => {
+        console.log(`Processing code block ${index + 1}`);
+        const originalCode = codeBlock.textContent;
         
-        console.log('Applied direct styles');
-    }, 500);
-});
+        // Create highlighted HTML
+        let highlightedCode = highlightSyntax(originalCode);
+        
+        // Apply the highlighted HTML
+        codeBlock.innerHTML = highlightedCode;
+        
+        // Direct element styling for extra certainty
+        const keywords = codeBlock.querySelectorAll('.keyword');
+        keywords.forEach(el => { el.style.color = '#569cd6'; });
+        
+        const strings = codeBlock.querySelectorAll('.string');
+        strings.forEach(el => { el.style.color = '#ce9178'; });
+        
+        const comments = codeBlock.querySelectorAll('.comment');
+        comments.forEach(el => { el.style.color = '#6a9955'; });
+        
+        const functions = codeBlock.querySelectorAll('.function');
+        functions.forEach(el => { el.style.color = '#dcdcaa'; });
+        
+        console.log(`Applied highlighting to code block ${index + 1}`);
+    });
+    
+    console.log('Syntax highlighting complete');
+}
 
+// Function to highlight syntax with inline styles
 function highlightSyntax(code) {
     // First escape HTML characters
     let escapedCode = code
@@ -544,22 +554,72 @@ function highlightSyntax(code) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-    // Apply syntax highlighting with scoped classes
+    // Apply syntax highlighting with direct inline styles
     return escapedCode
-        .replace(/\b(function|return|let|const|for|of|in|if|else|async|await)\b/g, '<span class="keyword" style="color: #569cd6 !important;">$1</span>')
-        .replace(/'([^']*)'|"([^"]*)"/g, '<span class="string" style="color: #ce9178 !important;">$&</span>')
-        .replace(/\/\/.*$/gm, '<span class="comment" style="color: #6a9955 !important;">$&</span>')
-        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g, '<span class="function" style="color: #dcdcaa !important;">$1</span>(')
-        .replace(/\b(\d+)\b/g, '<span class="number" style="color: #b5cea8 !important;">$1</span>')
-        .replace(/[+\-*/%=<>!&|^~?:]/g, '<span class="operator" style="color: #d4d4d4 !important;">$&</span>')
-        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b(?!\s*\()/g, '<span class="variable" style="color: #9cdcfe !important;">$1</span>')
-        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*):/g, '<span class="property" style="color: #9cdcfe !important;">$1</span>:')
-        .replace(/[{}[\]();,]/g, '<span class="punctuation" style="color: #d4d4d4 !important;">$&</span>')
-        .replace(/\/[^/]+\//g, '<span class="regex" style="color: #d16969 !important;">$&</span>')
-        .replace(/\b(console|Math|Object|Array|String|Number|Boolean|Date|RegExp|parseInt|charCodeAt|test|map|join|slice|push)\b/g, '<span class="builtin" style="color: #4ec9b0 !important;">$1</span>')
+        .replace(/\b(function|return|let|const|for|of|in|if|else|async|await)\b/g, 
+                '<span class="keyword" style="color: #569cd6 !important;">$1</span>')
+        .replace(/'([^']*)'|"([^"]*)"/g, 
+                '<span class="string" style="color: #ce9178 !important;">$&</span>')
+        .replace(/\/\/.*$/gm, 
+                '<span class="comment" style="color: #6a9955 !important;">$&</span>')
+        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g, 
+                '<span class="function" style="color: #dcdcaa !important;">$1</span>(')
+        .replace(/\b(\d+)\b/g, 
+                '<span class="number" style="color: #b5cea8 !important;">$1</span>')
+        .replace(/[+\-*/%=<>!&|^~?:]/g, 
+                '<span class="operator" style="color: #d4d4d4 !important;">$&</span>')
+        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b(?!\s*\()/g, 
+                '<span class="variable" style="color: #9cdcfe !important;">$1</span>')
+        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*):/g, 
+                '<span class="property" style="color: #9cdcfe !important;">$1</span>:')
+        .replace(/[{}[\]();,]/g, 
+                '<span class="punctuation" style="color: #d4d4d4 !important;">$&</span>')
+        .replace(/\/[^/]+\//g, 
+                '<span class="regex" style="color: #d16969 !important;">$&</span>')
+        .replace(/\b(console|Math|Object|Array|String|Number|Boolean|Date|RegExp|parseInt|charCodeAt|test|map|join|slice|push)\b/g, 
+                '<span class="builtin" style="color: #4ec9b0 !important;">$1</span>')
         .replace(/\n/g, '<br>'); // Add line breaks
 }
 
-function highlightCode(code) {
-    return highlightSyntax(code);
-}
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM content loaded, initializing about page');
+    
+    // Hide the original table of contents
+    const originalToc = document.querySelector('.about-section:first-child');
+    if (originalToc) {
+        originalToc.style.display = 'none';
+        console.log('Original TOC hidden');
+    }
+    
+    // Add our custom TOC sidebar
+    setTimeout(() => {
+        addTocSidebar();
+        console.log('TOC sidebar added');
+    }, 500);
+    
+    // Apply syntax highlighting with a delay
+    setTimeout(() => {
+        applySyntaxHighlighting();
+    }, 1000);
+});
+
+// Backup initialization - in case DOMContentLoaded doesn't fire
+window.addEventListener('load', function() {
+    console.log('Window loaded, ensuring about page is initialized');
+    
+    // Check if TOC exists, if not add it
+    if (!document.querySelector('.toc-sidebar')) {
+        addTocSidebar();
+        console.log('TOC sidebar added on window load');
+    }
+    
+    // Check if syntax highlighting has been applied
+    setTimeout(() => {
+        const highlightedElements = document.querySelectorAll('pre.code-example code .keyword');
+        if (highlightedElements.length === 0) {
+            console.log('No highlighted elements found, applying syntax highlighting');
+            applySyntaxHighlighting();
+        }
+    }, 500);
+});

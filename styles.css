@@ -893,12 +893,16 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     right: 5%;
     width: 200px;
     max-height: 70vh;
-    background-color: rgba(16, 18, 20, 0.7);
+    background-color: rgba(16, 18, 20, 0.4); /* More transparent */
+    backdrop-filter: blur(5px); /* Add blur effect if supported */
+    -webkit-backdrop-filter: blur(5px);
     overflow-y: auto;
     padding: 1.5rem 1rem;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
     z-index: 100;
     border-radius: 5px;
+    border: 1px solid rgba(125, 127, 131, 0.1);
+    transition: opacity 0.3s ease;
 }
 
 .toc-sidebar h2 {
@@ -1004,8 +1008,8 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     font-size: 1.05rem;
 }
 
-/* Code blocks with syntax highlighting */
-.code-example {
+/* Code blocks with inline styles for syntax highlighting */
+pre.code-example {
     background: rgba(16, 18, 20, 0.95) !important;
     border-radius: 5px !important;
     padding: 2.5rem !important;
@@ -1020,37 +1024,25 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     display: block !important;
 }
 
-.code-example code {
+pre.code-example code {
     display: block !important;
     white-space: pre !important;
     color: #d4d4d4 !important;
     font-family: inherit !important;
 }
 
-/* Syntax highlighting colors - VS Code dark theme with strong selectors */
-.code-example span.keyword { color: #569cd6 !important; }
-.code-example span.string { color: #ce9178 !important; }
-.code-example span.comment { color: #6a9955 !important; }
-.code-example span.function { color: #dcdcaa !important; }
-.code-example span.number { color: #b5cea8 !important; }
-.code-example span.operator { color: #d4d4d4 !important; }
-.code-example span.variable { color: #9cdcfe !important; }
-.code-example span.property { color: #9cdcfe !important; }
-.code-example span.punctuation { color: #d4d4d4 !important; }
-.code-example span.regex { color: #d16969 !important; }
-.code-example span.builtin { color: #4ec9b0 !important; }
-
-/* Pre-formatted code block styles */
-pre {
-    margin: 0 !important;
-    padding: 0 !important;
-    display: block !important;
-}
-
-/* Hide original table of contents */
-.about-section:first-child {
-    display: none;
-}
+/* Direct styling for syntax highlighting */
+pre.code-example span.keyword { color: #569cd6 !important; }
+pre.code-example span.string { color: #ce9178 !important; }
+pre.code-example span.comment { color: #6a9955 !important; }
+pre.code-example span.function { color: #dcdcaa !important; }
+pre.code-example span.number { color: #b5cea8 !important; }
+pre.code-example span.operator { color: #d4d4d4 !important; }
+pre.code-example span.variable { color: #9cdcfe !important; }
+pre.code-example span.property { color: #9cdcfe !important; }
+pre.code-example span.punctuation { color: #d4d4d4 !important; }
+pre.code-example span.regex { color: #d16969 !important; }
+pre.code-example span.builtin { color: #4ec9b0 !important; }
 
 /* Strategy and Method cards - refined zen style */
 .strategy-card, .method-card {
