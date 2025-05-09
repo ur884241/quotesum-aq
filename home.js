@@ -686,10 +686,12 @@ function formatStrategyName(strategy) {
 
 function getStrategyDescription(strategy) {
     const descriptions = {
-        'prefix': 'Found by checking if the sum of words from the start of the sentence matches the target sum',
-        'suffix': 'Found by checking if the sum of words from the end of the sentence matches the target sum',
-        'sliding_window': 'Found by checking all possible consecutive word sequences within the sentence',
-        'subsequence': 'Found by checking all possible word combinations that can form the target sum',
+        'prefix': 'Found by checking if the sum of words from the start of the sentence matches the target sum. This strategy looks for matches that begin at the first word of the sentence.',
+        'suffix': 'Found by checking if the sum of words from the end of the sentence matches the target sum. This strategy looks for matches that end at the last word of the sentence.',
+        'sliding_window': 'Found by checking all possible consecutive word sequences within the sentence. This strategy uses an optimized sliding window approach to find matches anywhere in the sentence.',
+        'subsequence': 'Found by checking all possible word combinations that can form the target sum. This strategy looks for any sequence of words that adds up to the target sum.',
+        'sentence_infix': 'Found by checking all possible substrings within the sentence. This strategy looks for matches that can start and end anywhere within the sentence.',
+        'substring': 'Found by checking all possible continuous word sequences. This strategy is similar to sliding window but with a different optimization approach.',
         'unknown': 'Strategy information not available'
     };
     return descriptions[strategy] || descriptions['unknown'];

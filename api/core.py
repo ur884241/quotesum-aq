@@ -342,7 +342,9 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
                                 "url": str(match.get("url", url)),
                                 "start_index": int(match.get("start_index", 0)),
                                 "end_index": int(match.get("end_index", 0)),
-                                "word_sums": [int(s) for s in match.get("word_sums", [])]
+                                "word_sums": [int(s) for s in match.get("word_sums", [])],
+                                "strategy": str(match.get("strategy", strategy_name)),
+                                "strategy_description": str(match.get("strategy_description", ""))
                             }
                             all_matches.append(match_data)
                         
