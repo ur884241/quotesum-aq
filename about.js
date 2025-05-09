@@ -470,8 +470,18 @@ async function parallelProcess(text, targetSum, calculationMethod) {
     `;
 };
 
-// Update code examples with syntax highlighting
-function highlightCode(code) {
+// Function to manually apply syntax highlighting to code blocks
+document.addEventListener('DOMContentLoaded', function() {
+    // Apply syntax highlighting to all code blocks
+    const codeBlocks = document.querySelectorAll('.code-example code');
+    
+    codeBlocks.forEach(function(codeBlock) {
+        const originalCode = codeBlock.textContent;
+        codeBlock.innerHTML = highlightSyntax(originalCode);
+    });
+});
+
+function highlightSyntax(code) {
     // First escape HTML characters
     let escapedCode = code
         .replace(/&/g, '&amp;')
@@ -492,4 +502,8 @@ function highlightCode(code) {
         .replace(/\/[^/]+\//g, '<span class="regex">$&</span>')
         .replace(/\b(console|Math|Object|Array|String|Number|Boolean|Date|RegExp|parseInt|charCodeAt|test|map|join|slice|push)\b/g, '<span class="builtin">$1</span>')
         .replace(/\n/g, '<br>'); // Add line breaks
+}
+
+function highlightCode(code) {
+    return highlightSyntax(code);
 }

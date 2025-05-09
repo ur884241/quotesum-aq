@@ -863,18 +863,18 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 
 /* Scientific Paper Styles */
 .about-content {
-    max-width: 900px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 3rem;
     background: transparent;
-    font-family: 'Roboto', 'Open Sans', sans-serif;
-    line-height: 1.8;
+    font-family: 'Lora', 'Georgia', serif;
+    line-height: 1.9;
     color: #c0c8d0;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.3px;
 }
 
 .about-section {
-    margin-bottom: 4rem;
+    margin-bottom: 5rem;
     padding-bottom: 2rem;
     text-align: left;
 }
@@ -884,76 +884,81 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     padding-bottom: 0;
 }
 
-/* Title section - zen style */
+/* Title section - refined zen style */
 .title-container {
     background: transparent;
     color: #9a9d9e;
-    padding: 4rem 0;
-    margin-bottom: 3rem;
+    padding: 4rem 0 3rem;
+    margin-bottom: 4rem;
     text-align: left;
-    border-bottom: 1px solid rgba(125, 127, 131, 0.2);
+    border-bottom: 1px solid rgba(125, 127, 131, 0.15);
 }
 
 .title-container h1 {
-    font-size: 2.5rem;
+    font-size: 2.6rem;
     margin: 0;
     font-weight: 400;
-    font-family: 'Roboto', 'Open Sans', sans-serif;
+    font-family: 'Lora', 'Georgia', serif;
     letter-spacing: 0.5px;
     color: #d4d4d4;
+    line-height: 1.4;
 }
 
 .title-container .subtitle {
-    font-size: 1.2rem;
-    margin: 1.5rem 0 0;
-    opacity: 0.9;
-    font-family: 'Roboto', 'Open Sans', sans-serif;
+    font-size: 1.3rem;
+    margin: 2rem 0 0;
+    opacity: 0.85;
+    font-family: 'Lora', 'Georgia', serif;
     color: #9a9d9e;
     font-weight: 300;
+    line-height: 1.6;
 }
 
-/* Section headings with zen spacing */
+/* Section headings with refined spacing */
 .about-section h2 {
     color: #d4d4d4;
     font-size: 1.8rem;
-    margin: 3rem 0 2rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(125, 127, 131, 0.2);
-    font-family: 'Roboto', 'Open Sans', sans-serif;
+    margin: 4rem 0 2.5rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(125, 127, 131, 0.15);
+    font-family: 'Lora', 'Georgia', serif;
     letter-spacing: 0.3px;
     font-weight: 400;
     text-align: left;
+    line-height: 1.4;
 }
 
 .about-section h3 {
     color: #9a9d9e;
-    font-size: 1.4rem;
-    margin: 2.5rem 0 1.5rem;
-    font-family: 'Roboto', 'Open Sans', sans-serif;
+    font-size: 1.5rem;
+    margin: 3rem 0 2rem;
+    font-family: 'Lora', 'Georgia', serif;
     letter-spacing: 0.2px;
     font-weight: 400;
     text-align: left;
+    line-height: 1.4;
 }
 
 .about-section p {
-    margin-bottom: 1.8rem;
-    text-align: justify;
+    margin-bottom: 2rem;
+    text-align: left;
     color: #c0c8d0;
-    line-height: 1.8;
+    line-height: 1.9;
+    font-size: 1.05rem;
 }
 
 /* Code blocks with syntax highlighting */
 .code-example {
-    background: rgba(16, 18, 20, 0.95);
-    border-radius: 4px;
-    padding: 2rem;
-    margin: 2rem 0;
-    font-family: 'Roboto Mono', 'Consolas', monospace;
-    font-size: 0.9rem;
-    line-height: 1.6;
+    background: rgba(16, 18, 20, 0.9);
+    border-radius: 5px;
+    padding: 2.5rem;
+    margin: 2.5rem 0;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.95rem;
+    line-height: 1.7;
     overflow-x: auto;
     color: #d4d4d4;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
 }
 
 .code-example code {
@@ -964,103 +969,112 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 }
 
 /* Syntax highlighting colors - VS Code dark theme */
-.keyword { color: #569cd6 !important; }
-.string { color: #ce9178 !important; }
-.comment { color: #6a9955 !important; }
-.function { color: #dcdcaa !important; }
-.number { color: #b5cea8 !important; }
-.operator { color: #d4d4d4 !important; }
-.variable { color: #9cdcfe !important; }
-.property { color: #9cdcfe !important; }
-.punctuation { color: #d4d4d4 !important; }
-.regex { color: #d16969 !important; }
-.builtin { color: #4ec9b0 !important; }
+.keyword { color: #569cd6; }
+.string { color: #ce9178; }
+.comment { color: #6a9955; }
+.function { color: #dcdcaa; }
+.number { color: #b5cea8; }
+.operator { color: #d4d4d4; }
+.variable { color: #9cdcfe; }
+.property { color: #9cdcfe; }
+.punctuation { color: #d4d4d4; }
+.regex { color: #d16969; }
+.builtin { color: #4ec9b0; }
 
-/* Strategy and Method cards - zen style */
+/* Strategy and Method cards - refined zen style */
 .strategy-card, .method-card {
     background: transparent;
-    padding: 2rem;
-    margin: 2rem 0;
+    padding: 2.5rem 0;
+    margin: 2.5rem 0;
 }
 
 .strategy-card h3, .method-card h3 {
     color: #9a9d9e;
     margin-top: 0;
-    font-family: 'Roboto', 'Open Sans', sans-serif;
+    margin-bottom: 1.5rem;
+    font-family: 'Lora', 'Georgia', serif;
     text-align: left;
 }
 
-/* Examples - zen style */
+/* Examples - refined zen style */
 .example {
     background: transparent;
-    padding: 1.5rem 2rem;
-    margin: 1.5rem 0;
+    padding: 2rem 0;
+    margin: 2rem 0;
+    border-top: 1px solid rgba(125, 127, 131, 0.1);
+    border-bottom: 1px solid rgba(125, 127, 131, 0.1);
 }
 
 .example h4 {
     color: #9a9d9e;
-    margin: 0 0 1rem 0;
-    font-family: 'Roboto', 'Open Sans', sans-serif;
+    margin: 0 0 1.5rem 0;
+    font-family: 'Lora', 'Georgia', serif;
     text-align: left;
+    font-size: 1.1rem;
 }
 
-/* Lists with zen spacing */
+/* Lists with refined spacing */
 .about-section ul, .about-section ol {
-    margin: 1.5rem 0;
-    padding-left: 2rem;
+    margin: 2rem 0;
+    padding-left: 2.5rem;
     color: #c0c8d0;
 }
 
 .about-section li {
-    margin-bottom: 1rem;
-    line-height: 1.6;
+    margin-bottom: 1.2rem;
+    line-height: 1.8;
+    font-size: 1.05rem;
 }
 
-/* Table of Contents - zen style */
+/* Table of Contents - refined zen style */
 .about-section:first-child {
     background: transparent;
-    padding: 2rem;
-    margin-bottom: 4rem;
+    padding: 2rem 0;
+    margin-bottom: 5rem;
     text-align: left;
+}
+
+.about-section:first-child h2 {
+    margin-top: 0;
 }
 
 .about-section:first-child ol {
     list-style-type: none;
     padding: 0;
-    margin: 0;
+    margin: 2rem 0;
 }
 
 .about-section:first-child li {
-    margin: 1rem 0;
+    margin: 1.2rem 0;
 }
 
 .about-section:first-child a {
     color: #d4d4d4;
     text-decoration: none;
     font-size: 1.1rem;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
     display: block;
-    padding: 0.5rem 0;
-    font-family: 'Roboto', 'Open Sans', sans-serif;
+    padding: 0.7rem 0;
+    font-family: 'Lora', 'Georgia', serif;
 }
 
 .about-section:first-child a:hover {
     color: #9a9d9e;
     text-decoration: none;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     padding-left: 1rem;
 }
 
 /* References */
 .references-list {
     list-style-type: decimal;
-    padding-left: 2rem;
+    padding-left: 2.5rem;
 }
 
 .references-list li {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.8rem;
     color: #c0c8d0;
-    line-height: 1.6;
+    line-height: 1.8;
 }
 
 /* Responsive adjustments */
