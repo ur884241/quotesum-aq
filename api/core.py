@@ -60,34 +60,42 @@ def fetch_text(url):
         if not text or not text.strip():
             raise Exception("Retrieved empty text content")
             
-        # Handle Project Gutenberg texts
-        if 'gutenberg.org' in url:
-            logger.info("Processing Project Gutenberg text")
-            # Split text into lines
-            lines = text.split('\n')
-            
-            # Find start and end markers
-            start_marker = "*** START OF THIS PROJECT GUTENBERG EBOOK"
-            end_marker = "*** END OF THIS PROJECT GUTENBERG EBOOK"
-            
-            start_idx = -1
-            end_idx = -1
-            
-            for i, line in enumerate(lines):
-                if start_marker in line:
-                    start_idx = i + 1
-                elif end_marker in line:
-                    end_idx = i
-                    break
-            
-            if start_idx != -1 and end_idx != -1:
-                # Extract the actual content
-                content_lines = lines[start_idx:end_idx]
-                text = '\n'.join(content_lines)
-                logger.info(f"Extracted Gutenberg content: {len(content_lines)} lines")
-            else:
-                logger.warning("Could not find Gutenberg markers, using full text")
-            
+        # Process and clean the text content
+        logger.info("Processing and cleaning text content")
+        lines = text.split('\n')
+        
+        # Clean up the content
+        cleaned_lines = []
+        for line in lines:
+            # Skip empty lines
+            if not line.strip():
+                continue
+                
+            # Skip lines that are just numbers or special characters
+            if line.strip().replace('.', '').replace(',', '').replace('!', '').replace('?', '').replace(';', '').replace(':', '').replace('-', '').replace('"', '').replace("'", '').isdigit():
+                continue
+                
+            # Skip lines that are just special characters
+            if all(c in '.,!?;:"\'()-' for c in line.strip()):
+                continue
+                
+            # Skip lines that are just URLs or file paths
+            if line.strip().startswith(('http://', 'https://', 'www.', '/', '\\')):
+                continue
+                
+            # Skip lines that are just common metadata markers
+            if any(marker in line.lower() for marker in [
+                'copyright', 'all rights reserved', 'terms of use',
+                'project gutenberg', 'ebook', 'chapter', 'page',
+                'table of contents', 'index', 'appendix'
+            ]):
+                continue
+                
+            cleaned_lines.append(line)
+        
+        text = '\n'.join(cleaned_lines)
+        logger.info(f"Cleaned text content: {len(cleaned_lines)} lines")
+        
         return text
     except Exception as e:
         logger.error(f"Error in fetch_text: {str(e)}")
