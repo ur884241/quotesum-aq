@@ -64,9 +64,57 @@ def fetch_text(url):
         logger.info("Processing and cleaning text content")
         lines = text.split('\n')
         
-        # Clean up the content
+        # First pass: Identify and remove header/footer sections
+        content_start = 0
+        content_end = len(lines)
+        
+        # Common header/footer markers
+        header_markers = [
+            'project gutenberg', 'ebook', 'copyright', 'all rights reserved',
+            'terms of use', 'table of contents', 'index', 'appendix',
+            'chapter', 'page', 'edition', 'published', 'license'
+        ]
+        
+        # Find the start of actual content
+        for i, line in enumerate(lines):
+            line_lower = line.lower()
+            # Skip if line contains header markers
+            if any(marker in line_lower for marker in header_markers):
+                continue
+            # Skip if line is just a URL or path
+            if any(line.strip().startswith(prefix) for prefix in ['http://', 'https://', 'www.', '/', '\\']):
+                continue
+            # Skip if line is just numbers or special characters
+            if line.strip().replace('.', '').replace(',', '').replace('!', '').replace('?', '').replace(';', '').replace(':', '').replace('-', '').replace('"', '').replace("'", '').isdigit():
+                continue
+            # If we find a line that looks like actual content, start from there
+            if len(line.strip()) > 20 and any(c.isalpha() for c in line):
+                content_start = i
+                break
+        
+        # Find the end of actual content
+        for i in range(len(lines) - 1, content_start, -1):
+            line_lower = lines[i].lower()
+            # Skip if line contains footer markers
+            if any(marker in line_lower for marker in header_markers):
+                continue
+            # Skip if line is just a URL or path
+            if any(lines[i].strip().startswith(prefix) for prefix in ['http://', 'https://', 'www.', '/', '\\']):
+                continue
+            # Skip if line is just numbers or special characters
+            if lines[i].strip().replace('.', '').replace(',', '').replace('!', '').replace('?', '').replace(';', '').replace(':', '').replace('-', '').replace('"', '').replace("'", '').isdigit():
+                continue
+            # If we find a line that looks like actual content, end there
+            if len(lines[i].strip()) > 20 and any(c.isalpha() for c in lines[i]):
+                content_end = i + 1
+                break
+        
+        # Extract the content section
+        content_lines = lines[content_start:content_end]
+        
+        # Second pass: Clean up the content
         cleaned_lines = []
-        for line in lines:
+        for line in content_lines:
             # Skip empty lines
             if not line.strip():
                 continue
@@ -84,11 +132,11 @@ def fetch_text(url):
                 continue
                 
             # Skip lines that are just common metadata markers
-            if any(marker in line.lower() for marker in [
-                'copyright', 'all rights reserved', 'terms of use',
-                'project gutenberg', 'ebook', 'chapter', 'page',
-                'table of contents', 'index', 'appendix'
-            ]):
+            if any(marker in line.lower() for marker in header_markers):
+                continue
+                
+            # Skip very short lines (likely headers or metadata)
+            if len(line.strip()) < 10:
                 continue
                 
             cleaned_lines.append(line)
