@@ -3,8 +3,6 @@ window.loadHomePage = function() {
     const content = `
         <div class="content" data-page="home">
             <div class="title-container">
-                <h1>QuoteSum</h1>
-                <p class="subtitle">Find quotes that equal specific numerical values</p>
             </div>
             
             <form id="searchForm" class="search-form">
