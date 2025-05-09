@@ -2,8 +2,21 @@
 
 // Function to load the "About" page content directly with basic formatting
 window.loadAboutPage = function() {
-    return `
+    const content = `
         <div class="content">
+            <div class="toc-sidebar">
+                <h2>Table of Contents</h2>
+                <ol>
+                    <li><a href="#introduction">1. Introduction</a></li>
+                    <li><a href="#theoretical-foundation">2. Theoretical Foundation</a></li>
+                    <li><a href="#calculation-methods">3. Calculation Methods</a></li>
+                    <li><a href="#search-strategies">4. Search Strategies</a></li>
+                    <li><a href="#implementation">5. Implementation Details</a></li>
+                    <li><a href="#results-analysis">6. Results Analysis</a></li>
+                    <li><a href="#conclusion">7. Conclusion</a></li>
+                    <li><a href="#references">8. References</a></li>
+                </ol>
+            </div>
             <div class="title-container">
                 <h1>QuoteSum: A Novel Approach to Textual Pattern Discovery</h1>
                 <p class="subtitle">A Comprehensive Analysis of Numerical Pattern Matching in Natural Language</p>
@@ -20,7 +33,7 @@ window.loadAboutPage = function() {
                         potential hidden patterns within text.
                     </p>
                 </section>
-
+                
                 <section class="about-section">
                     <h2>Table of Contents</h2>
                     <ol>
@@ -468,34 +481,60 @@ async function parallelProcess(text, targetSum, calculationMethod) {
             </div>
         </div>
     `;
+
+    return content;
 };
 
 // Function to manually apply syntax highlighting to code blocks
 document.addEventListener('DOMContentLoaded', function() {
-    // Apply syntax highlighting to all code blocks
-    const codeBlocks = document.querySelectorAll('.code-example code');
-    
-    codeBlocks.forEach(function(codeBlock) {
-        const originalCode = codeBlock.textContent;
-        codeBlock.innerHTML = highlightSyntax(originalCode);
-    });
+    // Apply syntax highlighting to all code blocks - with a delay to ensure DOM is fully loaded
+    setTimeout(() => {
+        console.log('Applying syntax highlighting');
+        
+        // Apply syntax highlighting to each code block
+        const codeBlocks = document.querySelectorAll('.code-example code');
+        console.log('Found code blocks:', codeBlocks.length);
+        
+        codeBlocks.forEach(function(codeBlock) {
+            const originalCode = codeBlock.textContent;
+            codeBlock.innerHTML = highlightSyntax(originalCode);
+            console.log('Highlighted code block');
+        });
 
-    // Add direct inline styles for syntax highlighting
-    const style = document.createElement('style');
-    style.textContent = `
-        .code-example .keyword { color: #569cd6 !important; }
-        .code-example .string { color: #ce9178 !important; }
-        .code-example .comment { color: #6a9955 !important; }
-        .code-example .function { color: #dcdcaa !important; }
-        .code-example .number { color: #b5cea8 !important; }
-        .code-example .operator { color: #d4d4d4 !important; }
-        .code-example .variable { color: #9cdcfe !important; }
-        .code-example .property { color: #9cdcfe !important; }
-        .code-example .punctuation { color: #d4d4d4 !important; }
-        .code-example .regex { color: #d16969 !important; }
-        .code-example .builtin { color: #4ec9b0 !important; }
-    `;
-    document.head.appendChild(style);
+        // Add direct inline styles for syntax highlighting
+        const style = document.createElement('style');
+        style.textContent = `
+            .code-example span.keyword { color: #569cd6 !important; }
+            .code-example span.string { color: #ce9178 !important; }
+            .code-example span.comment { color: #6a9955 !important; }
+            .code-example span.function { color: #dcdcaa !important; }
+            .code-example span.number { color: #b5cea8 !important; }
+            .code-example span.operator { color: #d4d4d4 !important; }
+            .code-example span.variable { color: #9cdcfe !important; }
+            .code-example span.property { color: #9cdcfe !important; }
+            .code-example span.punctuation { color: #d4d4d4 !important; }
+            .code-example span.regex { color: #d16969 !important; }
+            .code-example span.builtin { color: #4ec9b0 !important; }
+        `;
+        document.head.appendChild(style);
+        console.log('Added inline styles');
+
+        // For testing - directly apply colors to ensure they work
+        document.querySelectorAll('.code-example span.keyword').forEach(el => {
+            el.style.setProperty('color', '#569cd6', 'important');
+        });
+        document.querySelectorAll('.code-example span.string').forEach(el => {
+            el.style.setProperty('color', '#ce9178', 'important');
+        });
+        document.querySelectorAll('.code-example span.comment').forEach(el => {
+            el.style.setProperty('color', '#6a9955', 'important');
+        });
+        document.querySelectorAll('.code-example span.function').forEach(el => {
+            el.style.setProperty('color', '#dcdcaa', 'important');
+        });
+        
+        console.log('Applied direct styles');
+    }, 500);
 });
 
 function highlightSyntax(code) {
@@ -507,17 +546,17 @@ function highlightSyntax(code) {
 
     // Apply syntax highlighting with scoped classes
     return escapedCode
-        .replace(/\b(function|return|let|const|for|of|in|if|else|async|await)\b/g, '<span class="keyword">$1</span>')
-        .replace(/'([^']*)'|"([^"]*)"/g, '<span class="string">$&</span>')
-        .replace(/\/\/.*$/gm, '<span class="comment">$&</span>')
-        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g, '<span class="function">$1</span>(')
-        .replace(/\b(\d+)\b/g, '<span class="number">$1</span>')
-        .replace(/[+\-*/%=<>!&|^~?:]/g, '<span class="operator">$&</span>')
-        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b(?!\s*\()/g, '<span class="variable">$1</span>')
-        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*):/g, '<span class="property">$1</span>:')
-        .replace(/[{}[\]();,]/g, '<span class="punctuation">$&</span>')
-        .replace(/\/[^/]+\//g, '<span class="regex">$&</span>')
-        .replace(/\b(console|Math|Object|Array|String|Number|Boolean|Date|RegExp|parseInt|charCodeAt|test|map|join|slice|push)\b/g, '<span class="builtin">$1</span>')
+        .replace(/\b(function|return|let|const|for|of|in|if|else|async|await)\b/g, '<span class="keyword" style="color: #569cd6 !important;">$1</span>')
+        .replace(/'([^']*)'|"([^"]*)"/g, '<span class="string" style="color: #ce9178 !important;">$&</span>')
+        .replace(/\/\/.*$/gm, '<span class="comment" style="color: #6a9955 !important;">$&</span>')
+        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g, '<span class="function" style="color: #dcdcaa !important;">$1</span>(')
+        .replace(/\b(\d+)\b/g, '<span class="number" style="color: #b5cea8 !important;">$1</span>')
+        .replace(/[+\-*/%=<>!&|^~?:]/g, '<span class="operator" style="color: #d4d4d4 !important;">$&</span>')
+        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b(?!\s*\()/g, '<span class="variable" style="color: #9cdcfe !important;">$1</span>')
+        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*):/g, '<span class="property" style="color: #9cdcfe !important;">$1</span>:')
+        .replace(/[{}[\]();,]/g, '<span class="punctuation" style="color: #d4d4d4 !important;">$&</span>')
+        .replace(/\/[^/]+\//g, '<span class="regex" style="color: #d16969 !important;">$&</span>')
+        .replace(/\b(console|Math|Object|Array|String|Number|Boolean|Date|RegExp|parseInt|charCodeAt|test|map|join|slice|push)\b/g, '<span class="builtin" style="color: #4ec9b0 !important;">$1</span>')
         .replace(/\n/g, '<br>'); // Add line breaks
 }
 

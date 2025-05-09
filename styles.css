@@ -865,12 +865,14 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 .about-content {
     max-width: 800px;
     margin: 0 auto;
+    margin-left: 260px; /* Make room for the sidebar */
     padding: 3rem;
     background: transparent;
     font-family: 'Merriweather', 'Georgia', serif;
     line-height: 1.9;
     color: #c0c8d0;
     letter-spacing: 0.3px;
+    position: relative;
 }
 
 .about-section {
@@ -882,6 +884,60 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 .about-section:last-child {
     margin-bottom: 0;
     padding-bottom: 0;
+}
+
+/* Fixed sidebar for table of contents */
+.toc-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 230px;
+    height: 100vh;
+    background-color: rgba(16, 18, 20, 0.7);
+    overflow-y: auto;
+    padding: 2rem 1rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+}
+
+.toc-sidebar h2 {
+    color: #d4d4d4;
+    font-size: 1.3rem;
+    margin: 0 0 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(125, 127, 131, 0.15);
+    font-family: 'Playfair Display', 'Times New Roman', serif;
+    letter-spacing: 0.3px;
+    font-weight: 400;
+    text-align: left;
+}
+
+.toc-sidebar ol {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.toc-sidebar li {
+    margin: 0.7rem 0;
+    font-size: 0.95rem;
+}
+
+.toc-sidebar a {
+    color: #b0b8c0;
+    text-decoration: none;
+    display: block;
+    padding: 0.5rem 0.7rem;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    font-family: 'Merriweather', 'Georgia', serif;
+    line-height: 1.4;
+}
+
+.toc-sidebar a:hover {
+    color: #d4d4d4;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding-left: 1rem;
 }
 
 /* Title section - refined zen style */
@@ -949,42 +1005,50 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 
 /* Code blocks with syntax highlighting */
 .code-example {
-    background: rgba(16, 18, 20, 0.9);
-    border-radius: 5px;
-    padding: 2.5rem;
-    margin: 2.5rem 0;
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    font-size: 0.95rem;
-    line-height: 1.7;
-    overflow-x: auto;
-    color: #d4d4d4;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    background: rgba(16, 18, 20, 0.95) !important;
+    border-radius: 5px !important;
+    padding: 2.5rem !important;
+    margin: 2.5rem 0 !important;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
+    font-size: 0.95rem !important;
+    line-height: 1.7 !important;
+    overflow-x: auto !important;
+    color: #d4d4d4 !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
+    position: relative !important;
+    display: block !important;
 }
 
 .code-example code {
-    display: block;
-    white-space: pre;
-    color: #d4d4d4;
-    font-family: inherit;
+    display: block !important;
+    white-space: pre !important;
+    color: #d4d4d4 !important;
+    font-family: inherit !important;
 }
 
-/* Syntax highlighting colors - VS Code dark theme */
-.code-example .keyword { color: #569cd6; }
-.code-example .string { color: #ce9178; }
-.code-example .comment { color: #6a9955; }
-.code-example .function { color: #dcdcaa; }
-.code-example .number { color: #b5cea8; }
-.code-example .operator { color: #d4d4d4; }
-.code-example .variable { color: #9cdcfe; }
-.code-example .property { color: #9cdcfe; }
-.code-example .punctuation { color: #d4d4d4; }
-.code-example .regex { color: #d16969; }
-.code-example .builtin { color: #4ec9b0; }
+/* Syntax highlighting colors - VS Code dark theme with strong selectors */
+.code-example span.keyword { color: #569cd6 !important; }
+.code-example span.string { color: #ce9178 !important; }
+.code-example span.comment { color: #6a9955 !important; }
+.code-example span.function { color: #dcdcaa !important; }
+.code-example span.number { color: #b5cea8 !important; }
+.code-example span.operator { color: #d4d4d4 !important; }
+.code-example span.variable { color: #9cdcfe !important; }
+.code-example span.property { color: #9cdcfe !important; }
+.code-example span.punctuation { color: #d4d4d4 !important; }
+.code-example span.regex { color: #d16969 !important; }
+.code-example span.builtin { color: #4ec9b0 !important; }
 
 /* Pre-formatted code block styles */
 pre {
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+}
+
+/* Hide original table of contents */
+.about-section:first-child {
+    display: none;
 }
 
 /* Strategy and Method cards - refined zen style */
@@ -1032,45 +1096,6 @@ pre {
     font-size: 1.05rem;
 }
 
-/* Table of Contents - refined zen style */
-.about-section:first-child {
-    background: transparent;
-    padding: 2rem 0;
-    margin-bottom: 5rem;
-    text-align: left;
-}
-
-.about-section:first-child h2 {
-    margin-top: 0;
-}
-
-.about-section:first-child ol {
-    list-style-type: none;
-    padding: 0;
-    margin: 2rem 0;
-}
-
-.about-section:first-child li {
-    margin: 1.2rem 0;
-}
-
-.about-section:first-child a {
-    color: #d4d4d4;
-    text-decoration: none;
-    font-size: 1.1rem;
-    transition: all 0.4s ease;
-    display: block;
-    padding: 0.7rem 0;
-    font-family: 'Merriweather', 'Georgia', serif;
-}
-
-.about-section:first-child a:hover {
-    color: #9a9d9e;
-    text-decoration: none;
-    background: rgba(255, 255, 255, 0.03);
-    padding-left: 1rem;
-}
-
 /* References */
 .references-list {
     list-style-type: decimal;
@@ -1083,22 +1108,20 @@ pre {
     line-height: 1.8;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+/* Mobile responsive styles */
+@media (max-width: 992px) {
     .about-content {
+        margin-left: 0;
+        padding: 2rem 1.5rem;
+    }
+    
+    .toc-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        box-shadow: none;
         padding: 1rem;
-    }
-    
-    .about-section h2 {
-        font-size: 1.8rem;
-    }
-    
-    .about-section h3 {
-        font-size: 1.3rem;
-    }
-    
-    .code-example {
-        padding: 1rem;
-        font-size: 0.8rem;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
     }
 }
