@@ -920,18 +920,18 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Syntax highlighting colors */
-.code-example .keyword { color: #569cd6; }      /* Keywords like function, return, etc. */
-.code-example .string { color: #ce9178; }       /* String literals */
-.code-example .comment { color: #6a9955; }      /* Comments */
-.code-example .function { color: #dcdcaa; }     /* Function names */
-.code-example .number { color: #b5cea8; }       /* Numbers */
-.code-example .operator { color: #d4d4d4; }     /* Operators like =, +, -, etc. */
-.code-example .variable { color: #9cdcfe; }     /* Variable names */
-.code-example .property { color: #9cdcfe; }     /* Object properties */
-.code-example .punctuation { color: #d4d4d4; }  /* Punctuation like ;, ., etc. */
-.code-example .regex { color: #d16969; }        /* Regular expressions */
-.code-example .builtin { color: #4ec9b0; }      /* Built-in functions/objects */
+/* Syntax highlighting colors - VS Code dark theme */
+.code-example .keyword { color: #569cd6 !important; }      /* Keywords like function, return, etc. */
+.code-example .string { color: #ce9178 !important; }       /* String literals */
+.code-example .comment { color: #6a9955 !important; }      /* Comments */
+.code-example .function { color: #dcdcaa !important; }     /* Function names */
+.code-example .number { color: #b5cea8 !important; }       /* Numbers */
+.code-example .operator { color: #d4d4d4 !important; }     /* Operators like =, +, -, etc. */
+.code-example .variable { color: #9cdcfe !important; }     /* Variable names */
+.code-example .property { color: #9cdcfe !important; }     /* Object properties */
+.code-example .punctuation { color: #d4d4d4 !important; }  /* Punctuation like ;, ., etc. */
+.code-example .regex { color: #d16969 !important; }        /* Regular expressions */
+.code-example .builtin { color: #4ec9b0 !important; }      /* Built-in functions/objects */
 
 /* Strategy and Method cards - more transparent */
 .strategy-card, .method-card {
