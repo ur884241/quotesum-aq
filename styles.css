@@ -866,8 +866,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     max-width: 900px;
     margin: 0 auto;
     padding: 2rem;
-    background: rgba(12, 12, 14, 0.8);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    background: transparent;
     font-family: 'Georgia', serif;
     line-height: 1.6;
     color: #c0c8d0;
@@ -907,9 +906,9 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     color: #c0c8d0;
 }
 
-/* Code blocks */
+/* Code blocks with syntax highlighting */
 .code-example {
-    background: rgba(16, 18, 20, 0.7);
+    background: rgba(16, 18, 20, 0.95);
     border-radius: 4px;
     padding: 1.5rem;
     margin: 1.5rem 0;
@@ -917,13 +916,26 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     font-size: 0.9rem;
     line-height: 1.5;
     overflow-x: auto;
-    color: #a1a4a8;
+    color: #d4d4d4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Strategy and Method cards */
+/* Syntax highlighting colors */
+.code-example .keyword { color: #569cd6; }      /* Keywords like function, return, etc. */
+.code-example .string { color: #ce9178; }       /* String literals */
+.code-example .comment { color: #6a9955; }      /* Comments */
+.code-example .function { color: #dcdcaa; }     /* Function names */
+.code-example .number { color: #b5cea8; }       /* Numbers */
+.code-example .operator { color: #d4d4d4; }     /* Operators like =, +, -, etc. */
+.code-example .variable { color: #9cdcfe; }     /* Variable names */
+.code-example .property { color: #9cdcfe; }     /* Object properties */
+.code-example .punctuation { color: #d4d4d4; }  /* Punctuation like ;, ., etc. */
+.code-example .regex { color: #d16969; }        /* Regular expressions */
+.code-example .builtin { color: #4ec9b0; }      /* Built-in functions/objects */
+
+/* Strategy and Method cards - more transparent */
 .strategy-card, .method-card {
-    background: rgba(18, 20, 22, 0.5);
-    border-radius: 4px;
+    background: transparent;
     padding: 1.5rem;
     margin: 1.5rem 0;
 }
@@ -934,9 +946,9 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     font-family: "Garamond", "Times New Roman", serif;
 }
 
-/* Examples */
+/* Examples - more transparent */
 .example {
-    background: rgba(20, 22, 24, 0.5);
+    background: transparent;
     border-left: 3px solid rgba(125, 127, 131, 0.5);
     padding: 1rem 1.5rem;
     margin: 1rem 0;
@@ -959,11 +971,10 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     margin-bottom: 0.5rem;
 }
 
-/* Table of Contents */
+/* Table of Contents - more transparent */
 .about-section:first-child {
-    background: rgba(18, 20, 22, 0.5);
+    background: transparent;
     padding: 2rem;
-    border-radius: 4px;
     margin-bottom: 3rem;
 }
 
@@ -991,9 +1002,9 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     text-decoration: none;
 }
 
-/* Title section */
+/* Title section - more transparent */
 .title-container {
-    background: rgba(22, 24, 26, 0.8);
+    background: transparent;
     color: #9a9d9e;
     padding: 3rem 0;
     margin-bottom: 2rem;
