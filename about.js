@@ -480,15 +480,15 @@ function highlightCode(code) {
 
     // Apply syntax highlighting
     return escapedCode
-        .replace(/\b(function|return|let|const|for|of|in|if|else)\b/g, '<span class="keyword">$1</span>')
+        .replace(/\b(function|return|let|const|for|of|in|if|else|async|await)\b/g, '<span class="keyword">$1</span>')
         .replace(/'([^']*)'|"([^"]*)"/g, '<span class="string">$&</span>')
         .replace(/\/\/.*$/gm, '<span class="comment">$&</span>')
         .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g, '<span class="function">$1</span>(')
         .replace(/\b(\d+)\b/g, '<span class="number">$1</span>')
         .replace(/[+\-*/%=<>!&|^~?:]/g, '<span class="operator">$&</span>')
-        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g, '<span class="variable">$1</span>')
+        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b(?!\s*\()/g, '<span class="variable">$1</span>')
         .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*):/g, '<span class="property">$1</span>:')
         .replace(/[{}[\]();,]/g, '<span class="punctuation">$&</span>')
         .replace(/\/[^/]+\//g, '<span class="regex">$&</span>')
-        .replace(/\b(console|Math|Object|Array|String|Number|Boolean|Date|RegExp)\b/g, '<span class="builtin">$1</span>');
+        .replace(/\b(console|Math|Object|Array|String|Number|Boolean|Date|RegExp|parseInt|charCodeAt|test|map|join|slice|push)\b/g, '<span class="builtin">$1</span>');
 }
