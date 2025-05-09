@@ -678,10 +678,16 @@ function createQuoteCard(quote) {
 // Add helper functions for strategy formatting and descriptions
 function formatStrategyName(strategy) {
     if (!strategy) return 'Unknown Strategy';
-    return strategy
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+    const nameMap = {
+        'prefix': 'Prefix Strategy',
+        'suffix': 'Suffix Strategy',
+        'sliding_window': 'Sliding Window Strategy',
+        'subsequence': 'Subsequence Strategy',
+        'sentence_infix': 'Sentence Infix Strategy',
+        'substring': 'Substring Strategy',
+        'sentence_prefix': 'Sentence Prefix Strategy'
+    };
+    return nameMap[strategy] || 'Unknown Strategy';
 }
 
 function getStrategyDescription(strategy) {
@@ -692,6 +698,7 @@ function getStrategyDescription(strategy) {
         'subsequence': 'Found by checking all possible word combinations that can form the target sum. This strategy looks for any sequence of words that adds up to the target sum.',
         'sentence_infix': 'Found by checking all possible substrings within the sentence. This strategy looks for matches that can start and end anywhere within the sentence.',
         'substring': 'Found by checking all possible continuous word sequences. This strategy is similar to sliding window but with a different optimization approach.',
+        'sentence_prefix': 'Found by checking if the sum of words from the start of the sentence matches the target sum. This strategy looks for matches that begin at the first word of the sentence.',
         'unknown': 'Strategy information not available'
     };
     return descriptions[strategy] || descriptions['unknown'];
