@@ -883,20 +883,20 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 }
 
 .about-section h2 {
-    color: #9a9d9e;
+    color: #d4d4d4;
     font-size: 2rem;
     margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid rgba(125, 127, 131, 0.3);
-    font-family: "Garamond", "Times New Roman", serif;
+    font-family: "Times New Roman", "Garamond", serif;
     letter-spacing: 0.3px;
 }
 
 .about-section h3 {
-    color: #7d7f83;
+    color: #9a9d9e;
     font-size: 1.5rem;
     margin: 2rem 0 1rem;
-    font-family: "Garamond", "Times New Roman", serif;
+    font-family: "Times New Roman", "Garamond", serif;
     letter-spacing: 0.2px;
 }
 
@@ -921,17 +921,25 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 }
 
 /* Syntax highlighting colors - VS Code dark theme */
-.code-example .keyword { color: #569cd6 !important; }      /* Keywords like function, return, etc. */
-.code-example .string { color: #ce9178 !important; }       /* String literals */
-.code-example .comment { color: #6a9955 !important; }      /* Comments */
-.code-example .function { color: #dcdcaa !important; }     /* Function names */
-.code-example .number { color: #b5cea8 !important; }       /* Numbers */
-.code-example .operator { color: #d4d4d4 !important; }     /* Operators like =, +, -, etc. */
-.code-example .variable { color: #9cdcfe !important; }     /* Variable names */
-.code-example .property { color: #9cdcfe !important; }     /* Object properties */
-.code-example .punctuation { color: #d4d4d4 !important; }  /* Punctuation like ;, ., etc. */
-.code-example .regex { color: #d16969 !important; }        /* Regular expressions */
-.code-example .builtin { color: #4ec9b0 !important; }      /* Built-in functions/objects */
+.code-example .keyword { color: #569cd6 !important; }
+.code-example .string { color: #ce9178 !important; }
+.code-example .comment { color: #6a9955 !important; }
+.code-example .function { color: #dcdcaa !important; }
+.code-example .number { color: #b5cea8 !important; }
+.code-example .operator { color: #d4d4d4 !important; }
+.code-example .variable { color: #9cdcfe !important; }
+.code-example .property { color: #9cdcfe !important; }
+.code-example .punctuation { color: #d4d4d4 !important; }
+.code-example .regex { color: #d16969 !important; }
+.code-example .builtin { color: #4ec9b0 !important; }
+
+/* Ensure code spans are properly styled */
+.code-example span {
+    display: inline;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
 
 /* Strategy and Method cards - more transparent */
 .strategy-card, .method-card {
@@ -989,7 +997,7 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 }
 
 .about-section:first-child a {
-    color: #c0c8d0;
+    color: #d4d4d4;
     text-decoration: none;
     font-size: 1.1rem;
     transition: all 0.2s ease;
@@ -1020,15 +1028,17 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     font-size: 2.5rem;
     margin: 0;
     font-weight: normal;
-    font-family: "Garamond", "Times New Roman", serif;
+    font-family: "Times New Roman", "Garamond", serif;
     letter-spacing: 0.5px;
+    color: #d4d4d4;
 }
 
 .title-container .subtitle {
     font-size: 1.2rem;
     margin: 1rem 0 0;
     opacity: 0.9;
-    font-family: "Garamond", "Times New Roman", serif;
+    font-family: "Times New Roman", "Garamond", serif;
+    color: #9a9d9e;
 }
 
 /* References */
