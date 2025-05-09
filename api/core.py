@@ -282,7 +282,7 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
                 "word_count_distribution": {},
                 "sentences_with_matches": 0,
                 "longest_match": 0,
-                "shortest_match": 0,  # Changed from float('inf') to 0
+                "shortest_match": 0,
                 "avg_match_length": 0
             } for strategy_name in ALL_STRATEGIES
         }
@@ -330,7 +330,20 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
                     
                     if strategy_matches:
                         sentence_has_matches = True
-                        all_matches.extend(strategy_matches)
+                        # Ensure each match has all required fields
+                        for match in strategy_matches:
+                            if not isinstance(match, dict):
+                                continue
+                            # Ensure all required fields are present and properly formatted
+                            match_data = {
+                                "text": str(match.get("text", "")),
+                                "sum": int(match.get("sum", 0)),
+                                "is_complete_sentence": bool(match.get("is_complete_sentence", False)),
+                                "url": str(match.get("url", url)),
+                                "start_index": int(match.get("start_index", 0)),
+                                "end_index": int(match.get("end_index", 0))
+                            }
+                            all_matches.append(match_data)
                         
                         # Update strategy stats
                         stats = strategy_stats[strategy_name]
@@ -341,7 +354,7 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
                         # Update word count distribution
                         for match in strategy_matches:
                             word_count = len(match["text"].split())
-                            stats["word_count_distribution"][word_count] = stats["word_count_distribution"].get(word_count, 0) + 1
+                            stats["word_count_distribution"][str(word_count)] = stats["word_count_distribution"].get(str(word_count), 0) + 1
                             
                             # Update longest/shortest match
                             stats["longest_match"] = max(stats["longest_match"], word_count)
@@ -359,7 +372,7 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
         # Calculate average match lengths
         for stats in strategy_stats.values():
             if stats["total_matches"] > 0:
-                total_words = sum(count * freq for count, freq in stats["word_count_distribution"].items())
+                total_words = sum(int(count) * freq for count, freq in stats["word_count_distribution"].items())
                 stats["avg_match_length"] = total_words / stats["total_matches"]
 
         # Prepare the response
