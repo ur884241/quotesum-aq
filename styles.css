@@ -920,26 +920,27 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Syntax highlighting colors - VS Code dark theme */
-.code-example .keyword { color: #569cd6 !important; }
-.code-example .string { color: #ce9178 !important; }
-.code-example .comment { color: #6a9955 !important; }
-.code-example .function { color: #dcdcaa !important; }
-.code-example .number { color: #b5cea8 !important; }
-.code-example .operator { color: #d4d4d4 !important; }
-.code-example .variable { color: #9cdcfe !important; }
-.code-example .property { color: #9cdcfe !important; }
-.code-example .punctuation { color: #d4d4d4 !important; }
-.code-example .regex { color: #d16969 !important; }
-.code-example .builtin { color: #4ec9b0 !important; }
-
-/* Ensure code spans are properly styled */
-.code-example span {
-    display: inline;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
+.code-example code {
+    display: block;
+    white-space: pre;
 }
+
+/* Syntax highlighting colors - VS Code dark theme */
+.code-example code {
+    color: #d4d4d4;
+}
+
+.code-example code .keyword { color: #569cd6; }
+.code-example code .string { color: #ce9178; }
+.code-example code .comment { color: #6a9955; }
+.code-example code .function { color: #dcdcaa; }
+.code-example code .number { color: #b5cea8; }
+.code-example code .operator { color: #d4d4d4; }
+.code-example code .variable { color: #9cdcfe; }
+.code-example code .property { color: #9cdcfe; }
+.code-example code .punctuation { color: #d4d4d4; }
+.code-example code .regex { color: #d16969; }
+.code-example code .builtin { color: #4ec9b0; }
 
 /* Strategy and Method cards - more transparent */
 .strategy-card, .method-card {

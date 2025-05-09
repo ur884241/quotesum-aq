@@ -73,7 +73,7 @@ window.loadAboutPage = function() {
                         The system supports multiple calculation methods, each offering different perspectives 
                         on the text's numerical structure.
                     </p>
-                    <pre class="code-example">${highlightCode(`// Core word value calculation function
+                    <pre class="code-example"><code>// Core word value calculation function
 function calculateWordValue(word, calculationMethod) {
     let sum = 0;
     for (let char of word) {
@@ -86,7 +86,7 @@ function calculateWordValue(word, calculationMethod) {
 const charValues = {
     'a': 1, 'b': 2, 'c': 3, // ... and so on
     'A': 1, 'B': 2, 'C': 3  // ... and so on
-};`)}</pre>
+};</code></pre>
 
                     <h3>2.2 Pattern Matching Theory</h3>
                     <p>
@@ -472,24 +472,23 @@ async function parallelProcess(text, targetSum, calculationMethod) {
 
 // Update code examples with syntax highlighting
 function highlightCode(code) {
-    // First escape any HTML in the code
-    const escapedCode = code
+    // First escape HTML characters
+    let escapedCode = code
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
-    
-    // Then apply syntax highlighting
+
+    // Apply syntax highlighting
     return escapedCode
-        .replace(/\b(function|return|if|for|let|const|async|await)\b/g, '<span class="keyword">$1</span>')
-        .replace(/(['"])(.*?)\1/g, '<span class="string">$1$2$1</span>')
+        .replace(/\b(function|return|let|const|for|of|in|if|else)\b/g, '<span class="keyword">$1</span>')
+        .replace(/'([^']*)'|"([^"]*)"/g, '<span class="string">$&</span>')
         .replace(/\/\/.*$/gm, '<span class="comment">$&</span>')
         .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/g, '<span class="function">$1</span>(')
         .replace(/\b(\d+)\b/g, '<span class="number">$1</span>')
-        .replace(/([=+\-*/%&|^<>!?:])/g, '<span class="operator">$1</span>')
-        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b(?!\s*\()/g, '<span class="variable">$1</span>')
-        .replace(/([a-zA-Z_$][a-zA-Z0-9_$]*):/g, '<span class="property">$1</span>:')
-        .replace(/([;.,(){}[\]])/g, '<span class="punctuation">$1</span>')
-        .replace(/\/(.*?)\//g, '<span class="regex">/$1/</span>')
-        .replace(/\b(parseInt|charCodeAt|test|map|join|slice|push)\b/g, '<span class="builtin">$1</span>')
-        .replace(/\n/g, '<br>'); // Add line breaks
+        .replace(/[+\-*/%=<>!&|^~?:]/g, '<span class="operator">$&</span>')
+        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g, '<span class="variable">$1</span>')
+        .replace(/\b([a-zA-Z_$][a-zA-Z0-9_$]*):/g, '<span class="property">$1</span>:')
+        .replace(/[{}[\]();,]/g, '<span class="punctuation">$&</span>')
+        .replace(/\/[^/]+\//g, '<span class="regex">$&</span>')
+        .replace(/\b(console|Math|Object|Array|String|Number|Boolean|Date|RegExp)\b/g, '<span class="builtin">$1</span>');
 }
