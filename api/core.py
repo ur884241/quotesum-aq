@@ -193,7 +193,7 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
         
         # Run search strategies
         all_matches = []
-        original_word_index = 0
+        sentence_start_index = 0  # Track the starting index of each sentence
 
         # For advanced analytics
         strategy_stats = {
@@ -244,8 +244,10 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
                         sentence_words_lower,
                         sentence_word_sums,
                         target_sum,
-                        original_sentence_words,
-                        original_word_index
+                        primary_value_dict,
+                        url,
+                        sentence_start_index,
+                        original_sentence_words
                     )
                     
                     if strategy_matches:
@@ -255,34 +257,37 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
                         # Update strategy stats
                         stats = strategy_stats[strategy_name]
                         stats["total_matches"] += len(strategy_matches)
-                        stats["complete_matches"] += sum(1 for m in strategy_matches if m["is_complete"])
-                        stats["incomplete_matches"] += sum(1 for m in strategy_matches if not m["is_complete"])
+                        stats["complete_matches"] += sum(1 for m in strategy_matches if m.get("is_complete_sentence", False))
+                        stats["incomplete_matches"] += sum(1 for m in strategy_matches if not m.get("is_complete_sentence", False))
                         
                         # Update word count distribution
                         for match in strategy_matches:
-                            word_count = len(match["words"])
+                            word_count = len(match["text"].split())
                             stats["word_count_distribution"][word_count] = stats["word_count_distribution"].get(word_count, 0) + 1
+                            
+                            # Update longest/shortest match
                             stats["longest_match"] = max(stats["longest_match"], word_count)
                             stats["shortest_match"] = min(stats["shortest_match"], word_count)
+            
+            # Update sentence start index for next sentence
+            sentence_start_index += len(original_sentence_words)
             
             if sentence_has_matches:
                 sentences_with_matches += 1
                 for stats in strategy_stats.values():
                     stats["sentences_with_matches"] += 1
-            
-            original_word_index += len(original_sentence_words)
 
         # Calculate average match lengths
         for stats in strategy_stats.values():
             if stats["total_matches"] > 0:
-                total_length = sum(length * count for length, count in stats["word_count_distribution"].items())
-                stats["avg_match_length"] = total_length / stats["total_matches"]
+                total_words = sum(count * freq for count, freq in stats["word_count_distribution"].items())
+                stats["avg_match_length"] = total_words / stats["total_matches"]
 
         # Prepare the response
         response = {
             "matches": all_matches,
             "stats": {
-                "total_sentences": sentences_analyzed,
+                "total_sentences_analyzed": sentences_analyzed,
                 "sentences_with_matches": sentences_with_matches,
                 "total_matches": len(all_matches),
                 "strategy_stats": strategy_stats
