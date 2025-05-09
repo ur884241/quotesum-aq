@@ -863,538 +863,20 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
 
 /* Scientific Paper Styles */
 .about-content {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: "Georgia", serif;
-    line-height: 1.6;
-    text-align: justify;
-    color: #c0c8d0; /* Soft blue-silver color for text */
-}
-
-.scientific-paper {
-    background-color: rgba(12, 12, 14, 0.8);
-    padding: 30px;
-    border-radius: 6px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    border: none;
-}
-
-.scientific-paper h1 {
-    font-size: 22px;
-    text-align: center;
-    margin-bottom: 30px;
-    font-weight: bold;
-    color: #9a9d9e; /* Subdued silver for main title, Nier-inspired */
-    padding-bottom: 20px;
-    letter-spacing: 0.5px;
-    border-bottom: none;
-    font-family: "Garamond", "Times New Roman", serif;
-    text-transform: uppercase;
-}
-
-.scientific-paper h2 {
-    font-size: 18px;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    padding-bottom: 8px;
-    font-weight: bold;
-    color: #7d7f83; /* Darker silver-gray for section headings, Nier-inspired */
-    letter-spacing: 0.3px;
-    border-bottom: none;
-    font-family: "Garamond", "Times New Roman", serif;
-}
-
-.scientific-paper h3 {
-    font-size: 16px;
-    margin-top: 25px;
-    margin-bottom: 15px;
-    font-weight: bold;
-    color: #6e7072; /* Even darker silver for subsection headings, Nier-inspired */
-    letter-spacing: 0.2px;
-    font-family: "Garamond", "Times New Roman", serif;
-}
-
-.scientific-paper p {
-    margin-bottom: 18px;
-    font-size: 15px;
-    line-height: 1.65;
-}
-
-.scientific-paper em {
-    font-style: italic;
-    color: #a1a4a8; /* Light silver for italics, Nier-inspired */
-}
-
-.scientific-paper ol, .scientific-paper ul {
-    margin-left: 25px;
-    margin-bottom: 20px;
-    color: #c0c8d0; /* Match the main text color */
-    font-size: 15px;
-}
-
-.scientific-paper li {
-    margin-bottom: 8px;
-    line-height: 1.6;
-}
-
-.paper-metadata {
-    text-align: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: none;
-}
-
-.paper-author {
-    font-style: italic;
-    color: #8a8d93;
-    margin-bottom: 10px;
-    font-family: "Garamond", "Times New Roman", serif;
-    font-size: 15px;
-}
-
-.paper-date {
-    color: #7d7f83;
-    font-size: 0.9em;
-    font-family: "Garamond", "Times New Roman", serif;
-}
-
-.pseudocode {
-    background-color: rgba(16, 18, 20, 0.7);
-    border: none;
-    border-radius: 4px;
-    padding: 15px;
-    margin: 20px 0;
-    overflow-x: auto;
-    font-family: "Consolas", "Monaco", monospace;
-    font-size: 13px;
-    line-height: 1.5;
-    color: #a1a4a8; /* Light silver for code, Nier-inspired */
-}
-
-.equation {
-    background-color: rgba(16, 18, 20, 0.7);
-    border: none;
-    border-radius: 4px;
-    padding: 15px;
-    margin: 20px 0;
-    overflow-x: auto;
-    font-family: "Consolas", "Monaco", monospace;
-    font-size: 13px;
-    line-height: 1.5;
-    color: #a1a4a8; /* Light silver for equations, Nier-inspired */
-}
-
-.code {
-    font-family: "Consolas", "Monaco", monospace;
-    color: #8a8d93;
-    font-size: 13px;
-}
-
-.complexity-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 25px 0;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    font-size: 0.85em;
-    font-family: "Georgia", serif;
-}
-
-.complexity-table th, .complexity-table td {
-    border: none;
-    padding: 10px;
-    text-align: center;
-}
-
-.complexity-table th {
-    background-color: rgba(22, 24, 26, 0.8); /* Dark slate for header, Nier-inspired */
-    font-weight: bold;
-    color: #9a9d9e;
-}
-
-.complexity-table tr:nth-child(even) {
-    background-color: rgba(18, 20, 22, 0.5);
-}
-
-.complexity-table tr:nth-child(odd) {
-    background-color: rgba(20, 22, 24, 0.5);
-}
-
-.complexity-table tr:hover {
-    background-color: rgba(24, 26, 28, 0.6);
-}
-
-.paper-section {
-    margin-bottom: 40px;
-}
-
-.references-list {
-    padding-left: 25px;
-    font-size: 14px;
-}
-
-.references-list li {
-    margin-bottom: 12px;
-    text-indent: -25px;
-    padding-left: 25px;
-}
-
-@media (max-width: 768px) {
-    .about-content {
-        padding: 15px;
-    }
-    
-    .scientific-paper {
-        padding: 15px;
-    }
-    
-    .scientific-paper h1 {
-        font-size: 18px;
-    }
-    
-    .scientific-paper h2 {
-        font-size: 16px;
-    }
-    
-    .scientific-paper h3 {
-        font-size: 14px;
-    }
-    
-    .scientific-paper p, .scientific-paper li {
-        font-size: 14px;
-    }
-    
-    .pseudocode, .equation {
-        font-size: 12px;
-        padding: 10px;
-    }
-}
-
-/* Adjust content for absence of title */
-#content {
-    margin-left: 150px;
-    padding: 20px;
-    position: relative;
-    z-index: 1;
-    background-color: var(--bg-color);
-}
-
-/* Ensure the search form is properly positioned */
-.search-form {
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.6);
-    border-radius: 5px;
-    margin-bottom: 20px;
-}
-
-/* Reset any overridden background colors to match site */
-input, button, select, textarea {
-    background-color: rgba(25, 25, 25, 0.6) !important;
-    border: 1px solid var(--border-color);
-    color: white !important;
-}
-
-/* Fix parent container backgrounds */
-.input-group, .form-group, .summary-box, .processing-info, .quote, .quotes-container {
-    background-color: rgba(40, 40, 40, 0.4);
-    border-color: var(--border-color);
-}
-
-/* Title container that might have black background */
-.title-container {
-    position: relative;
-    height: 120px;
-    margin-bottom: 35px;
-    text-align: center;
-    background: var(--bg-color) !important;
-    overflow: visible;
-    z-index: 1;
-}
-
-/* Make sure the search form doesn't have black background */
-.search-form {
-    margin-top: 20px;
-    position: relative;
-    z-index: 5;
-    background-color: var(--bg-color) !important;
-}
-
-/* Standardize all background colors to exactly the same shade */
-.input-group, 
-.form-group, 
-.file-upload-container, 
-.source-inputs, 
-.url-input, 
-input, 
-select, 
-textarea, 
-.invoke-button, 
-.file-upload-button,
-.search-form {
-    background-color: rgba(33, 35, 38, 0.9) !important;
-    border-color: #333 !important;
-}
-
-/* The only container that needs a slightly different background */
-.input-group {
-    background-color: rgba(33, 35, 38, 0.95) !important;
-    padding: 20px;
-    border-radius: 3px;
-    border: 1px solid #333;
-}
-
-/* Make table header sticky for easier reference */
-.analytics-table thead th {
-    position: sticky;
-    top: 0;
-    background-color: #1a1a1a;
-    z-index: 10;
-}
-
-/* Improve scrollbar appearance */
-::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-    margin: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-    border: 2px solid var(--bg-color);
-    transition: background 0.3s;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-#complete-quotes, #incomplete-quotes {
-    max-height: none; /* Remove max height limitation */
-    overflow-y: visible; /* Remove nested scrolling */
-    padding: 15px;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.05);
-    margin-bottom: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.quote {
-    margin-bottom: 15px;
-    padding: 12px;
-    border-radius: 4px;
-    background-color: rgba(0, 0, 0, 0.2);
-    transition: background-color 0.2s;
-}
-
-.quote:hover {
-    background-color: rgba(0, 0, 0, 0.4);
-}
-
-.quote.complete {
-    border-left: 3px solid #4caf50;
-}
-
-.quote.incomplete {
-    border-left: 3px solid #ff9800;
-}
-
-.quote-text {
-    font-size: 16px;
-    margin-bottom: 8px;
-    line-height: 1.4;
-}
-
-.quote-sum, .quote-breakdown {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
-    margin: 5px 0;
-}
-
-#quotes-container h2, .analytics-section h3 {
-    position: sticky;
-    top: 0;
-    margin-top: 0;
-    padding: 10px 15px;
-    background-color: var(--bg-color);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    z-index: 10;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-}
-
-.summary-box {
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.toggle-analytics-btn {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: none;
-    border-radius: 4px;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.toggle-analytics-btn:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Improve the table header appearance */
-.analytics-table {
-    position: relative;
-}
-
-.analytics-table thead th {
-    position: sticky;
-    top: 45px; /* Positioned below section header */
-    background-color: rgba(30, 30, 30, 0.95);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    z-index: 9;
-    padding: 10px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
-}
-
-/* Add separators between quote sections */
-.quote-section {
-    position: relative;
-    margin-bottom: 30px;
-    padding-bottom: 10px;
-}
-
-/* Improve transitions between sections */
-#results > * {
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-#results:hover > *:not(:hover) {
-    opacity: 0.95;
-}
-
-/* Modal styles for advanced analytics */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5); /* Lighter background */
-    backdrop-filter: blur(3px); /* Add blur effect */
-    -webkit-backdrop-filter: blur(3px);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s, visibility 0.3s;
-}
-
-.modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-.modal-container {
-    width: 90%;
-    max-width: 1000px;
-    max-height: 90vh;
-    background-color: var(--bg-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transform: translateY(20px);
-    transition: transform 0.3s;
-}
-
-.modal-overlay.active .modal-container {
-    transform: translateY(0);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.modal-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: var(--text-color);
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    font-size: 24px;
-    cursor: pointer;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-}
-
-.modal-close:hover {
-    opacity: 1;
-    background: none !important;
-}
-
-.modal-body {
-    padding: 15px;
-    overflow-y: auto;
-    flex: 1;
-}
-
-/* Make table headers sticky in the modal */
-.modal-body .analytics-table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-/* Documentation Styles */
-.about-content {
     max-width: 900px;
     margin: 0 auto;
     padding: 2rem;
-    background: #fff;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background: rgba(12, 12, 14, 0.8);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     font-family: 'Georgia', serif;
     line-height: 1.6;
-    color: #333;
+    color: #c0c8d0;
 }
 
 .about-section {
     margin-bottom: 3rem;
     padding-bottom: 2rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .about-section:last-child {
@@ -1402,28 +884,33 @@ textarea,
 }
 
 .about-section h2 {
-    color: #8B7355;  /* Dark yellow for section titles */
+    color: #9a9d9e;
     font-size: 2rem;
     margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 2px solid #8B7355;
+    border-bottom: 2px solid #7d7f83;
+    font-family: "Garamond", "Times New Roman", serif;
+    letter-spacing: 0.3px;
 }
 
 .about-section h3 {
-    color: #666;
+    color: #7d7f83;
     font-size: 1.5rem;
     margin: 2rem 0 1rem;
+    font-family: "Garamond", "Times New Roman", serif;
+    letter-spacing: 0.2px;
 }
 
 .about-section p {
     margin-bottom: 1.5rem;
     text-align: justify;
+    color: #c0c8d0;
 }
 
 /* Code blocks */
 .code-example {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
+    background: rgba(16, 18, 20, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     padding: 1.5rem;
     margin: 1.5rem 0;
@@ -1431,40 +918,43 @@ textarea,
     font-size: 0.9rem;
     line-height: 1.5;
     overflow-x: auto;
-    color: #333;
+    color: #a1a4a8;
 }
 
 /* Strategy and Method cards */
 .strategy-card, .method-card {
-    background: #fafafa;
-    border: 1px solid #eee;
+    background: rgba(18, 20, 22, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     padding: 1.5rem;
     margin: 1.5rem 0;
 }
 
 .strategy-card h3, .method-card h3 {
-    color: #8B7355;
+    color: #9a9d9e;
     margin-top: 0;
+    font-family: "Garamond", "Times New Roman", serif;
 }
 
 /* Examples */
 .example {
-    background: #fff;
-    border-left: 4px solid #8B7355;
+    background: rgba(20, 22, 24, 0.5);
+    border-left: 4px solid #7d7f83;
     padding: 1rem 1.5rem;
     margin: 1rem 0;
 }
 
 .example h4 {
-    color: #666;
+    color: #9a9d9e;
     margin: 0 0 0.5rem 0;
+    font-family: "Garamond", "Times New Roman", serif;
 }
 
 /* Lists */
 .about-section ul, .about-section ol {
     margin: 1rem 0;
     padding-left: 2rem;
+    color: #c0c8d0;
 }
 
 .about-section li {
@@ -1473,7 +963,7 @@ textarea,
 
 /* Table of Contents */
 .about-section:first-child {
-    background: #fafafa;
+    background: rgba(18, 20, 22, 0.5);
     padding: 2rem;
     border-radius: 4px;
     margin-bottom: 3rem;
@@ -1490,34 +980,40 @@ textarea,
 }
 
 .about-section:first-child a {
-    color: #8B7355;
+    color: #9a9d9e;
     text-decoration: none;
     font-size: 1.1rem;
+    transition: color 0.2s;
 }
 
 .about-section:first-child a:hover {
+    color: #c0c8d0;
     text-decoration: underline;
 }
 
 /* Title section */
 .title-container {
-    background: #8B7355;
-    color: #fff;
+    background: rgba(22, 24, 26, 0.8);
+    color: #9a9d9e;
     padding: 3rem 0;
     margin-bottom: 2rem;
     text-align: center;
+    border-bottom: 2px solid #7d7f83;
 }
 
 .title-container h1 {
     font-size: 2.5rem;
     margin: 0;
     font-weight: normal;
+    font-family: "Garamond", "Times New Roman", serif;
+    letter-spacing: 0.5px;
 }
 
 .title-container .subtitle {
     font-size: 1.2rem;
     margin: 1rem 0 0;
     opacity: 0.9;
+    font-family: "Garamond", "Times New Roman", serif;
 }
 
 /* Responsive adjustments */

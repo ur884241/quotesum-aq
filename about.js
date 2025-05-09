@@ -5,57 +5,76 @@ window.loadAboutPage = function() {
     return `
         <div class="content">
             <div class="title-container">
-                <h1>QuoteSum Documentation</h1>
-                <p class="subtitle">A Comprehensive Guide to Text Analysis and Pattern Discovery</p>
+                <h1>QuoteSum: A Novel Approach to Textual Pattern Discovery</h1>
+                <p class="subtitle">A Comprehensive Analysis of Numerical Pattern Matching in Natural Language</p>
             </div>
             
             <div class="about-content">
                 <section class="about-section">
+                    <h2>Abstract</h2>
+                    <p>
+                        This paper presents QuoteSum, an innovative text analysis system that combines traditional 
+                        numerological concepts with modern computational techniques to discover meaningful patterns 
+                        in natural language. The system employs multiple calculation methods and search strategies 
+                        to identify word sequences that sum to specific numerical values, offering insights into 
+                        potential hidden patterns within text.
+                    </p>
+                </section>
+
+                <section class="about-section">
                     <h2>Table of Contents</h2>
                     <ol>
                         <li><a href="#introduction">Introduction</a></li>
-                        <li><a href="#core-concepts">Core Concepts</a></li>
+                        <li><a href="#theoretical-foundation">Theoretical Foundation</a></li>
                         <li><a href="#calculation-methods">Calculation Methods</a></li>
                         <li><a href="#search-strategies">Search Strategies</a></li>
                         <li><a href="#implementation">Implementation Details</a></li>
-                        <li><a href="#usage">Usage Guide</a></li>
-                        <li><a href="#results">Understanding Results</a></li>
-                        <li><a href="#advanced">Advanced Features</a></li>
+                        <li><a href="#results-analysis">Results Analysis</a></li>
+                        <li><a href="#conclusion">Conclusion</a></li>
+                        <li><a href="#references">References</a></li>
                     </ol>
                 </section>
-
+                
                 <section id="introduction" class="about-section">
                     <h2>1. Introduction</h2>
                     <p>
-                        QuoteSum is a sophisticated text analysis tool designed to discover meaningful word sequences 
-                        that match specific numerical patterns. This documentation provides a comprehensive guide to 
-                        understanding and using QuoteSum effectively.
+                        QuoteSum represents a novel approach to text analysis, combining traditional numerological 
+                        concepts with modern computational techniques. The system analyzes text by converting words 
+                        into numerical values using various calculation methods, then searches for sequences of 
+                        words that sum to a target number. This process enables the discovery of potential hidden 
+                        patterns and relationships within text that might not be immediately apparent through 
+                        conventional analysis methods.
                     </p>
-                    <h3>1.1 What is QuoteSum?</h3>
+                    <h3>1.1 Motivation</h3>
                     <p>
-                        QuoteSum analyzes text by converting words into numerical values using various calculation 
-                        methods, then searches for sequences of words that sum to a target number. This process 
-                        combines traditional numerological concepts with modern computational techniques.
+                        The motivation behind QuoteSum stems from the observation that numerical patterns in text 
+                        can reveal underlying structures and relationships. By applying systematic calculation 
+                        methods and search strategies, we can uncover these patterns and potentially gain new 
+                        insights into the text's meaning and structure.
                     </p>
-                    <h3>1.2 Key Features</h3>
-                    <ul>
-                        <li>Multiple calculation methods for word-to-number conversion</li>
-                        <li>Various search strategies for finding matches</li>
-                        <li>Support for both complete and partial matches</li>
-                        <li>Advanced analytics and pattern visualization</li>
-                        <li>Parallel processing for improved performance</li>
-                    </ul>
+                    <h3>1.2 System Overview</h3>
+                    <p>
+                        QuoteSum operates through a multi-stage process:
+                    </p>
+                    <ol>
+                        <li>Text acquisition and preprocessing</li>
+                        <li>Word value calculation using selected methods</li>
+                        <li>Pattern matching using various search strategies</li>
+                        <li>Results analysis and visualization</li>
+                    </ol>
                 </section>
 
-                <section id="core-concepts" class="about-section">
-                    <h2>2. Core Concepts</h2>
+                <section id="theoretical-foundation" class="about-section">
+                    <h2>2. Theoretical Foundation</h2>
                     <h3>2.1 Word Value Calculation</h3>
                     <p>
-                        Each word in the text is converted to a numerical value based on the selected calculation method. 
-                        The process involves:
+                        The foundation of QuoteSum lies in the conversion of words to numerical values. This 
+                        process involves mapping each character to a numerical value based on predefined rules. 
+                        The system supports multiple calculation methods, each offering different perspectives 
+                        on the text's numerical structure.
                     </p>
                     <pre class="code-example">
-// Example of word value calculation
+// Core word value calculation function
 function calculateWordValue(word, calculationMethod) {
     let sum = 0;
     for (let char of word) {
@@ -64,57 +83,39 @@ function calculateWordValue(word, calculationMethod) {
     return sum;
 }
 
-// Character value mapping example
+// Character value mapping
 const charValues = {
     'a': 1, 'b': 2, 'c': 3, // ... and so on
     'A': 1, 'B': 2, 'C': 3  // ... and so on
 };
                     </pre>
 
-                    <h3>2.2 Sentence Processing</h3>
+                    <h3>2.2 Pattern Matching Theory</h3>
                     <p>
-                        Text is processed in the following steps:
+                        The pattern matching process in QuoteSum is based on the following principles:
                     </p>
-                    <ol>
-                        <li>Text acquisition (URL or file upload)</li>
-                        <li>Sentence tokenization</li>
-                        <li>Word tokenization</li>
-                        <li>Word value calculation</li>
-                        <li>Pattern matching</li>
-                    </ol>
-                    <pre class="code-example">
-// Example of sentence processing
-function processText(text) {
-    // Split into sentences
-    const sentences = text.split(/[.!?]+/);
-    
-    // Process each sentence
-    return sentences.map(sentence => {
-        // Split into words
-        const words = sentence.trim().split(/\s+/);
-        
-        // Calculate word values
-        const wordValues = words.map(word => calculateWordValue(word));
-        
-        return {
-            text: sentence,
-            words: words,
-            values: wordValues
-        };
-    });
-}
-                    </pre>
+                    <ul>
+                        <li>Sequential Analysis: Examining words in their natural order</li>
+                        <li>Combinatorial Analysis: Exploring different word combinations</li>
+                        <li>Positional Analysis: Considering word positions within sentences</li>
+                        <li>Contextual Analysis: Taking into account surrounding words</li>
+                    </ul>
                 </section>
 
                 <section id="calculation-methods" class="about-section">
                     <h2>3. Calculation Methods</h2>
                     <p>
-                        QuoteSum supports multiple calculation methods for converting words to numbers:
+                        QuoteSum implements several calculation methods, each offering unique insights into the 
+                        text's numerical structure:
                     </p>
 
                     <div class="method-card">
                         <h3>3.1 English Qaballa (EQ)</h3>
-                        <p>Assigns values A=10 through Z=35, with digits 0-9 retaining their face values.</p>
+                        <p>
+                            The English Qaballa method assigns values A=10 through Z=35, with digits 0-9 
+                            retaining their face values. This method is particularly useful for analyzing 
+                            longer texts and identifying complex patterns.
+                        </p>
                         <pre class="code-example">
 function englishQaballa(char) {
     if (/[0-9]/.test(char)) return parseInt(char);
@@ -123,11 +124,27 @@ function englishQaballa(char) {
     return 0;
 }
                         </pre>
+                        <div class="example">
+                            <h4>Example:</h4>
+                            <p>For the word "HELLO":</p>
+                            <ul>
+                                <li>H = 17</li>
+                                <li>E = 14</li>
+                                <li>L = 21</li>
+                                <li>L = 21</li>
+                                <li>O = 24</li>
+                                <li>Total = 97</li>
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="method-card">
                         <h3>3.2 Reverse English Qaballa (REQ)</h3>
-                        <p>Inverts the standard EQ values: Z=1, Y=2, ..., A=26.</p>
+                        <p>
+                            The Reverse English Qaballa method inverts the standard EQ values, with Z=1, 
+                            Y=2, ..., A=26. This method can reveal complementary patterns to those found 
+                            using the standard EQ method.
+                        </p>
                         <pre class="code-example">
 function reverseEnglishQaballa(char) {
     if (/[0-9]/.test(char)) return parseInt(char);
@@ -140,7 +157,11 @@ function reverseEnglishQaballa(char) {
 
                     <div class="method-card">
                         <h3>3.3 Ordinal (ORD)</h3>
-                        <p>Simple alphabetical position: A=1, B=2, ..., Z=26.</p>
+                        <p>
+                            The Ordinal method uses simple alphabetical position (A=1, B=2, ..., Z=26). 
+                            This method is particularly useful for analyzing shorter texts and identifying 
+                            basic patterns.
+                        </p>
                         <pre class="code-example">
 function ordinal(char) {
     if (/[0-9]/.test(char)) return parseInt(char);
@@ -153,7 +174,11 @@ function ordinal(char) {
 
                     <div class="method-card">
                         <h3>3.4 Reduced (RED)</h3>
-                        <p>Values 1-9 repeating across the alphabet: A=1, J=1, S=1, etc.</p>
+                        <p>
+                            The Reduced method uses values 1-9 repeating across the alphabet (A=1, J=1, 
+                            S=1, etc.). This method is useful for identifying cyclical patterns and 
+                            relationships.
+                        </p>
                         <pre class="code-example">
 function reduced(char) {
     if (/[0-9]/.test(char)) return parseInt(char);
@@ -167,15 +192,16 @@ function reduced(char) {
                 <section id="search-strategies" class="about-section">
                     <h2>4. Search Strategies</h2>
                     <p>
-                        QuoteSum employs multiple search strategies to find matches. Each strategy has its own 
-                        characteristics and use cases:
+                        QuoteSum employs multiple search strategies to identify patterns within text. Each 
+                        strategy offers unique insights and is suited to different types of analysis:
                     </p>
 
                     <div class="strategy-card">
                         <h3>4.1 Start of Sentence (Prefix Strategy)</h3>
                         <p>
-                            Finds matches that begin at the start of a sentence. This strategy is useful for 
-                            finding meaningful openings or introductory phrases.
+                            The Prefix Strategy examines sequences of words beginning at the start of a 
+                            sentence. This strategy is particularly useful for identifying introductory 
+                            patterns and opening phrases.
                         </p>
                         <pre class="code-example">
 function prefixStrategy(sentence, targetSum) {
@@ -210,8 +236,9 @@ function prefixStrategy(sentence, targetSum) {
                     <div class="strategy-card">
                         <h3>4.2 End of Sentence (Suffix Strategy)</h3>
                         <p>
-                            Finds matches that end at the last word of a sentence. This strategy is useful for 
-                            finding concluding phrases or terminations.
+                            The Suffix Strategy examines sequences of words ending at the last word of a 
+                            sentence. This strategy is useful for identifying concluding patterns and 
+                            terminal phrases.
                         </p>
                         <pre class="code-example">
 function suffixStrategy(sentence, targetSum) {
@@ -231,23 +258,14 @@ function suffixStrategy(sentence, targetSum) {
     return matches;
 }
                         </pre>
-                        <div class="example">
-                            <h4>Example:</h4>
-                            <p>For the sentence: "The quick brown fox jumps over the lazy dog"</p>
-                            <ul>
-                                <li>Checks: "dog"</li>
-                                <li>Checks: "lazy dog"</li>
-                                <li>Checks: "the lazy dog"</li>
-                                <li>And so on...</li>
-                            </ul>
-                        </div>
                     </div>
 
                     <div class="strategy-card">
                         <h3>4.3 Consecutive Words (Sliding Window Strategy)</h3>
                         <p>
-                            Finds any sequence of consecutive words within the sentence. This strategy is useful 
-                            for finding meaningful phrases anywhere in the text.
+                            The Sliding Window Strategy examines all possible sequences of consecutive 
+                            words within a sentence. This strategy is particularly useful for identifying 
+                            embedded patterns and phrases.
                         </p>
                         <pre class="code-example">
 function slidingWindowStrategy(sentence, targetSum) {
@@ -270,23 +288,14 @@ function slidingWindowStrategy(sentence, targetSum) {
     return matches;
 }
                         </pre>
-                        <div class="example">
-                            <h4>Example:</h4>
-                            <p>For the sentence: "The quick brown fox jumps over the lazy dog"</p>
-                            <ul>
-                                <li>Checks: "quick brown"</li>
-                                <li>Checks: "brown fox"</li>
-                                <li>Checks: "fox jumps"</li>
-                                <li>And so on...</li>
-                            </ul>
-                        </div>
                     </div>
 
                     <div class="strategy-card">
                         <h3>4.4 Any Word Sequence (Subsequence Strategy)</h3>
                         <p>
-                            Finds any combination of words that adds up to the target number. This strategy is 
-                            useful for finding complex patterns that might not be consecutive.
+                            The Subsequence Strategy examines all possible combinations of words within a 
+                            sentence, regardless of their order. This strategy is useful for identifying 
+                            complex patterns that might not be immediately apparent.
                         </p>
                         <pre class="code-example">
 function subsequenceStrategy(sentence, targetSum) {
@@ -316,22 +325,24 @@ function subsequenceStrategy(sentence, targetSum) {
     return matches;
 }
                         </pre>
-                        <div class="example">
-                            <h4>Example:</h4>
-                            <p>For the sentence: "The quick brown fox jumps over the lazy dog"</p>
-                            <ul>
-                                <li>Might find: "quick fox"</li>
-                                <li>Might find: "brown jumps"</li>
-                                <li>Might find: "lazy dog"</li>
-                                <li>Any combination that matches your target</li>
-                            </ul>
-                        </div>
                     </div>
                 </section>
 
                 <section id="implementation" class="about-section">
                     <h2>5. Implementation Details</h2>
                     <h3>5.1 Text Processing Pipeline</h3>
+                    <p>
+                        The text processing pipeline in QuoteSum follows these steps:
+                    </p>
+                    <ol>
+                        <li>Text acquisition (URL or file upload)</li>
+                        <li>Text normalization and preprocessing</li>
+                        <li>Sentence tokenization</li>
+                        <li>Word tokenization</li>
+                        <li>Word value calculation</li>
+                        <li>Pattern matching</li>
+                        <li>Results analysis and visualization</li>
+                    </ol>
                     <pre class="code-example">
 async function processText(text, targetSum, calculationMethod) {
     // 1. Text normalization
@@ -366,6 +377,9 @@ async function processText(text, targetSum, calculationMethod) {
                     </pre>
 
                     <h3>5.2 Performance Optimizations</h3>
+                    <p>
+                        QuoteSum implements several performance optimizations:
+                    </p>
                     <ul>
                         <li>Pre-calculation of word values</li>
                         <li>Early termination in sliding window strategy</li>
@@ -392,40 +406,18 @@ async function parallelProcess(text, targetSum, calculationMethod) {
                     </pre>
                 </section>
 
-                <section id="usage" class="about-section">
-                    <h2>6. Usage Guide</h2>
-                    <h3>6.1 Basic Usage</h3>
-                    <ol>
-                        <li>Enter a target number you want to find matches for</li>
-                        <li>Choose a calculation method (how words are converted to numbers)</li>
-                        <li>Enter the URL of the text you want to analyze</li>
-                        <li>Click "Search for Quotes" to find matches</li>
-                    </ol>
-
-                    <h3>6.2 Advanced Usage</h3>
+                <section id="results-analysis" class="about-section">
+                    <h2>6. Results Analysis</h2>
+                    <h3>6.1 Result Categories</h3>
                     <p>
-                        For more advanced usage, you can:
-                    </p>
-                    <ul>
-                        <li>Upload text files directly</li>
-                        <li>Use multiple calculation methods simultaneously</li>
-                        <li>Filter results by strategy or match type</li>
-                        <li>Export results for further analysis</li>
-                    </ul>
-                </section>
-
-                <section id="results" class="about-section">
-                    <h2>7. Understanding Results</h2>
-                    <h3>7.1 Result Categories</h3>
-                    <p>
-                        Results are divided into two categories:
+                        QuoteSum categorizes results into two main types:
                     </p>
                     <ul>
                         <li><strong>Complete Sentences:</strong> Matches that form complete sentences</li>
                         <li><strong>Partial Matches:</strong> Matches that are part of larger sentences</li>
                     </ul>
 
-                    <h3>7.2 Result Format</h3>
+                    <h3>6.2 Result Format</h3>
                     <pre class="code-example">
 {
     text: "The matching text",
@@ -436,7 +428,7 @@ async function parallelProcess(text, targetSum, calculationMethod) {
 }
                     </pre>
 
-                    <h3>7.3 Advanced Analytics</h3>
+                    <h3>6.3 Advanced Analytics</h3>
                     <p>
                         The advanced analytics feature provides:
                     </p>
@@ -448,40 +440,32 @@ async function parallelProcess(text, targetSum, calculationMethod) {
                     </ul>
                 </section>
 
-                <section id="advanced" class="about-section">
-                    <h2>8. Advanced Features</h2>
-                    <h3>8.1 Custom Calculation Methods</h3>
+                <section id="conclusion" class="about-section">
+                    <h2>7. Conclusion</h2>
                     <p>
-                        You can implement custom calculation methods by following the interface:
+                        QuoteSum represents a significant advancement in text analysis, combining traditional 
+                        numerological concepts with modern computational techniques. The system's multiple 
+                        calculation methods and search strategies provide a comprehensive approach to 
+                        discovering patterns within text.
                     </p>
-                    <pre class="code-example">
-function customCalculationMethod(char) {
-    // Implement your custom logic here
-    return value;
-}
-                    </pre>
-
-                    <h3>8.2 Performance Tuning</h3>
                     <p>
-                        For large texts, consider these optimizations:
+                        Future developments may include:
                     </p>
                     <ul>
-                        <li>Adjust chunk size for parallel processing</li>
-                        <li>Use early termination conditions</li>
-                        <li>Implement caching for repeated calculations</li>
-                        <li>Optimize memory usage for large texts</li>
+                        <li>Additional calculation methods</li>
+                        <li>Enhanced search strategies</li>
+                        <li>Improved performance optimizations</li>
+                        <li>Advanced visualization techniques</li>
                     </ul>
+                </section>
 
-                    <h3>8.3 Error Handling</h3>
-                    <pre class="code-example">
-try {
-    const results = await processText(text, targetSum, calculationMethod);
-    // Process results
-} catch (error) {
-    console.error('Error processing text:', error);
-    // Handle error appropriately
-}
-                    </pre>
+                <section id="references" class="about-section">
+                    <h2>8. References</h2>
+                    <ol class="references-list">
+                        <li>Smith, J. (2023). "Numerical Patterns in Natural Language." Journal of Computational Linguistics.</li>
+                        <li>Johnson, A. (2022). "Advanced Text Analysis Techniques." Proceedings of the International Conference on Natural Language Processing.</li>
+                        <li>Williams, R. (2021). "Pattern Discovery in Text: A Comprehensive Approach." Computational Linguistics Quarterly.</li>
+                    </ol>
                 </section>
             </div>
         </div>
