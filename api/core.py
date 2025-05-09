@@ -34,7 +34,13 @@ def fetch_text_from_url(url):
         response = requests.get(url, timeout=10)
         response.raise_for_status()  # Raise an exception for HTTP errors
         logger.info(f"Successfully retrieved content from URL: {url}")
-        return response.text
+        
+        # Debug: Log the first 500 characters of the response
+        content = response.text
+        logger.info(f"First 500 characters of response:\n{content[:500]}")
+        logger.info(f"Total content length: {len(content)} characters")
+        
+        return content
     except requests.RequestException as e:
         logger.error(f"Error fetching URL {url}: {e}")
         if hasattr(e.response, 'status_code'):
@@ -63,117 +69,75 @@ def fetch_text(url):
         # Process and clean the text content
         logger.info("Processing and cleaning text content")
         
-        # First, let's examine the text structure
+        # Split into lines and clean
         lines = text.split('\n')
         logger.info(f"Found {len(lines)} lines in text")
         
-        # Log the first few lines to understand the structure
-        logger.info("First 10 lines of text:")
-        for i, line in enumerate(lines[:10]):
-            logger.info(f"Line {i}: {line[:100]}")
-        
-        # Find the start and end of the actual content
-        start_markers = [
-            "*** START OF THIS PROJECT GUTENBERG EBOOK",
-            "*** START OF THE PROJECT GUTENBERG EBOOK",
-            "*** START OF THIS PROJECT GUTENBERG",
-            "*** START OF THE PROJECT GUTENBERG",
-            "***START OF THIS PROJECT GUTENBERG EBOOK",
-            "***START OF THE PROJECT GUTENBERG EBOOK",
-            "***START OF THIS PROJECT GUTENBERG",
-            "***START OF THE PROJECT GUTENBERG"
-        ]
-        
-        end_markers = [
-            "*** END OF THIS PROJECT GUTENBERG EBOOK",
-            "*** END OF THE PROJECT GUTENBERG EBOOK",
-            "*** END OF THIS PROJECT GUTENBERG",
-            "*** END OF THE PROJECT GUTENBERG",
-            "***END OF THIS PROJECT GUTENBERG EBOOK",
-            "***END OF THE PROJECT GUTENBERG EBOOK",
-            "***END OF THIS PROJECT GUTENBERG",
-            "***END OF THE PROJECT GUTENBERG"
-        ]
-        
-        content_start = 0
-        content_end = len(lines)
-        
-        # Find the start of content
-        for i, line in enumerate(lines):
-            line = line.strip()
-            if any(marker in line for marker in start_markers):
-                content_start = i + 1
-                logger.info(f"Found content start at line {content_start}: {line}")
-                break
-        
-        # Find the end of content
-        for i in range(len(lines) - 1, content_start, -1):
-            line = lines[i].strip()
-            if any(marker in line for marker in end_markers):
-                content_end = i
-                logger.info(f"Found content end at line {content_end}: {line}")
-                break
-        
-        # If we didn't find markers, try to find content by looking for the first substantial line
-        if content_start == 0:
-            logger.info("No start marker found, looking for first substantial line")
-            for i, line in enumerate(lines):
-                line = line.strip()
-                if len(line) > 50 and any(c.isalpha() for c in line):
-                    content_start = i
-                    logger.info(f"Found potential content start at line {content_start}: {line[:100]}")
-                    break
-        
-        # Extract the content section
-        content_lines = lines[content_start:content_end]
-        logger.info(f"Extracted {len(content_lines)} lines of content")
-        
-        # Log a sample of the content
-        if content_lines:
-            logger.info("Sample of extracted content:")
-            for i, line in enumerate(content_lines[:5]):
-                logger.info(f"Content line {i}: {line[:100]}")
-        
         # Clean up the content
         cleaned_lines = []
-        for line in content_lines:
+        current_paragraph = []
+        
+        for line in lines:
+            line = line.strip()
+            
             # Skip empty lines
-            if not line.strip():
+            if not line:
+                # If we have a paragraph built up, add it
+                if current_paragraph:
+                    cleaned_lines.append(' '.join(current_paragraph))
+                    current_paragraph = []
                 continue
-                
+            
             # Skip lines that are just numbers or special characters
-            if line.strip().replace('.', '').replace(',', '').replace('!', '').replace('?', '').replace(';', '').replace(':', '').replace('-', '').replace('"', '').replace("'", '').isdigit():
+            if line.replace('.', '').replace(',', '').replace('!', '').replace('?', '').replace(';', '').replace(':', '').replace('-', '').replace('"', '').replace("'", '').isdigit():
                 continue
-                
+            
             # Skip lines that are just special characters
-            if all(c in '.,!?;:"\'()-' for c in line.strip()):
+            if all(c in '.,!?;:"\'()-' for c in line):
                 continue
-                
+            
             # Skip lines that are just URLs or file paths
-            if line.strip().startswith(('http://', 'https://', 'www.', '/', '\\')):
+            if line.startswith(('http://', 'https://', 'www.', '/', '\\')):
                 continue
-                
+            
+            # Skip very short lines (less than 3 characters)
+            if len(line) < 3:
+                continue
+            
             # Skip lines that are just common metadata markers
             if any(marker in line.lower() for marker in [
-                'project gutenberg', 'ebook', 'copyright', 'all rights reserved',
-                'terms of use', 'table of contents', 'index', 'appendix',
+                'copyright', 'all rights reserved', 'terms of use',
+                'table of contents', 'index', 'appendix',
                 'chapter', 'page', 'edition', 'published', 'license'
             ]):
                 continue
-                
-            # Skip very short lines
-            if len(line.strip()) < 5:
-                continue
-                
-            cleaned_lines.append(line)
+            
+            # Add the line to the current paragraph
+            current_paragraph.append(line)
+            
+            # If the line ends with a sentence ending, finish the paragraph
+            if line.endswith(('.', '!', '?', '...')):
+                if current_paragraph:
+                    cleaned_lines.append(' '.join(current_paragraph))
+                    current_paragraph = []
+        
+        # Add any remaining paragraph
+        if current_paragraph:
+            cleaned_lines.append(' '.join(current_paragraph))
         
         # Join the cleaned lines
         text = '\n'.join(cleaned_lines)
-        logger.info(f"Cleaned text content: {len(cleaned_lines)} lines")
+        logger.info(f"Cleaned text content: {len(cleaned_lines)} paragraphs")
         
         if not text.strip():
             raise Exception("No valid content found after cleaning")
-            
+        
+        # Log a sample of the cleaned content
+        if cleaned_lines:
+            logger.info("Sample of cleaned content:")
+            for i, line in enumerate(cleaned_lines[:5]):
+                logger.info(f"Paragraph {i}: {line[:100]}")
+        
         return text
     except Exception as e:
         logger.error(f"Error in fetch_text: {str(e)}")
