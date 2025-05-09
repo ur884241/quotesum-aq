@@ -62,87 +62,72 @@ def fetch_text(url):
             
         # Process and clean the text content
         logger.info("Processing and cleaning text content")
-        lines = text.split('\n')
         
-        # First pass: Identify and remove header/footer sections
-        content_start = 0
-        content_end = len(lines)
+        # Split text into chunks (paragraphs)
+        chunks = text.split('\n\n')
         
-        # Common header/footer markers
-        header_markers = [
-            'project gutenberg', 'ebook', 'copyright', 'all rights reserved',
-            'terms of use', 'table of contents', 'index', 'appendix',
-            'chapter', 'page', 'edition', 'published', 'license'
-        ]
+        # Filter and clean chunks
+        cleaned_chunks = []
+        in_content = False
+        content_chunks = 0
         
-        # Find the start of actual content
-        for i, line in enumerate(lines):
-            line_lower = line.lower()
-            # Skip if line contains header markers
-            if any(marker in line_lower for marker in header_markers):
-                continue
-            # Skip if line is just a URL or path
-            if any(line.strip().startswith(prefix) for prefix in ['http://', 'https://', 'www.', '/', '\\']):
-                continue
-            # Skip if line is just numbers or special characters
-            if line.strip().replace('.', '').replace(',', '').replace('!', '').replace('?', '').replace(';', '').replace(':', '').replace('-', '').replace('"', '').replace("'", '').isdigit():
-                continue
-            # If we find a line that looks like actual content, start from there
-            if len(line.strip()) > 20 and any(c.isalpha() for c in line):
-                content_start = i
-                break
-        
-        # Find the end of actual content
-        for i in range(len(lines) - 1, content_start, -1):
-            line_lower = lines[i].lower()
-            # Skip if line contains footer markers
-            if any(marker in line_lower for marker in header_markers):
-                continue
-            # Skip if line is just a URL or path
-            if any(lines[i].strip().startswith(prefix) for prefix in ['http://', 'https://', 'www.', '/', '\\']):
-                continue
-            # Skip if line is just numbers or special characters
-            if lines[i].strip().replace('.', '').replace(',', '').replace('!', '').replace('?', '').replace(';', '').replace(':', '').replace('-', '').replace('"', '').replace("'", '').isdigit():
-                continue
-            # If we find a line that looks like actual content, end there
-            if len(lines[i].strip()) > 20 and any(c.isalpha() for c in lines[i]):
-                content_end = i + 1
-                break
-        
-        # Extract the content section
-        content_lines = lines[content_start:content_end]
-        
-        # Second pass: Clean up the content
-        cleaned_lines = []
-        for line in content_lines:
-            # Skip empty lines
-            if not line.strip():
+        for chunk in chunks:
+            # Skip empty chunks
+            if not chunk.strip():
                 continue
                 
-            # Skip lines that are just numbers or special characters
-            if line.strip().replace('.', '').replace(',', '').replace('!', '').replace('?', '').replace(';', '').replace(':', '').replace('-', '').replace('"', '').replace("'", '').isdigit():
+            # Convert to lowercase for checking
+            chunk_lower = chunk.lower()
+            
+            # Skip chunks that are just metadata
+            if any(marker in chunk_lower for marker in [
+                'project gutenberg', 'ebook', 'copyright', 'all rights reserved',
+                'terms of use', 'table of contents', 'index', 'appendix',
+                'chapter', 'page', 'edition', 'published', 'license'
+            ]):
                 continue
                 
-            # Skip lines that are just special characters
-            if all(c in '.,!?;:"\'()-' for c in line.strip()):
+            # Skip chunks that are just URLs or paths
+            if any(chunk.strip().startswith(prefix) for prefix in ['http://', 'https://', 'www.', '/', '\\']):
                 continue
                 
-            # Skip lines that are just URLs or file paths
-            if line.strip().startswith(('http://', 'https://', 'www.', '/', '\\')):
+            # Skip chunks that are just numbers or special characters
+            if chunk.strip().replace('.', '').replace(',', '').replace('!', '').replace('?', '').replace(';', '').replace(':', '').replace('-', '').replace('"', '').replace("'", '').isdigit():
                 continue
                 
-            # Skip lines that are just common metadata markers
-            if any(marker in line.lower() for marker in header_markers):
+            # Skip chunks that are just special characters
+            if all(c in '.,!?;:"\'()-' for c in chunk.strip()):
                 continue
                 
-            # Skip very short lines (likely headers or metadata)
-            if len(line.strip()) < 10:
+            # Skip very short chunks
+            if len(chunk.strip()) < 20:
                 continue
                 
-            cleaned_lines.append(line)
+            # Check if this looks like actual content
+            words = chunk.split()
+            if len(words) < 3:  # Skip chunks with too few words
+                continue
+                
+            # Count words that look like actual content (contain letters)
+            content_words = sum(1 for word in words if any(c.isalpha() for c in word))
+            if content_words < 2:  # Skip chunks with too few content words
+                continue
+                
+            # If we find a chunk that looks like content, start keeping chunks
+            if not in_content and content_words >= len(words) * 0.5:  # At least 50% of words should be content
+                in_content = True
+                
+            if in_content:
+                cleaned_chunks.append(chunk)
+                content_chunks += 1
+                
+                # If we've found enough content chunks, we can stop
+                if content_chunks >= 5:  # Found at least 5 good content chunks
+                    break
         
-        text = '\n'.join(cleaned_lines)
-        logger.info(f"Cleaned text content: {len(cleaned_lines)} lines")
+        # Join the cleaned chunks
+        text = '\n\n'.join(cleaned_chunks)
+        logger.info(f"Cleaned text content: {len(cleaned_chunks)} chunks")
         
         return text
     except Exception as e:
