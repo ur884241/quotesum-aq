@@ -432,8 +432,8 @@ window.displayResults = function(data) {
             console.log("No incomplete quotes found");
         }
         
-        // Prepare advanced analytics in modal
-        if (data.advanced_analytics) {
+        // Show the analytics button only after results are displayed and if there is advanced analytics data
+        if (data.advanced_analytics && (data.complete_quotes.length > 0 || data.incomplete_quotes.length > 0)) {
             console.log("Preparing advanced analytics for modal");
             
             // Show the analytics button
