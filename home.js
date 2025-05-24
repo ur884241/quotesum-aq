@@ -64,19 +64,6 @@ window.loadHomePage = function() {
             <div id="analytics-button-container" style="display: none; margin-top: 20px; text-align: center;">
                 <button id="show-analytics-btn" class="toggle-analytics-btn">Show Advanced Analytics</button>
             </div>
-            
-            <!-- Modal for Advanced Analytics -->
-            <div id="analytics-modal" class="modal-overlay">
-                <div class="modal-container">
-                    <div class="modal-header">
-                        <div class="modal-title">Advanced Analytics Report</div>
-                        <button class="modal-close">&times;</button>
-                    </div>
-                    <div class="modal-body" id="analytics-content">
-                        <!-- Analytics content will be injected here -->
-                    </div>
-                </div>
-            </div>
         </div>
     `;
 
@@ -278,7 +265,7 @@ window.hideLoading = function() {
     if (quotesContainer) quotesContainer.style.display = 'block';
 };
 
-// Updated displayResults function to use modal for analytics
+// Updated displayResults function to create modal dynamically
 window.displayResults = function(data) {
     console.log("displayResults function called");
     
@@ -289,6 +276,27 @@ window.displayResults = function(data) {
     const completeQuotes = document.getElementById('complete-quotes');
     const incompleteQuotes = document.getElementById('incomplete-quotes');
     const analyticsBtn = document.getElementById('analytics-button-container');
+
+    // Create analytics modal if it doesn't exist
+    let analyticsModal = document.getElementById('analytics-modal');
+    if (!analyticsModal) {
+        analyticsModal = document.createElement('div');
+        analyticsModal.id = 'analytics-modal';
+        analyticsModal.className = 'modal-overlay';
+        analyticsModal.innerHTML = `
+            <div class="modal-container">
+                <div class="modal-header">
+                    <div class="modal-title">Advanced Analytics Report</div>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body" id="analytics-content">
+                    <!-- Analytics content will be injected here -->
+                </div>
+            </div>
+        `;
+        document.body.appendChild(analyticsModal);
+    }
+    
     const analyticsContent = document.getElementById('analytics-content');
 
     console.log("DOM elements found:", {
