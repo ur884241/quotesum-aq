@@ -520,6 +520,19 @@ function addTocSidebar() {
     setTimeout(() => {
         tocSidebar.style.opacity = '1';
     }, 300);
+
+    // Add click event listeners to TOC links
+    const tocLinks = tocSidebar.querySelectorAll('a');
+    tocLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
 }
 
 // Function to initialize the About page specific elements
@@ -542,6 +555,25 @@ window.addEventListener('hashchange', function() {
             existingToc.remove();
         }
     } else {
-        addTocSidebar();
+        // If we're on the about page, ensure the TOC is present
+        if (!document.querySelector('.toc-sidebar')) {
+            addTocSidebar();
+        }
+    }
+});
+
+// Add event listener for section clicks
+document.addEventListener('click', function(e) {
+    // Only handle clicks if we're on the about page
+    if (window.location.hash.includes('about')) {
+        const target = e.target.closest('a');
+        if (target && target.getAttribute('href').startsWith('#')) {
+            e.preventDefault();
+            const targetId = target.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
     }
 });
