@@ -482,6 +482,12 @@ async function parallelProcess(text, targetSum, calculationMethod) {
 
 // Function to add the discrete TOC sidebar after page load
 function addTocSidebar() {
+    // Remove any existing TOC sidebar first
+    const existingToc = document.querySelector('.toc-sidebar');
+    if (existingToc) {
+        existingToc.remove();
+    }
+    
     // Only add if we're on the About page
     if (!window.location.hash.includes('about')) {
         return;
@@ -528,16 +534,14 @@ function initializeAboutPage() {
     addTocSidebar();
 }
 
-// Listen for hash changes to add/remove TOC for About page
+// Add event listener for hash changes to handle TOC sidebar visibility
 window.addEventListener('hashchange', function() {
-    // Remove existing TOC if present
-    const existingToc = document.querySelector('.toc-sidebar');
-    if (existingToc) {
-        existingToc.remove();
-    }
-    
-    // Add TOC if now on About page
-    if (window.location.hash.includes('about')) {
+    if (!window.location.hash.includes('about')) {
+        const existingToc = document.querySelector('.toc-sidebar');
+        if (existingToc) {
+            existingToc.remove();
+        }
+    } else {
         addTocSidebar();
     }
 });
