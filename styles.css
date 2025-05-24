@@ -875,6 +875,30 @@ button:hover, .invoke-button:hover, .file-upload-button:hover {
     position: relative;
 }
 
+/* Style for hyperlinks in the about paper */
+.about-content a {
+    color: #c0c8d0;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(192, 200, 208, 0.3);
+    transition: border-color 0.3s ease;
+}
+
+.about-content a:hover {
+    border-bottom-color: #c0c8d0;
+}
+
+/* Style for reference links */
+.references-list a {
+    color: #c0c8d0;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(192, 200, 208, 0.3);
+    transition: border-color 0.3s ease;
+}
+
+.references-list a:hover {
+    border-bottom-color: #c0c8d0;
+}
+
 .about-section {
     margin-bottom: 5rem;
     padding-bottom: 2rem;
