@@ -5,8 +5,7 @@ window.loadAboutPage = function() {
     const content = `
         <div class="content" data-page="about">
             <div class="title-container">
-                <h1>QuoteSum: A Novel Approach to Textual Pattern Discovery</h1>
-                <p class="subtitle">A Comprehensive Analysis of Algorithmic Approaches to Numerological Pattern Recognition</p>
+                <h1>Sfynx7 : Numerological Hermeneutics</h1>
             </div>
             
             <div class="about-content">
