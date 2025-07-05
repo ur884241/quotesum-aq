@@ -984,9 +984,11 @@ body:not([data-page="about"]) .toc-sidebar {
     margin: 0;
     font-weight: 400;
     font-family: 'Playfair Display', 'Times New Roman', serif;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.5px;
     color: #d4d4d4;
     line-height: 1.4;
+    text-transform: uppercase;
+    font-weight: 300;
 }
 
 .title-container .subtitle {

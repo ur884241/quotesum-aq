@@ -5,7 +5,7 @@ window.loadAboutPage = function() {
     const content = `
         <div class="content" data-page="about">
             <div class="title-container">
-                <h1>Sfynx7 : Numerological Hermeneutics</h1>
+                <h1>SFYNX7 : NUMEROLOGICAL HERMENEUTICS</h1>
             </div>
             
             <div class="about-content">
@@ -483,9 +483,11 @@ window.addEventListener('hashchange', function() {
         }
     } else {
         // If we're on the about page, ensure the TOC is present
-        if (!document.querySelector('.toc-sidebar')) {
-            addTocSidebar();
-        }
+        setTimeout(() => {
+            if (!document.querySelector('.toc-sidebar')) {
+                addTocSidebar();
+            }
+        }, 100);
     }
 });
 
@@ -502,5 +504,16 @@ document.addEventListener('click', function(e) {
                 targetElement.scrollIntoView({ behavior: 'smooth' });
             }
         }
+    }
+});
+
+// Ensure TOC is added when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.hash.includes('about')) {
+        setTimeout(() => {
+            if (!document.querySelector('.toc-sidebar')) {
+                addTocSidebar();
+            }
+        }, 200);
     }
 });
