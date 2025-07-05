@@ -170,7 +170,7 @@ def create_reduced_dict():
 
 def create_agrippa_dict():
     """Create a dictionary mapping letters to their Agrippa values."""
-    return {chr(97 + i): ((i + 1) % 9) or 9 for i in range(26)}
+    return {chr(97 + i): ((i + 1) % 8) or 8 for i in range(26)}
 
 def create_english_dict():
     """Create a dictionary mapping letters to their English values."""
