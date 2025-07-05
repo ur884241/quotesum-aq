@@ -381,7 +381,7 @@ window.displayResults = function(data) {
         const summaryHTML = `
             <div class="summary-box">
                 <p>Found ${data.complete_quotes.length + data.incomplete_quotes.length} matching quotes</p>
-                <p>Calculation type: ${data.calculation_type || 'N/A'}</p>
+                <p>Calculation type: ${formatCalculationType(data.calculation_type)}</p>
                 <p>Processing method: Parallel processing with sliding window</p>
             </div>
         `;
@@ -714,4 +714,18 @@ function getStrategyDescription(strategy) {
         'unknown': 'Strategy information not available'
     };
     return descriptions[strategy] || descriptions['unknown'];
+}
+
+function formatCalculationType(calculationType) {
+    const nameMap = {
+        'eq': 'English Qaballa (EQ)',
+        'req': 'Reverse English Qaballa (REQ)',
+        'ord': 'Ordinal (ORD)',
+        'red': 'Reduced (RED)',
+        'agr': 'Agrippa (AGR)',
+        'eng': 'English (ENG)',
+        'heb': 'Hebrew (HEB)',
+        'pyt': 'Pythagorean (PYT)'
+    };
+    return nameMap[calculationType] || calculationType;
 }

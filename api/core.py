@@ -207,6 +207,22 @@ VALUE_DICTS = {
     'pythagorean': create_pythagorean_dict()
 }
 
+# Mapping from frontend values to backend values
+CALCULATION_TYPE_MAPPING = {
+    'eq': 'eq',                    # English Qaballa
+    'req': 'reverse_eq',           # Reverse English Qaballa
+    'ord': 'ordinal',              # Ordinal
+    'red': 'reduced',              # Reduced
+    'agr': 'agrippa',              # Agrippa
+    'eng': 'english',              # English
+    'heb': 'hebrew',               # Hebrew
+    'pyt': 'pythagorean'           # Pythagorean
+}
+
+def map_calculation_type(frontend_type):
+    """Map frontend calculation type to backend calculation type."""
+    return CALCULATION_TYPE_MAPPING.get(frontend_type, 'eq')
+
 def calculate_all_sums(text):
     """Calculate all possible gematria sums for a given text."""
     text_lower = text.lower()
@@ -259,11 +275,13 @@ def simple_sentence_tokenize(text):
 def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_type='other'):
     """Find quotes in the text that match the target sum using multiple strategies."""
     try:
-        logger.info(f"Starting search with target_sum={target_sum}, calculation_type={calculation_type}, source_type={source_type}")
+        # Map frontend calculation type to backend calculation type
+        backend_calculation_type = map_calculation_type(calculation_type)
+        logger.info(f"Starting search with target_sum={target_sum}, frontend_calculation_type={calculation_type}, backend_calculation_type={backend_calculation_type}, source_type={source_type}")
 
         # Select the primary value dictionary for this search
-        primary_value_dict = VALUE_DICTS.get(calculation_type, VALUE_DICTS['eq'])
-        logger.info(f"Using primary calculation type: {calculation_type}")
+        primary_value_dict = VALUE_DICTS.get(backend_calculation_type, VALUE_DICTS['eq'])
+        logger.info(f"Using primary calculation type: {backend_calculation_type}")
 
         # Use simple sentence tokenization
         sentences = simple_sentence_tokenize(text)
@@ -310,7 +328,7 @@ def find_matching_quotes(text, target_sum, url, calculation_type='eq', source_ty
             ]
 
             # Log the calculation and strategies being applied
-            logger.info(f"Applying strategies to sentence of {len(sentence_words_lower)} words using '{calculation_type}' calculation")
+            logger.info(f"Applying strategies to sentence of {len(sentence_words_lower)} words using '{backend_calculation_type}' calculation")
             
             # Apply all search strategies
             for strategy_name in ALL_STRATEGIES:
